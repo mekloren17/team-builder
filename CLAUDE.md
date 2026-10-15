@@ -77,6 +77,8 @@ npm run sim         # simulazione completa (~5 min)
 npm run sim:extra   # esperimenti aggiuntivi (~3 min)
 ```
 
+**Indirizzi:** codice su https://github.com/mekloren17/team-builder (privato, branch `main`); sito su https://team-builder-phi-six.vercel.app (Vercel, deploy automatico a ogni push su `main`).
+
 Il motore è in `src/lib/engine/`. L'app lo importa con `@/lib/engine/engine`; test e simulatore usano import con estensione `.ts` (abilitati da `allowImportingTsExtensions` in `tsconfig.json`).
 
 ### Cosa fa il motore (`engine/engine.ts`)
