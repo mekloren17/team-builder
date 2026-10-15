@@ -78,7 +78,7 @@ npm run sim         # simulazione completa (~5 min)
 npm run sim:extra   # esperimenti aggiuntivi (~3 min)
 ```
 
-**Indirizzi:** codice su https://github.com/mekloren17/team-builder (privato, branch `main`); sito su https://team-builder-phi-six.vercel.app (Vercel, deploy automatico a ogni push su `main`).
+**Indirizzi:** codice su https://github.com/mekloren17/team-builder (privato, branch `main`); sito su https://team-builder-phi-six.vercel.app (Vercel, deploy automatico a ogni push su `main`). I commit vanno firmati con l'email noreply di GitHub (`267590533+mekloren17@users.noreply.github.com`, già in `git config` locale): con il piano Hobby Vercel blocca i deploy di commit con un autore che non riconosce.
 
 Il motore è in `src/lib/engine/`. L'app lo importa con `@/lib/engine/engine`; test e simulatore usano import con estensione `.ts` (abilitati da `allowImportingTsExtensions` in `tsconfig.json`).
 
