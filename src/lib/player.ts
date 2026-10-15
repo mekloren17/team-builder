@@ -1,6 +1,6 @@
 // A player as stored in the database, and the helpers that turn it into what the engine and the card need.
 
-import { ageFromBirthYear, type Freq, type Level, type Pos, type Profile, type Years } from "@/lib/engine/engine";
+import { ageFromBirthYear, type BalancePlayer, type Freq, type Level, type Pos, type Profile, type Years } from "@/lib/engine/engine";
 
 export type Foot = "right" | "left" | "both";
 export type Role = "owner" | "admin" | "player";
@@ -68,6 +68,20 @@ export function toEngineProfile(p: PlayerRow): Profile | null {
     years: p.years_played,
     freq: p.frequency,
     attrs: p.attributes,
+    positions: p.positions,
+    gkRotation: p.gk_rotation,
+  };
+}
+
+/** Level used for balancing when someone has not filled in the questionnaire yet: an average amateur. */
+export const UNKNOWN_LEVEL = 60;
+
+/** Engine input for balancing and positions. */
+export function toBalancePlayer(p: PlayerRow, form: number): BalancePlayer {
+  return {
+    id: p.id,
+    mu: p.mu ?? p.prior_overall ?? UNKNOWN_LEVEL,
+    form,
     positions: p.positions,
     gkRotation: p.gk_rotation,
   };

@@ -42,7 +42,7 @@ Documento di partenza per continuare lo sviluppo. Contiene il contesto, le decis
 ### Decisioni ancora aperte
 
 - [x] **Metodo di rating** (vedi §4): **confermato da Lorenzo il 15/10/2026: ricalcolo da tutto lo storico** (`estimateRatings`).
-- [ ] Numero dispari di presenti: una squadra con un giocatore in più, o un giocatore che ruota tra le due.
+- [x] Numero dispari di presenti: **una squadra con un giocatore in più** (15/10/2026). Il giocatore in più vale `extraPlayer` = 5 punti di forza (≈ 67% di vittoria a parità di livello medio): è una stima, da calibrare con le partite reali. Usato sia nel bilanciamento (`splitStrengths`) sia nel ricalcolo dei rating.
 - [ ] Calo di affidabilità del rating per chi è inattivo da mesi (seconda fase).
 - [ ] Ospiti senza account: come collegare il profilo ospite a un account creato dopo.
 - [ ] **Email di login (magic link):** il servizio email incluso in Supabase manda solo agli indirizzi del team del progetto e non permette di modificare i modelli. Prima di invitare gli amici serve un SMTP esterno (es. Resend con un dominio proprio, ~10 €/anno). Poi va cambiato il link nei modelli *Magic Link* e *Confirm signup* in `{{ .RedirectTo }}?token_hash={{ .TokenHash }}&type=email`, così funziona anche se aperto in un altro browser (la route `/auth/callback` gestisce già `token_hash`). Attenzione: `RedirectTo` può già contenere `?next=...` (link d'invito), quindi nel modello serve `&` invece di `?` in quel caso: conviene spostare `next` in un cookie prima di attivare i modelli. Deciso il 15/10/2026: prima Google, l'email dopo. Intanto il modulo email nella pagina di login è nascosto: per riattivarlo, `EMAIL_LOGIN_ENABLED = true` in `src/app/login/login-form.tsx`.
@@ -113,7 +113,7 @@ B = (0,45·E + 0,25·F + 0,30·A) · k_età      arrotondato, limitato a 40–92
 - +0,2 per ogni coppia di compagni già insieme nella partita precedente (varietà);
 - vincoli rigidi dell'admin: `together` / `apart`.
 
-Richiede un numero pari di giocatori (lancia un errore altrimenti: vedi decisione aperta sul dispari).
+Con un numero dispari prova anche le divisioni sbilanciate di uno: la squadra con un giocatore in più riceve un bonus di `extraPlayer` punti (vedi decisioni).
 
 **Posizioni** — `assignPositions(team, format)`: sceglie tra i moduli 1-2-2 / 1-1-2-1 (a 5) e 1-3-2-1 / 1-2-3-1 (a 7) quello che lascia meno giocatori fuori ruolo. In porta va chi preferisce il ruolo, poi chi ha "porta a turno ok", altrimenti il rating più basso.
 
