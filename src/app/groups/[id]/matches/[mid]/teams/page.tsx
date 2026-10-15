@@ -9,6 +9,9 @@ import { TeamEditor, type EditorPlayer, type Option } from "./team-editor";
 
 type Props = { params: Promise<{ id: string; mid: string }> };
 
+// Three are shown at first; "Another option" reveals the next ones, all different from each other.
+const MAX_PROPOSALS = 10;
+
 export default function TeamsPage({ params }: Props) {
   return (
     <main className="mx-auto w-full max-w-xl flex-1 px-4 py-8 sm:px-6">
@@ -33,6 +36,7 @@ async function Teams({ params }: Props) {
       ...toBalancePlayer(p, s.form),
       name: p.display_name,
       overall: displayOverall(p) ?? UNKNOWN_LEVEL,
+      photoUrl: p.photo_url,
     };
   });
 
@@ -45,6 +49,7 @@ async function Teams({ params }: Props) {
   let error: string | null = null;
   try {
     const proposals = balanceTeams(balance, {
+      proposals: MAX_PROPOSALS,
       previousTeams: await previousTeams(id, mid),
       together: constraints.filter((c) => c.type === "together").map((c) => [c.player_a, c.player_b]),
       apart: constraints.filter((c) => c.type === "apart").map((c) => [c.player_a, c.player_b]),
@@ -67,7 +72,16 @@ async function Teams({ params }: Props) {
         </p>
       </header>
       {error && <p className="rounded-xl bg-amber-50 p-4 text-amber-900 dark:bg-amber-950 dark:text-amber-100">{error}</p>}
-      {options.length > 0 && <TeamEditor groupId={id} matchId={mid} players={editorPlayers} options={options} />}
+      {options.length > 0 && (
+        <TeamEditor
+          groupId={id}
+          matchId={mid}
+          format={match.format}
+          players={editorPlayers}
+          options={options}
+          initiallyShown={Math.min(options.length, (match.status === "teams_set" ? 1 : 0) + 3)}
+        />
+      )}
     </div>
   );
 }
