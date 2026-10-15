@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  initialOverall, cardAttributes, winProbability, updateAfterMatch, balanceTeams, assignPositions, estimateRatings, DEFAULT_PARAMS,
+  initialOverall, cardAttributes, winProbability, updateAfterMatch, balanceTeams, assignPositions, estimateRatings, isProvisional, ageFromBirthYear, DEFAULT_PARAMS,
   type Profile, type BalancePlayer, type HistoryMatch,
 } from './engine.ts';
 
@@ -93,4 +93,14 @@ test('positions: preferred keeper goes in goal', () => {
   const out = assignPositions(team, 5);
   assert.equal(out.slots.find((s) => s.pos === 'GK')!.id, 'p0');
   assert.equal(out.slots.length, 5);
+});
+
+test('provisional badge: fewer than 10 matches played', () => {
+  assert.equal(isProvisional(0), true);
+  assert.equal(isProvisional(9), true);
+  assert.equal(isProvisional(10), false);
+});
+
+test('age from birth year', () => {
+  assert.equal(ageFromBirthYear(1998, 2026), 28);
 });

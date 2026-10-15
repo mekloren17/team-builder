@@ -83,8 +83,16 @@ export function cardAttributes(overall: number, attrs: number[]): number[] {
   return attrs.map((a) => clamp(Math.round(overall + 6 * (a - m)), 30, 99));
 }
 
-export function isProvisional(r: Rating, params: Params = DEFAULT_PARAMS): boolean {
-  return r.sigma > 5;
+export const PROVISIONAL_MATCHES = 10;
+
+/** With the batch rating there is no sigma: a rating is provisional until the player has 10 matches. */
+export function isProvisional(matchesPlayed: number): boolean {
+  return matchesPlayed < PROVISIONAL_MATCHES;
+}
+
+/** Age in a given year, from the birth year asked in the questionnaire. */
+export function ageFromBirthYear(birthYear: number, year: number = new Date().getFullYear()): number {
+  return year - birthYear;
 }
 
 // ---------- 2. Expected result and rating update ----------

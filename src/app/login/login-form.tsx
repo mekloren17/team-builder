@@ -5,7 +5,9 @@ import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 export function LoginForm() {
-  const linkError = useSearchParams().get("error") === "link";
+  const searchParams = useSearchParams();
+  const linkError = searchParams.get("error") === "link";
+  const next = searchParams.get("next");
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "sending" | "sent">("idle");
   const [error, setError] = useState<string | null>(
@@ -16,7 +18,7 @@ export function LoginForm() {
     setError(null);
     const { error } = await createClient().auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: callbackUrl() },
+      options: { redirectTo: callbackUrl(next) },
     });
     if (error) setError(error.message);
   }
@@ -27,7 +29,7 @@ export function LoginForm() {
     setStatus("sending");
     const { error } = await createClient().auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: callbackUrl() },
+      options: { emailRedirectTo: callbackUrl(next) },
     });
     if (error) {
       setError(error.message);
@@ -83,6 +85,8 @@ export function LoginForm() {
   );
 }
 
-function callbackUrl() {
-  return `${window.location.origin}/auth/callback`;
+/** Where Supabase sends the user back; `next` is the page to open after sign-in (e.g. an invite). */
+function callbackUrl(next: string | null) {
+  const url = `${window.location.origin}/auth/callback`;
+  return next ? `${url}?next=${encodeURIComponent(next)}` : url;
 }

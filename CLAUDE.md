@@ -45,7 +45,7 @@ Documento di partenza per continuare lo sviluppo. Contiene il contesto, le decis
 - [ ] Numero dispari di presenti: una squadra con un giocatore in più, o un giocatore che ruota tra le due.
 - [ ] Calo di affidabilità del rating per chi è inattivo da mesi (seconda fase).
 - [ ] Ospiti senza account: come collegare il profilo ospite a un account creato dopo.
-- [ ] **Email di login (magic link):** il servizio email incluso in Supabase manda solo agli indirizzi del team del progetto e non permette di modificare i modelli. Prima di invitare gli amici serve un SMTP esterno (es. Resend con un dominio proprio, ~10 €/anno). Poi va cambiato il link nei modelli *Magic Link* e *Confirm signup* in `{{ .RedirectTo }}?token_hash={{ .TokenHash }}&type=email`, così funziona anche se aperto in un altro browser (la route `/auth/callback` gestisce già `token_hash`). Deciso il 15/10/2026: prima Google, l'email dopo.
+- [ ] **Email di login (magic link):** il servizio email incluso in Supabase manda solo agli indirizzi del team del progetto e non permette di modificare i modelli. Prima di invitare gli amici serve un SMTP esterno (es. Resend con un dominio proprio, ~10 €/anno). Poi va cambiato il link nei modelli *Magic Link* e *Confirm signup* in `{{ .RedirectTo }}?token_hash={{ .TokenHash }}&type=email`, così funziona anche se aperto in un altro browser (la route `/auth/callback` gestisce già `token_hash`). Attenzione: `RedirectTo` può già contenere `?next=...` (link d'invito), quindi nel modello serve `&` invece di `?` in quel caso: conviene spostare `next` in un cookie prima di attivare i modelli. Deciso il 15/10/2026: prima Google, l'email dopo.
 
 ---
 
@@ -232,7 +232,7 @@ Durante il questionario l'anteprima della carta si aggiorna dal vivo.
 | `team_proposals` | match_id, rank, team_a, team_b, win_prob_a |
 | `pair_constraints` | match_id, player_a, player_b, type (together/apart) |
 
-Profilo e rating stanno in `players` (un record per persona per gruppo), così gli ospiti funzionano come gli altri. Quando un utente entra in un secondo gruppo, il profilo viene copiato dal primo. Il campo `sigma` non c'è (si usa il ricalcolo). Schema in `supabase/migrations/`: la prima migrazione dà solo accesso in lettura ai membri del gruppo; le scritture passeranno da funzioni lato server aggiunte nei passi successivi.
+Profilo e rating stanno in `players` (un record per persona per gruppo), così gli ospiti funzionano come gli altri. Quando un utente entra in un secondo gruppo, il profilo viene copiato dal primo. Il campo `sigma` non c'è (si usa il ricalcolo). Il questionario è della persona: `save_my_profile` lo salva in tutti i suoi gruppi (il rating `mu` resta per gruppo). `prior_overall` lo calcola l'app con `initialOverall` lato server; il database ne controlla solo l'intervallo (chi mente nel questionario otterrebbe lo stesso effetto, quindi non è un rischio in più). Schema in `supabase/migrations/`: la prima migrazione dà solo accesso in lettura ai membri del gruppo; le scritture passeranno da funzioni lato server aggiunte nei passi successivi.
 
 ### Schermate
 
