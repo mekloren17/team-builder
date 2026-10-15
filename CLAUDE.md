@@ -256,8 +256,8 @@ Profilo e rating stanno in `players` (un record per persona per gruppo), così g
 
 Ogni passo si chiude con qualcosa che Lorenzo può provare. Non passare al successivo senza il suo ok.
 
-1. **Setup progetto** — repo GitHub, Next.js + TypeScript + Tailwind, motore importato con i suoi test che girano (`npm test`), deploy su Vercel di una pagina vuota. *Fatto quando:* Lorenzo apre l'URL di Vercel dal telefono.
-2. **Database e login** — schema Supabase con migrazioni, RLS, login Google + magic link. *Fatto quando:* Lorenzo entra con il suo account Google e un amico con l'email.
+1. **Setup progetto** — repo GitHub, Next.js + TypeScript + Tailwind, motore importato con i suoi test che girano (`npm test`), deploy su Vercel di una pagina vuota. *Fatto quando:* Lorenzo apre l'URL di Vercel dal telefono. ✅ **Fatto (15/10/2026).**
+2. **Database e login** — schema Supabase con migrazioni, RLS, login Google + magic link. *Fatto quando:* Lorenzo entra con il suo account Google e un amico con l'email. ✅ **Fatto (15/10/2026)**, tranne il magic link per gli amici: serve un SMTP esterno (vedi decisioni aperte).
 3. **Gruppi e profilo** — crea gruppo, link d'invito, questionario con anteprima carta, ospiti. *Fatto quando:* 3–4 amici entrano nel gruppo e vedono le loro carte.
 4. **Partite e squadre** — crea partita, "I'm in" con forma, generazione delle 3 proposte, spostamento manuale, vincoli insieme/separati, formazione con carte. *Fatto quando:* si generano le squadre per una partita vera.
 5. **Risultato e rating** — inserimento, conferma, contestazione, ricalcolo dei rating (metodo confermato da Lorenzo), storico `mu_before`/`mu_after`. *Fatto quando:* dopo una partita vera i rating cambiano come previsto.
