@@ -45,6 +45,7 @@ Documento di partenza per continuare lo sviluppo. Contiene il contesto, le decis
 - [ ] Numero dispari di presenti: una squadra con un giocatore in più, o un giocatore che ruota tra le due.
 - [ ] Calo di affidabilità del rating per chi è inattivo da mesi (seconda fase).
 - [ ] Ospiti senza account: come collegare il profilo ospite a un account creato dopo.
+- [ ] **Email di login (magic link):** il servizio email incluso in Supabase manda solo agli indirizzi del team del progetto e non permette di modificare i modelli. Prima di invitare gli amici serve un SMTP esterno (es. Resend con un dominio proprio, ~10 €/anno). Poi va cambiato il link nei modelli *Magic Link* e *Confirm signup* in `{{ .RedirectTo }}?token_hash={{ .TokenHash }}&type=email`, così funziona anche se aperto in un altro browser (la route `/auth/callback` gestisce già `token_hash`). Deciso il 15/10/2026: prima Google, l'email dopo.
 
 ---
 
