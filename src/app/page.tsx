@@ -1,24 +1,48 @@
-import { initialOverall } from "@/lib/engine/engine";
-
-// Placeholder home page: proves the engine is wired into the app.
-const sampleOverall = initialOverall({
-  age: 28,
-  level: "semipro",
-  years: "10+",
-  freq: "1w",
-  attrs: [3, 4, 4, 3, 3, 4],
-  positions: ["MID"],
-  gkRotation: false,
-});
+import { Suspense } from "react";
+import Link from "next/link";
+import { createClient } from "@/lib/supabase/server";
+import { signOut } from "./actions";
 
 export default function Home() {
   return (
-    <main className="flex flex-1 flex-col items-center justify-center gap-4 px-6 text-center">
+    <main className="flex flex-1 flex-col items-center justify-center gap-6 px-6 text-center">
       <h1 className="text-4xl font-bold tracking-tight">Team Builder</h1>
       <p className="max-w-sm text-lg text-zinc-600 dark:text-zinc-400">
-        Balanced teams for 5-a-side and 7-a-side. Coming soon.
+        Balanced teams for 5-a-side and 7-a-side.
       </p>
-      <p className="text-sm text-zinc-500">Engine check: sample overall {sampleOverall}</p>
+      <Suspense fallback={<div className="h-12" />}>
+        <Account />
+      </Suspense>
     </main>
+  );
+}
+
+async function Account() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return (
+      <Link href="/login" className="flex h-12 items-center rounded-full bg-foreground px-8 font-medium text-background">
+        Sign in
+      </Link>
+    );
+  }
+
+  const { data: profile } = await supabase.from("profiles").select("name").eq("id", user.id).single();
+
+  return (
+    <div className="space-y-3">
+      <p>
+        Signed in as <strong>{profile?.name ?? user.email}</strong>
+      </p>
+      <form action={signOut}>
+        <button type="submit" className="text-sm text-zinc-500 underline">
+          Sign out
+        </button>
+      </form>
+    </div>
   );
 }

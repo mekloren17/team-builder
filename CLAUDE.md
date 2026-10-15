@@ -223,15 +223,15 @@ Durante il questionario l'anteprima della carta si aggiorna dal vivo.
 
 | Tabella | Campi principali |
 | --- | --- |
-| `users` | id, name, email, avatar_url (gestita da Supabase Auth) |
+| `profiles` | id (= utente di Supabase Auth), name, email, avatar_url; creata da un trigger al primo login, ognuno vede solo la propria |
 | `groups` | id, name, invite_code, default_format (5/7), owner_id |
-| `players` | id, group_id, user_id (null per gli ospiti), display_name, role (owner/admin/player), birth_year, max_level, years_played, frequency, positions, foot, attributes, gk_rating, mu, matches_played |
-| `matches` | id, group_id, format, date, status (open/teams_set/played), score_a, score_b, result_status (pending/confirmed), result_by, confirmed_by, win_prob_a, created_by |
+| `players` | id, group_id, user_id (null per gli ospiti), display_name, role (owner/admin/player), birth_year, max_level, years_played, frequency, positions, foot, attributes, gk_rating, **prior_overall** (overall del questionario o stima dell'admin per gli ospiti: è il `prior` di `estimateRatings`), mu, matches_played |
+| `matches` | id, group_id, format, starts_at, status (open/teams_set/played), score_a, score_b, result_status (pending/confirmed/disputed), result_by, confirmed_by, win_prob_a, created_by |
 | `match_players` | match_id, player_id, form, team (A/B), position, mu_before, mu_after |
 | `team_proposals` | match_id, rank, team_a, team_b, win_prob_a |
 | `pair_constraints` | match_id, player_a, player_b, type (together/apart) |
 
-Profilo e rating stanno in `players` (un record per persona per gruppo), così gli ospiti funzionano come gli altri. Quando un utente entra in un secondo gruppo, il profilo viene copiato dal primo. Se si adotta il ricalcolo, il campo `sigma` non serve.
+Profilo e rating stanno in `players` (un record per persona per gruppo), così gli ospiti funzionano come gli altri. Quando un utente entra in un secondo gruppo, il profilo viene copiato dal primo. Il campo `sigma` non c'è (si usa il ricalcolo). Schema in `supabase/migrations/`: la prima migrazione dà solo accesso in lettura ai membri del gruppo; le scritture passeranno da funzioni lato server aggiunte nei passi successivi.
 
 ### Schermate
 
