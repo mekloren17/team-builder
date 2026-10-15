@@ -1,6 +1,5 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import { connection } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { displayOverall } from "@/lib/player";
 import { signOut } from "./actions";
@@ -20,8 +19,6 @@ export default function Home() {
 }
 
 async function Account() {
-  // The session depends on the request: render this part at request time only.
-  await connection();
   const supabase = await createClient();
   const {
     data: { user },
