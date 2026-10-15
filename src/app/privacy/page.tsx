@@ -19,6 +19,10 @@ export default function PrivacyPage() {
       <ul className="list-disc space-y-1 pl-6">
         <li>From your Google account or email sign-in: your name, email address and profile picture.</li>
         <li>What you tell us in your player profile: birth year, football experience, preferred positions and your self-assessment.</li>
+        <li>
+          Your card photo: your Google profile picture, or a photo you upload. You can change or remove it at any time
+          from your profile.
+        </li>
         <li>The matches you play in: teams, scores and the rating the app computes from them.</li>
       </ul>
 
@@ -31,7 +35,9 @@ export default function PrivacyPage() {
 
       <h2 className="text-xl font-semibold">Where it is stored</h2>
       <p>
-        Data is stored with Supabase (database servers in Frankfurt, Germany) and the app is hosted by Vercel.
+        Data is stored with Supabase (database servers in Frankfurt, Germany) and the app is hosted by Vercel. Card
+        photos are stored under random, unguessable addresses: they are shown inside the app, but anyone who has the
+        exact address of a photo could open it.
       </p>
 
       <h2 className="text-xl font-semibold">Your choices</h2>

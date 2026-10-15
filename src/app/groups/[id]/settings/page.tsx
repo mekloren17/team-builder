@@ -4,7 +4,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { displayOverall, isGuest } from "@/lib/player";
 import { POSITION_OPTIONS } from "@/lib/questionnaire";
-import { addGuest, removeGuest, setMemberRole } from "../../actions";
+import { PhotoEditor } from "@/components/photo-editor";
+import { addGuest, removeGuest, setGuestPhoto, setMemberRole } from "../../actions";
 import { loadGroup } from "../data";
 import { CopyInvite } from "./copy-invite";
 
@@ -55,10 +56,15 @@ async function Settings({ params }: Props) {
         {guests.length > 0 && (
           <ul className="divide-y divide-zinc-200 rounded-xl border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
             {guests.map((g) => (
-              <li key={g.id} className="flex items-center justify-between px-4 py-3">
+              <li key={g.id} className="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
                 <span>
                   {g.display_name} <span className="text-zinc-500">· {displayOverall(g)}</span>
                 </span>
+                <PhotoEditor
+                  target={{ kind: "guest", playerId: g.id }}
+                  currentUrl={g.photo_url}
+                  save={setGuestPhoto.bind(null, id, g.id)}
+                />
                 {g.matches_played === 0 && (
                   <form action={removeGuest.bind(null, id, g.id)}>
                     <button type="submit" className="text-sm text-red-600 underline">

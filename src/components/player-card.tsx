@@ -9,6 +9,7 @@ export interface PlayerCardProps {
   foot?: Foot | null;
   provisional?: boolean;
   guest?: boolean;
+  photoUrl?: string | null;
   size?: "sm" | "lg";
 }
 
@@ -20,11 +21,24 @@ const TIER_STYLE: Record<Tier, string> = {
 
 const FOOT_LABEL: Record<Foot, string> = { right: "R", left: "L", both: "R/L" };
 
+const BADGE = "rounded-full bg-black/20 px-2 py-0.5 font-semibold uppercase";
+
 /** Original card design: a tall rounded tile with a diagonal tier gradient and a stripe across the middle. */
-export function PlayerCard({ name, overall, position, attributes, foot, provisional, guest, size = "lg" }: PlayerCardProps) {
+export function PlayerCard({
+  name,
+  overall,
+  position,
+  attributes,
+  foot,
+  provisional,
+  guest,
+  photoUrl,
+  size = "lg",
+}: PlayerCardProps) {
   const lg = size === "lg";
   const style = overall === null ? "from-zinc-300 via-zinc-200 to-zinc-400 text-zinc-700" : TIER_STYLE[tier(overall)];
   const values = overall !== null && attributes ? cardAttributes(overall, attributes) : null;
+  const badgeSize = lg ? "text-[10px]" : "text-[7px]";
 
   return (
     <div
@@ -35,26 +49,17 @@ export function PlayerCard({ name, overall, position, attributes, foot, provisio
       {/* diagonal stripe */}
       <div className="pointer-events-none absolute -left-8 top-1/3 h-10 w-[160%] -rotate-12 bg-white/15" />
 
-      <div className="relative flex items-start justify-between">
-        <div className="leading-none">
+      <div className="relative flex items-start justify-between gap-2">
+        <div className="flex flex-col items-start gap-1 leading-none">
           <div className={`font-black tabular-nums ${lg ? "text-5xl" : "text-3xl"}`}>{overall ?? "–"}</div>
-          <div className={`mt-1 font-bold tracking-widest ${lg ? "text-sm" : "text-xs"}`}>{position ?? ""}</div>
+          <div className={`font-bold tracking-widest ${lg ? "text-sm" : "text-xs"}`}>{position ?? ""}</div>
+          {provisional && overall !== null && <span className={`${BADGE} ${badgeSize}`}>Provisional</span>}
+          {guest && <span className={`${BADGE} ${badgeSize}`}>Guest</span>}
         </div>
-        <div className="flex flex-col items-end gap-1">
-          {provisional && overall !== null && (
-            <span className={`rounded-full bg-black/20 px-2 py-0.5 font-semibold uppercase ${lg ? "text-[10px]" : "text-[8px]"}`}>
-              Provisional
-            </span>
-          )}
-          {guest && (
-            <span className={`rounded-full bg-black/20 px-2 py-0.5 font-semibold uppercase ${lg ? "text-[10px]" : "text-[8px]"}`}>
-              Guest
-            </span>
-          )}
-        </div>
+        <Photo url={photoUrl ?? null} name={name} lg={lg} />
       </div>
 
-      <div className={`relative truncate text-center font-bold uppercase tracking-wide ${lg ? "mt-6 text-lg" : "mt-3 text-sm"}`}>
+      <div className={`relative truncate text-center font-bold uppercase tracking-wide ${lg ? "mt-3 text-lg" : "mt-2 text-sm"}`}>
         {name || "Your name"}
       </div>
 
@@ -69,7 +74,9 @@ export function PlayerCard({ name, overall, position, attributes, foot, provisio
             ))}
           </div>
         ) : (
-          <p className={`text-center opacity-70 ${lg ? "text-sm" : "text-[11px]"}`}>{guest ? "Level estimated by an admin" : "Profile not filled in yet"}</p>
+          <p className={`text-center opacity-70 ${lg ? "text-sm" : "text-[11px]"}`}>
+            {guest ? "Level estimated by an admin" : "Profile not filled in yet"}
+          </p>
         )}
       </div>
 
@@ -78,6 +85,31 @@ export function PlayerCard({ name, overall, position, attributes, foot, provisio
           Foot {FOOT_LABEL[foot]}
         </div>
       )}
+    </div>
+  );
+}
+
+/** Square photo in the top-right corner; initials when there is no photo. */
+function Photo({ url, name, lg }: { url: string | null; name: string; lg: boolean }) {
+  const box = `relative shrink-0 overflow-hidden rounded-xl bg-black/15 ring-2 ring-white/40 ${lg ? "size-28" : "size-16"}`;
+  if (url) {
+    return (
+      <div className={box}>
+        {/* Photos are already small (320 px) and come from Supabase or Google: no image optimisation needed. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={url} alt="" className="size-full object-cover" referrerPolicy="no-referrer" />
+      </div>
+    );
+  }
+  const initials = name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0].toUpperCase())
+    .join("");
+  return (
+    <div className={`${box} flex items-center justify-center font-black opacity-70 ${lg ? "text-3xl" : "text-lg"}`}>
+      {initials || "?"}
     </div>
   );
 }

@@ -85,6 +85,7 @@ function Card({ player, size }: { player: PlayerRow; size: "sm" | "lg" }) {
       foot={player.foot}
       provisional={isProvisional(player.matches_played)}
       guest={isGuest(player)}
+      photoUrl={player.photo_url}
       size={size}
     />
   );

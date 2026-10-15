@@ -99,3 +99,18 @@ export async function setMemberRole(groupId: string, playerId: string, role: "ad
   if (error) throw new Error(error.message);
   revalidatePath(`/groups/${groupId}`, "layout");
 }
+
+/** The signed-in user's photo, in all their groups (null removes it). The file is already uploaded. */
+export async function setMyPhoto(url: string | null) {
+  const { supabase } = await requireUser("/");
+  const { error } = await supabase.rpc("set_my_photo", { url });
+  if (error) return { error: error.message };
+  revalidatePath("/", "layout");
+}
+
+export async function setGuestPhoto(groupId: string, playerId: string, url: string | null) {
+  const { supabase } = await requireUser(`/groups/${groupId}/settings`);
+  const { error } = await supabase.rpc("set_guest_photo", { pid: playerId, url });
+  if (error) return { error: error.message };
+  revalidatePath(`/groups/${groupId}`, "layout");
+}

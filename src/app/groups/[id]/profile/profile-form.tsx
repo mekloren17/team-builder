@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { ageFromBirthYear, initialOverall, type Freq, type Level, type Pos, type Years } from "@/lib/engine/engine";
+import { PhotoEditor } from "@/components/photo-editor";
 import { PlayerCard } from "@/components/player-card";
 import { ATTRIBUTE_NAMES, mainPosition, type Foot, type PlayerRow } from "@/lib/player";
 import {
@@ -14,7 +15,7 @@ import {
   POSITION_OPTIONS,
   YEARS_OPTIONS,
 } from "@/lib/questionnaire";
-import { saveProfile } from "../../actions";
+import { saveProfile, setMyPhoto } from "../../actions";
 
 const STEPS = ["About you", "Experience", "Positions", "Skills"] as const;
 const THIS_YEAR = new Date().getFullYear();
@@ -22,6 +23,7 @@ const THIS_YEAR = new Date().getFullYear();
 export function ProfileForm({ groupId, initial }: { groupId: string; initial: PlayerRow }) {
   const [step, setStep] = useState(0);
   const [displayName, setDisplayName] = useState(initial.display_name);
+  const [photoUrl, setPhotoUrl] = useState(initial.photo_url);
   const [birthYear, setBirthYear] = useState<string>(initial.birth_year?.toString() ?? "");
   const [foot, setFoot] = useState<Foot | null>(initial.foot);
   const [level, setLevel] = useState<Level | null>(initial.max_level);
@@ -92,6 +94,7 @@ export function ProfileForm({ groupId, initial }: { groupId: string; initial: Pl
           position={mainPosition(positions)}
           attributes={overall !== null ? previewAttrs : null}
           foot={foot}
+          photoUrl={photoUrl}
           size="sm"
         />
       </div>
@@ -100,6 +103,16 @@ export function ProfileForm({ groupId, initial }: { groupId: string; initial: Pl
 
       {step === 0 && (
         <div className="space-y-5">
+          {initial.user_id && (
+            <Field label="Photo (saved right away)">
+              <PhotoEditor
+                target={{ kind: "me", userId: initial.user_id }}
+                currentUrl={photoUrl}
+                save={setMyPhoto}
+                onSaved={setPhotoUrl}
+              />
+            </Field>
+          )}
           <Field label="Name on your card">
             <input
               value={displayName}

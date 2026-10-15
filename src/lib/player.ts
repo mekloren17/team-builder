@@ -23,10 +23,11 @@ export interface PlayerRow {
   prior_overall: number | null;
   mu: number | null;
   matches_played: number;
+  photo_url: string | null;
 }
 
 export const PLAYER_COLUMNS =
-  "id, group_id, user_id, display_name, role, birth_year, max_level, years_played, frequency, positions, gk_rotation, foot, attributes, gk_rating, prior_overall, mu, matches_played";
+  "id, group_id, user_id, display_name, role, birth_year, max_level, years_played, frequency, positions, gk_rotation, foot, attributes, gk_rating, prior_overall, mu, matches_played, photo_url";
 
 export const ATTRIBUTE_NAMES = ["Pace", "Shooting", "Passing", "Dribbling", "Defending", "Physical"] as const;
 export const ATTRIBUTE_SHORT = ["PAC", "SHO", "PAS", "DRI", "DEF", "PHY"] as const;
