@@ -9,7 +9,7 @@ type Props = { params: Promise<{ id: string }> };
 
 export default function PlayersPage({ params }: Props) {
   return (
-    <Page wide>
+    <Page>
       <Suspense>
         <Players params={params} />
       </Suspense>

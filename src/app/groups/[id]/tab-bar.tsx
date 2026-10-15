@@ -22,7 +22,7 @@ export function TabBar({ groupId, canManage }: { groupId: string; canManage: boo
       aria-label="Group"
       className="fixed inset-x-0 bottom-0 z-30 border-t-2 border-ink bg-ink pb-[env(safe-area-inset-bottom)] md:static md:border-b-2 md:border-t-0 md:bg-paper md:pb-0"
     >
-      <ul className="mx-auto flex max-w-3xl md:gap-1 md:px-6">
+      <ul className="mx-auto flex max-w-2xl md:gap-1 md:px-2">
         {tabs.map(({ href, label, icon: Icon, active }) => (
           <li key={href} className="flex-1 md:flex-none">
             <Link

@@ -36,15 +36,15 @@ export function choice(selected: boolean) {
 // ---------- Layout ----------
 
 /** Page body: one column, readable on a phone, centred on a desktop. */
-export function Page({ children, wide = false }: { children: React.ReactNode; wide?: boolean }) {
-  return <main className={`mx-auto w-full flex-1 px-4 py-6 sm:px-6 ${wide ? "max-w-3xl" : "max-w-xl"}`}>{children}</main>;
+export function Page({ children }: { children: React.ReactNode }) {
+  return <main className="mx-auto w-full max-w-2xl flex-1 px-4 py-6 sm:px-6">{children}</main>;
 }
 
 /** The top of the paper: name of the publication and an ink rule. */
 export function Masthead({ title, right }: { title: string; right?: React.ReactNode }) {
   return (
     <header className="border-b-[3px] border-ink bg-paper">
-      <div className="mx-auto flex max-w-3xl items-baseline justify-between gap-4 px-4 pb-2 pt-4 sm:px-6">
+      <div className="mx-auto flex max-w-2xl items-baseline justify-between gap-4 px-4 pb-2 pt-4 sm:px-6">
         <span className="truncate font-display text-[1.75rem] font-extrabold uppercase leading-none tracking-tight">{title}</span>
         {right && <span className="shrink-0 text-sm font-semibold text-ink-soft">{right}</span>}
       </div>
