@@ -43,11 +43,11 @@ export function Lineup({
         <div className="pointer-events-none absolute inset-x-3 top-1/2 border-t-2 border-white/30" />
         <div className="pointer-events-none absolute left-1/2 top-1/2 size-20 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white/30" />
 
-        <div className="relative flex flex-col gap-3">
+        {/* each half has the same four rows (empty ones included), so the halfway line falls between the teams */}
+        <div className="relative grid grid-rows-[repeat(8,minmax(5.5rem,auto))]">
           {LINES.map((pos) => (
             <Line key={`A-${pos}`} players={teamA.filter((p) => (p.position ?? "MID") === pos)} />
           ))}
-          <div className="h-6" />
           {[...LINES].reverse().map((pos) => (
             <Line key={`B-${pos}`} players={teamB.filter((p) => (p.position ?? "MID") === pos)} />
           ))}
@@ -73,9 +73,8 @@ function TeamHeader({ name, strength, prob, count }: { name: string; strength: n
 }
 
 function Line({ players }: { players: LineupPlayer[] }) {
-  if (players.length === 0) return null;
   return (
-    <div className="flex justify-center gap-2">
+    <div className="flex items-center justify-center gap-2">
       {players.map((p) => (
         <Token key={p.id} player={p} />
       ))}
@@ -100,7 +99,7 @@ function Token({ player }: { player: LineupPlayer }) {
           <span className="flex size-full items-center justify-center text-sm font-bold">{initials}</span>
         )}
       </div>
-      <div className="-mt-2 rounded-full bg-black/70 px-1.5 text-[11px] font-bold tabular-nums">
+      <div className="mt-1 rounded-full bg-black/70 px-1.5 text-[11px] font-bold tabular-nums">
         {player.overall} <span title="Form">{formIcon(player.form)}</span>
       </div>
       <div className="mt-0.5 w-full truncate text-[11px] font-semibold drop-shadow">{player.name}</div>

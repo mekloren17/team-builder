@@ -137,3 +137,22 @@ test('batch rating: a bigger team winning by the expected margin moves nobody mu
   const est = estimateRatings(prior, [h]);
   for (const id of prior.keys()) assert.ok(Math.abs(est.get(id)! - 60) < 0.5, `${id} = ${est.get(id)}`);
 });
+
+test('one keeper and one "fine in goal": they end up in different teams', () => {
+  const ps: BalancePlayer[] = players(10).map((p) => ({ ...p, positions: p.positions.filter((x) => x !== 'GK'), gkRotation: false }));
+  ps[0] = { ...ps[0], positions: ['GK'] };
+  ps[5] = { ...ps[5], gkRotation: true };
+  const [best] = balanceTeams(ps);
+  const inA = (id: string) => best.teamA.includes(id);
+  assert.notEqual(inA(ps[0].id), inA(ps[5].id));
+});
+
+test('positions: with no keeper, a player without preferences goes in goal before a defender', () => {
+  const team: BalancePlayer[] = [
+    { id: 'def', mu: 50, form: 3, positions: ['DEF'], gkRotation: false },
+    { id: 'guest', mu: 65, form: 3, positions: [], gkRotation: false },
+    { id: 'att', mu: 70, form: 3, positions: ['ATT'], gkRotation: false },
+  ];
+  const out = assignPositions(team, 5);
+  assert.equal(out.slots.find((s) => s.pos === 'GK')!.id, 'guest');
+});

@@ -241,7 +241,7 @@ export interface BalanceOptions {
   together?: [string, string][];
   apart?: [string, string][];
   proposals?: number; // how many to return (default 3)
-  weights?: { gk: number; role: number; repeat: number };
+  weights?: { gk: number; keeper: number; role: number; repeat: number };
 }
 
 export interface Proposal {
@@ -253,7 +253,8 @@ export interface Proposal {
   penalty: number;
 }
 
-const DEFAULT_WEIGHTS = { gk: 10, role: 1.5, repeat: 0.2 };
+// gk: both teams get a real keeper (if there are 2+); keeper: else, both get someone who accepts goal
+const DEFAULT_WEIGHTS = { gk: 10, keeper: 5, role: 1.5, repeat: 0.2 };
 
 /**
  * Strength of two teams that may differ by one player: mean level, plus half of `extraPlayer` points
@@ -285,6 +286,9 @@ export function balanceTeams(
   const eff = players.map((p) => effectiveMu(p.mu, p.form, params));
   const isGk = players.map((p) => p.positions.includes('GK'));
   const gkCount = isGk.filter(Boolean).length;
+  // can go in goal: a real keeper, or someone fine taking turns
+  const canKeep = players.map((p, i) => isGk[i] || p.gkRotation);
+  const keeperCount = canKeep.filter(Boolean).length;
   const idx = new Map(players.map((p, i) => [p.id, i]));
 
   // previous teammates, as index pairs
@@ -313,7 +317,7 @@ export function balanceTeams(
     const inA = (i: number) => (mask & (1 << i)) !== 0;
     for (const [a, b] of together) if (inA(a) !== inA(b)) return;
     for (const [a, b] of apart) if (inA(a) === inA(b)) return;
-    let sumA = 0, sumB = 0, nA = 0, gkA = 0, gkB = 0;
+    let sumA = 0, sumB = 0, nA = 0, gkA = 0, gkB = 0, keepA = 0, keepB = 0;
     let defA = 0, defB = 0, attA = 0, attB = 0;
     for (let i = 0; i < n; i++) {
       const p = players[i];
@@ -321,11 +325,13 @@ export function balanceTeams(
         sumA += eff[i];
         nA++;
         if (isGk[i]) gkA++;
+        if (canKeep[i]) keepA++;
         if (p.positions.includes('DEF')) defA++;
         if (p.positions.includes('ATT')) attA++;
       } else {
         sumB += eff[i];
         if (isGk[i]) gkB++;
+        if (canKeep[i]) keepB++;
         if (p.positions.includes('DEF')) defB++;
         if (p.positions.includes('ATT')) attB++;
       }
@@ -335,6 +341,7 @@ export function balanceTeams(
     const sA = sumA / nA + bonus, sB = sumB / nB - bonus;
     let penalty = Math.abs(sA - sB);
     if (gkCount >= 2 && (gkA === 0 || gkB === 0)) penalty += w.gk;
+    else if (keeperCount >= 2 && (keepA === 0 || keepB === 0)) penalty += w.keeper;
     if (defA === 0) penalty += w.role;
     if (defB === 0) penalty += w.role;
     if (attA === 0) penalty += w.role;
@@ -407,13 +414,15 @@ export function assignPositions(team: BalancePlayer[], format: 5 | 7): { formati
 }
 
 function greedyAssign(team: BalancePlayer[], slots: Pos[]) {
-  // goalkeeper first: who prefers GK, else who accepts rotation, else lowest-rated
+  // goalkeeper first: who prefers GK, else who accepts rotation, else the lowest-rated of those
+  // without any preferred position (e.g. guests), else the lowest-rated
   const left = [...team];
   const out: { id: string; pos: Pos; preferred: boolean }[] = [];
   const takeGk = () => {
     let i = left.findIndex((p) => p.positions.includes('GK'));
     if (i < 0) i = left.findIndex((p) => p.gkRotation);
-    if (i < 0) i = left.reduce((bi, p, j) => (p.mu < left[bi].mu ? j : bi), 0);
+    if (i < 0) i = lowest(left, (p) => p.positions.length === 0);
+    if (i < 0) i = lowest(left, () => true);
     const p = left.splice(i, 1)[0];
     out.push({ id: p.id, pos: 'GK', preferred: p.positions.includes('GK') || p.gkRotation });
   };
@@ -439,4 +448,13 @@ function greedyAssign(team: BalancePlayer[], slots: Pos[]) {
     out.push({ id: p.id, pos, preferred: p.positions.includes(pos) });
   }
   return out;
+}
+
+/** Index of the lowest-rated player matching the filter, or -1. */
+function lowest(ps: BalancePlayer[], ok: (p: BalancePlayer) => boolean): number {
+  let best = -1;
+  ps.forEach((p, j) => {
+    if (ok(p) && (best < 0 || p.mu < ps[best].mu)) best = j;
+  });
+  return best;
 }
