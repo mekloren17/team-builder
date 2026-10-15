@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import Link from "next/link";
 import { ageFromBirthYear, initialOverall, type Freq, type Level, type Pos, type Years } from "@/lib/engine/engine";
 import { PhotoEditor } from "@/components/photo-editor";
 import { PlayerCard } from "@/components/player-card";
+import { BackLink, button, choice, ErrorText, Headline, input } from "@/components/ui";
 import { ATTRIBUTE_NAMES, mainPosition, type Foot, type PlayerRow } from "@/lib/player";
 import {
   ATTRIBUTE_LEVELS,
@@ -79,15 +79,18 @@ export function ProfileForm({ groupId, initial }: { groupId: string; initial: Pl
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <Link href={`/groups/${groupId}`} className="text-sm text-zinc-500">
-          ← Back
-        </Link>
-        <span className="text-sm text-zinc-500">
+        <BackLink href={`/groups/${groupId}`}>Home</BackLink>
+        <span className="text-sm font-semibold text-ink-soft">
           Step {step + 1} of {STEPS.length}
         </span>
       </div>
+      <div className="grid grid-cols-4 gap-1" aria-hidden>
+        {STEPS.map((s, i) => (
+          <span key={s} className={`h-1.5 ${i <= step ? "bg-ink" : "bg-paper-deep"}`} />
+        ))}
+      </div>
 
-      <div className="sticky top-0 z-10 -mx-6 flex justify-center bg-background/90 py-3 backdrop-blur">
+      <div className="sticky top-0 z-10 -mx-4 flex justify-center border-b-2 border-ink bg-paper py-3 sm:-mx-6">
         <PlayerCard
           name={displayName}
           overall={overall}
@@ -99,7 +102,7 @@ export function ProfileForm({ groupId, initial }: { groupId: string; initial: Pl
         />
       </div>
 
-      <h1 className="text-2xl font-bold tracking-tight">{STEPS[step]}</h1>
+      <Headline>{STEPS[step]}</Headline>
 
       {step === 0 && (
         <div className="space-y-5">
@@ -118,7 +121,7 @@ export function ProfileForm({ groupId, initial }: { groupId: string; initial: Pl
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
               maxLength={40}
-              className="h-12 w-full rounded-xl border border-zinc-300 bg-transparent px-4 dark:border-zinc-700"
+              className={input}
             />
           </Field>
           <Field label="Year of birth">
@@ -127,7 +130,7 @@ export function ProfileForm({ groupId, initial }: { groupId: string; initial: Pl
               onChange={(e) => setBirthYear(e.target.value.replace(/\D/g, "").slice(0, 4))}
               inputMode="numeric"
               placeholder="1995"
-              className="h-12 w-full rounded-xl border border-zinc-300 bg-transparent px-4 dark:border-zinc-700"
+              className={input}
             />
           </Field>
           <Field label="Stronger foot">
@@ -161,8 +164,8 @@ export function ProfileForm({ groupId, initial }: { groupId: string; initial: Pl
               ))}
             </div>
           </Field>
-          <label className="flex items-center gap-3">
-            <input type="checkbox" checked={gkRotation} onChange={(e) => setGkRotation(e.target.checked)} className="size-5" />
+          <label className="flex min-h-12 items-center gap-3 font-medium">
+            <input type="checkbox" checked={gkRotation} onChange={(e) => setGkRotation(e.target.checked)} className="size-6" />
             <span>I&apos;m fine taking turns in goal</span>
           </label>
           {isGk && (
@@ -175,7 +178,7 @@ export function ProfileForm({ groupId, initial }: { groupId: string; initial: Pl
 
       {step === 3 && (
         <div className="space-y-6">
-          <p className="text-zinc-600 dark:text-zinc-400">Be honest: the teams are only as fair as these answers.</p>
+          <p className="text-ink-soft">Be honest: the teams are only as fair as these answers. Nobody sees them but the app.</p>
           {ATTRIBUTE_NAMES.map((name, i) => (
             <Field key={name} label={name}>
               <Levels
@@ -188,14 +191,14 @@ export function ProfileForm({ groupId, initial }: { groupId: string; initial: Pl
         </div>
       )}
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <ErrorText>{error}</ErrorText>}
 
       <div className="flex gap-3 pb-8">
         {step > 0 && (
           <button
             type="button"
             onClick={() => setStep(step - 1)}
-            className="h-12 flex-1 rounded-full border border-zinc-300 font-medium dark:border-zinc-700"
+            className={`${button.secondary} flex-1`}
           >
             Back
           </button>
@@ -205,7 +208,7 @@ export function ProfileForm({ groupId, initial }: { groupId: string; initial: Pl
             type="button"
             disabled={!stepValid[step]}
             onClick={() => setStep(step + 1)}
-            className="h-12 flex-1 rounded-full bg-foreground font-medium text-background disabled:opacity-40"
+            className={`${button.primary} flex-1`}
           >
             Next
           </button>
@@ -214,7 +217,7 @@ export function ProfileForm({ groupId, initial }: { groupId: string; initial: Pl
             type="button"
             disabled={!stepValid.every(Boolean) || saving}
             onClick={submit}
-            className="h-12 flex-1 rounded-full bg-foreground font-medium text-background disabled:opacity-40"
+            className={`${button.primary} flex-1`}
           >
             {saving ? "Saving…" : "Save my card"}
           </button>
@@ -227,7 +230,7 @@ export function ProfileForm({ groupId, initial }: { groupId: string; initial: Pl
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="space-y-2">
-      <div className="font-medium">{label}</div>
+      <div className="font-semibold">{label}</div>
       {children}
     </div>
   );
@@ -239,9 +242,7 @@ function OptionButton({ selected, onClick, children }: { selected: boolean; onCl
       type="button"
       onClick={onClick}
       aria-pressed={selected}
-      className={`min-h-12 w-full rounded-xl border px-4 py-2 text-left ${
-        selected ? "border-foreground bg-foreground text-background" : "border-zinc-300 dark:border-zinc-700"
-      }`}
+      className={choice(selected)}
     >
       {children}
     </button>
@@ -274,10 +275,10 @@ function Choices<T extends string>({
 /** Levels 1..5, each with its behaviour description. */
 function Levels({ descriptions, value, onChange }: { descriptions: string[]; value: number | null; onChange: (v: number) => void }) {
   return (
-    <div className="space-y-2">
+    <div className="space-y-1.5">
       {descriptions.map((d, i) => (
         <OptionButton key={i} selected={value === i + 1} onClick={() => onChange(i + 1)}>
-          <span className="mr-3 font-bold tabular-nums">{i + 1}</span>
+          <span className="tabular mr-3 font-display text-xl font-extrabold">{i + 1}</span>
           {d}
         </OptionButton>
       ))}

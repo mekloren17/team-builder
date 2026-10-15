@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
+import { button, ErrorText } from "@/components/ui";
 import { createClient } from "@/lib/supabase/client";
 
 const BUCKET = "player-photos";
@@ -116,12 +117,12 @@ export function PhotoEditor({
         <button
           type="button"
           onClick={() => input.current?.click()}
-          className="h-11 rounded-full border border-zinc-300 px-5 font-medium dark:border-zinc-700"
+          className={button.small}
         >
           {currentUrl ? "Change photo" : "Add photo"}
         </button>
         {currentUrl && (
-          <button type="button" onClick={() => startBusy(() => persist(null))} disabled={busy} className="text-sm text-zinc-500 underline">
+          <button type="button" onClick={() => startBusy(() => persist(null))} disabled={busy} className={button.quiet}>
             Remove
           </button>
         )}
@@ -133,14 +134,14 @@ export function PhotoEditor({
         className="hidden"
         onChange={(e) => e.target.files?.[0] && pick(e.target.files[0])}
       />
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <ErrorText>{error}</ErrorText>}
 
       {crop && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-6">
-          <div className="w-full max-w-sm space-y-4 rounded-2xl bg-background p-5">
-            <h2 className="text-lg font-semibold">Frame your face</h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/80 p-4" role="dialog" aria-modal="true" aria-label="Frame your face">
+          <div className="w-full max-w-sm space-y-4 border-2 border-ink bg-paper p-5">
+            <h2 className="font-display text-2xl font-extrabold uppercase">Frame your face</h2>
             <div
-              className="relative mx-auto touch-none select-none overflow-hidden rounded-xl bg-zinc-200"
+              className="relative mx-auto touch-none select-none overflow-hidden border-2 border-ink bg-paper-deep"
               style={{ width: VIEW, height: VIEW }}
               onPointerDown={(e) => {
                 e.currentTarget.setPointerCapture(e.pointerId);
@@ -168,7 +169,7 @@ export function PhotoEditor({
               />
             </div>
             <label className="block space-y-1 text-sm">
-              <span className="text-zinc-500">Zoom</span>
+              <span className="font-semibold">Zoom</span>
               <input
                 type="range"
                 min={1}
@@ -179,12 +180,12 @@ export function PhotoEditor({
                 className="w-full"
               />
             </label>
-            <p className="text-sm text-zinc-500">Drag the photo to move it.</p>
+            <p className="text-sm text-ink-soft">Drag the photo to centre your face.</p>
             <div className="flex gap-3">
               <button
                 type="button"
                 onClick={close}
-                className="h-11 flex-1 rounded-full border border-zinc-300 font-medium dark:border-zinc-700"
+                className={`${button.secondary} flex-1`}
               >
                 Cancel
               </button>
@@ -192,7 +193,7 @@ export function PhotoEditor({
                 type="button"
                 onClick={upload}
                 disabled={busy}
-                className="h-11 flex-1 rounded-full bg-foreground font-medium text-background disabled:opacity-50"
+                className={`${button.primary} flex-1 text-lg`}
               >
                 {busy ? "Saving…" : "Use photo"}
               </button>

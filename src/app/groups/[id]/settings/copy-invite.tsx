@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { Check, Share2 } from "lucide-react";
+import { button } from "@/components/ui";
 
 /** Shows the full invite link and copies it (or opens the phone's share sheet). */
 export function CopyInvite({ url }: { url: string }) {
@@ -21,15 +23,17 @@ export function CopyInvite({ url }: { url: string }) {
   }
 
   return (
-    <div className="flex gap-2">
+    <div className="flex">
       <input
         readOnly
         value={url}
+        aria-label="Invite link"
         onFocus={(e) => e.target.select()}
-        className="h-12 min-w-0 flex-1 rounded-xl border border-zinc-300 bg-transparent px-4 text-sm dark:border-zinc-700"
+        className="min-h-12 min-w-0 flex-1 border-2 border-r-0 border-ink bg-sheet px-3 text-sm"
       />
-      <button type="button" onClick={share} className="h-12 shrink-0 rounded-full bg-foreground px-5 font-medium text-background">
-        {copied ? "Copied!" : "Share"}
+      <button type="button" onClick={share} className={`${button.primary} shrink-0 text-base`}>
+        {copied ? <Check className="size-5" aria-hidden /> : <Share2 className="size-5" aria-hidden />}
+        {copied ? "Copied" : "Share"}
       </button>
     </div>
   );

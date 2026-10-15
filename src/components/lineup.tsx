@@ -1,5 +1,5 @@
 import type { Pos } from "@/lib/engine/engine";
-import { formIcon } from "@/lib/match";
+import { FormIcon, Mark, WinBar } from "@/components/ui";
 import { tier, type Tier } from "@/lib/player";
 
 export interface LineupPlayer {
@@ -36,8 +36,11 @@ export function Lineup({
 }) {
   return (
     <div className="space-y-3">
-      <TeamHeader name="Team A" strength={strengthA} prob={winProbA} count={teamA.length} />
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-b from-emerald-700 via-emerald-600 to-emerald-700 px-2 py-4 text-white shadow-inner">
+      <div className="border-2 border-ink bg-sheet p-4">
+        <WinBar probA={winProbA} labelA="Team A" labelB="Team B" />
+      </div>
+      <TeamHeader name="Team A" strength={strengthA} count={teamA.length} />
+      <div className="relative overflow-hidden border-2 border-ink bg-[#2f7d4f] px-2 py-4 text-white">
         {/* pitch markings */}
         <div className="pointer-events-none absolute inset-3 rounded-lg border-2 border-white/30" />
         <div className="pointer-events-none absolute inset-x-3 top-1/2 border-t-2 border-white/30" />
@@ -53,20 +56,19 @@ export function Lineup({
           ))}
         </div>
       </div>
-      <TeamHeader name="Team B" strength={strengthB} prob={1 - winProbA} count={teamB.length} />
+      <TeamHeader name="Team B" strength={strengthB} count={teamB.length} />
     </div>
   );
 }
 
-function TeamHeader({ name, strength, prob, count }: { name: string; strength: number; prob: number; count: number }) {
+function TeamHeader({ name, strength, count }: { name: string; strength: number; count: number }) {
   return (
-    <div className="flex items-baseline justify-between px-1">
-      <span className="text-lg font-bold">
-        {name} <span className="text-sm font-normal text-zinc-500">· {count} players</span>
+    <div className="flex items-baseline justify-between">
+      <span className="font-display text-xl font-extrabold uppercase">
+        {name} <span className="font-sans text-sm font-semibold normal-case text-ink-soft">· {count} players</span>
       </span>
-      <span className="text-sm text-zinc-600 dark:text-zinc-400">
-        Strength <strong className="tabular-nums">{strength.toFixed(1)}</strong> · Win{" "}
-        <strong className="tabular-nums">{Math.round(prob * 100)}%</strong>
+      <span className="text-sm font-semibold text-ink-soft">
+        Strength <Mark value={strength.toFixed(1)} size="sm" />
       </span>
     </div>
   );
@@ -99,10 +101,11 @@ function Token({ player }: { player: LineupPlayer }) {
           <span className="flex size-full items-center justify-center text-sm font-bold">{initials}</span>
         )}
       </div>
-      <div className="mt-1 rounded-full bg-black/70 px-1.5 text-[11px] font-bold tabular-nums">
-        {player.overall} <span title="Form">{formIcon(player.form)}</span>
+      <div className="mt-1 flex items-center gap-0.5 bg-ink px-1.5 font-display text-sm font-extrabold leading-5 tabular-nums">
+        {player.overall}
+        <FormIcon form={player.form} className="size-3.5" />
       </div>
-      <div className="mt-0.5 w-full truncate text-[11px] font-semibold drop-shadow">{player.name}</div>
+      <div className="mt-0.5 w-full truncate text-xs font-semibold">{player.name}</div>
     </div>
   );
 }

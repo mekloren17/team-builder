@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import Link from "next/link";
+import { BackLink, Dateline, ErrorText, Headline, Page } from "@/components/ui";
 import { notFound } from "next/navigation";
 import { balanceTeams, type BalancePlayer } from "@/lib/engine/engine";
 import { formatMatchDate } from "@/lib/match";
@@ -14,11 +14,11 @@ const MAX_PROPOSALS = 10;
 
 export default function TeamsPage({ params }: Props) {
   return (
-    <main className="mx-auto w-full max-w-xl flex-1 px-4 py-8 sm:px-6">
+    <Page>
       <Suspense>
         <Teams params={params} />
       </Suspense>
-    </main>
+    </Page>
   );
 }
 
@@ -62,16 +62,12 @@ async function Teams({ params }: Props) {
 
   return (
     <div className="space-y-6">
-      <header className="space-y-1">
-        <Link href={`/groups/${id}/matches/${mid}`} className="text-sm text-zinc-500">
-          ← {formatMatchDate(match.starts_at)}
-        </Link>
-        <h1 className="text-2xl font-bold tracking-tight">Teams</h1>
-        <p className="text-zinc-500">
-          Pick a proposal, then tap a player to move them to the other team. The win chance updates as you go.
-        </p>
+      <header>
+        <BackLink href={`/groups/${id}/matches/${mid}`}>{formatMatchDate(match.starts_at)}</BackLink>
+        <Headline>Make the teams</Headline>
+        <Dateline>Pick a proposal, swap players if you like, then save. The win chance follows every move.</Dateline>
       </header>
-      {error && <p className="rounded-xl bg-amber-50 p-4 text-amber-900 dark:bg-amber-950 dark:text-amber-100">{error}</p>}
+      {error && <ErrorText>{error}</ErrorText>}
       {options.length > 0 && (
         <TeamEditor
           groupId={id}

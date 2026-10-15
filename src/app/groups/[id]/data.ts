@@ -1,5 +1,8 @@
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
+import type { FixtureMatch } from "@/components/fixtures";
+import { listedSince, MATCH_COLUMNS } from "@/lib/match";
+import { createClient } from "@/lib/supabase/server";
 import { PLAYER_COLUMNS, type PlayerRow } from "@/lib/player";
 
 export interface GroupRow {
@@ -23,4 +26,20 @@ export async function loadGroup(groupId: string, path: string) {
   const me = all.find((p) => p.user_id === user.id);
   if (!me) notFound();
   return { group: group as GroupRow, players: all, me, canManage: me.role !== "player" };
+}
+
+/** Matches from a week ago on, oldest first, with who signed up. */
+export async function loadMatches(groupId: string) {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("matches")
+    .select(`${MATCH_COLUMNS}, match_players (player_id)`)
+    .eq("group_id", groupId)
+    .gte("starts_at", listedSince())
+    .order("starts_at");
+  const matches = (data ?? []) as FixtureMatch[];
+  const now = Date.now();
+  // the next match is the first not played that started less than 3 hours ago (still on the pitch)
+  const next = matches.find((m) => m.status !== "played" && new Date(m.starts_at).getTime() > now - 3 * 3600 * 1000);
+  return { matches, next };
 }

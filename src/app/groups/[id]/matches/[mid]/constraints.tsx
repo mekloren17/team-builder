@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { button, ErrorText } from "@/components/ui";
 import type { PairConstraintRow } from "@/lib/match";
 import { setPairConstraint } from "../actions";
 
@@ -35,23 +36,23 @@ export function Constraints({
     });
   }
 
-  const select = "h-11 min-w-0 flex-1 rounded-xl border border-zinc-300 bg-background px-3 dark:border-zinc-700";
+  const select = "min-h-12 min-w-0 flex-1 border-2 border-ink bg-sheet px-3 font-medium";
 
   return (
     <div className="space-y-3">
       {constraints.length > 0 && (
         <ul className="space-y-1">
           {constraints.map((c) => (
-            <li key={c.id} className="flex items-center justify-between text-sm">
+            <li key={c.id} className="flex min-h-10 items-center justify-between gap-3">
               <span>
-                {name(c.player_a)} <span className="text-zinc-500">{c.type === "together" ? "with" : "not with"}</span>{" "}
+                {name(c.player_a)} <span className="font-semibold text-ink-soft">{c.type === "together" ? "with" : "not with"}</span>{" "}
                 {name(c.player_b)}
               </span>
               <button
                 type="button"
                 disabled={busy}
                 onClick={() => save(c.player_a, c.player_b, null)}
-                className="text-red-600 underline"
+                className={button.danger}
               >
                 Remove
               </button>
@@ -91,12 +92,12 @@ export function Constraints({
           type="button"
           disabled={!a || !b || a === b || busy}
           onClick={() => save(a, b, type)}
-          className="h-11 rounded-full border border-zinc-300 px-4 font-medium disabled:opacity-40 dark:border-zinc-700"
+          className={button.small}
         >
           Add
         </button>
       </div>
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <ErrorText>{error}</ErrorText>}
     </div>
   );
 }

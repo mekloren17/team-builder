@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { button, ErrorText, input } from "@/components/ui";
 import { createClient } from "@/lib/supabase/client";
 
 // Email sign-in stays hidden until a custom SMTP is set up (see CLAUDE.md, open decisions).
@@ -47,21 +48,21 @@ export function LoginForm() {
       <button
         type="button"
         onClick={signInWithGoogle}
-        className="flex h-12 w-full items-center justify-center rounded-full border border-zinc-300 bg-white font-medium text-zinc-900 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:hover:bg-zinc-800"
+        className={`${button.primary} w-full`}
       >
         Continue with Google
       </button>
 
       {EMAIL_LOGIN_ENABLED && (
         <>
-          <div className="flex items-center gap-3 text-sm text-zinc-500">
-            <span className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800" />
+          <div className="flex items-center gap-3 text-sm text-ink-soft">
+            <span className="h-px flex-1 bg-rule" />
             or
-            <span className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800" />
+            <span className="h-px flex-1 bg-rule" />
           </div>
 
           {status === "sent" ? (
-            <p className="rounded-lg bg-emerald-50 p-4 text-center text-emerald-900 dark:bg-emerald-950 dark:text-emerald-100">
+            <p className="border-2 border-ink bg-sheet p-4">
               Check your inbox: we sent a sign-in link to <strong>{email}</strong>.
             </p>
           ) : (
@@ -73,12 +74,12 @@ export function LoginForm() {
                 placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="h-12 w-full rounded-full border border-zinc-300 bg-transparent px-5 dark:border-zinc-700"
+                className={input}
               />
               <button
                 type="submit"
                 disabled={status === "sending"}
-                className="h-12 w-full rounded-full bg-foreground font-medium text-background disabled:opacity-60"
+                className={`${button.secondary} w-full`}
               >
                 {status === "sending" ? "Sending…" : "Email me a sign-in link"}
               </button>
@@ -87,7 +88,7 @@ export function LoginForm() {
         </>
       )}
 
-      {error && <p className="text-center text-sm text-red-600">{error}</p>}
+      {error && <ErrorText>{error}</ErrorText>}
     </div>
   );
 }

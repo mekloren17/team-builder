@@ -52,18 +52,14 @@ export const STATUS_LABEL: Record<MatchStatus, string> = {
   played: "Played",
 };
 
-/** Form of the day, 1..5. */
+/** Form of the day, 1..5 (drawn with FormIcon). */
 export const FORM_LEVELS = [
-  { value: 1, icon: "⇊", label: "Bad day" },
-  { value: 2, icon: "↘", label: "Not great" },
-  { value: 3, icon: "→", label: "Normal" },
-  { value: 4, icon: "↗", label: "Good" },
-  { value: 5, icon: "⇈", label: "On fire" },
+  { value: 1, label: "Bad day" },
+  { value: 2, label: "Meh" },
+  { value: 3, label: "Normal" },
+  { value: 4, label: "Good" },
+  { value: 5, label: "On fire" },
 ] as const;
-
-export function formIcon(form: number): string {
-  return FORM_LEVELS[form - 1]?.icon ?? "→";
-}
 
 /** Matches from this moment on are listed in the group (the last week included, to see recent teams). */
 export function listedSince(): string {

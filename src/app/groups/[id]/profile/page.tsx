@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { Page } from "@/components/ui";
 import { loadGroup } from "../data";
 import { ProfileForm } from "./profile-form";
 
@@ -6,11 +7,11 @@ type Props = { params: Promise<{ id: string }> };
 
 export default function ProfilePage({ params }: Props) {
   return (
-    <main className="mx-auto w-full max-w-xl flex-1 px-6 py-8">
+    <Page>
       <Suspense>
         <Profile params={params} />
       </Suspense>
-    </main>
+    </Page>
   );
 }
 

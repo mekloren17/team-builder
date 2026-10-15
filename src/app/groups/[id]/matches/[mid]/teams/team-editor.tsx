@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { ArrowLeftRight, Plus } from "lucide-react";
 import { assignPositions, effectiveMu, splitStrengths, winProbability, type BalancePlayer } from "@/lib/engine/engine";
 import { Lineup, type LineupPlayer } from "@/components/lineup";
-import { formIcon } from "@/lib/match";
+import { button, ErrorText, FormIcon, Mark, WinBar } from "@/components/ui";
 import { saveTeams } from "../../actions";
 
 export interface EditorPlayer extends BalancePlayer {
@@ -73,19 +74,16 @@ export function TeamEditor({
     });
   }
 
+  const tab = (on: boolean) =>
+    `min-h-11 shrink-0 border-2 border-ink px-4 text-sm font-semibold transition-colors duration-150 ${
+      on ? "bg-ink text-paper" : "bg-sheet text-ink hover:bg-paper-deep"
+    }`;
+
   return (
     <div className="space-y-5">
-      <div className="flex gap-2 overflow-x-auto pb-1">
+      <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0" role="group" aria-label="Proposals">
         {options.slice(0, shown).map((o, i) => (
-          <button
-            key={o.label}
-            type="button"
-            onClick={() => choose(i)}
-            aria-pressed={selected === i}
-            className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium ${
-              selected === i ? "border-foreground bg-foreground text-background" : "border-zinc-300 dark:border-zinc-700"
-            }`}
-          >
+          <button key={o.label} type="button" onClick={() => choose(i)} aria-pressed={selected === i} className={tab(selected === i)}>
             {o.label}
           </button>
         ))}
@@ -96,50 +94,38 @@ export function TeamEditor({
               choose(shown);
               setShown(shown + 1);
             }}
-            className="shrink-0 rounded-full border border-dashed border-zinc-400 px-4 py-2 text-sm font-medium"
+            className="inline-flex min-h-11 shrink-0 items-center gap-1 border-2 border-dashed border-ink px-4 text-sm font-semibold hover:bg-sheet"
           >
-            + Another option
+            <Plus className="size-4" aria-hidden /> Another option
           </button>
         )}
       </div>
 
-      <div className="rounded-xl bg-zinc-100 p-4 text-center dark:bg-zinc-900">
-        <div className="text-sm text-zinc-500">Chance of winning{edited && " (edited)"}</div>
-        <div className="mt-1 flex items-center justify-center gap-3 text-2xl font-bold tabular-nums">
-          <span>A {Math.round(probA * 100)}%</span>
-          <span className="text-zinc-400">–</span>
-          <span>{Math.round((1 - probA) * 100)}% B</span>
-        </div>
-        <div className="mt-2 h-2 overflow-hidden rounded-full bg-zinc-300 dark:bg-zinc-700">
-          <div className="h-full bg-foreground" style={{ width: `${probA * 100}%` }} />
-        </div>
+      <div className="border-2 border-ink bg-sheet p-4">
+        <p className="mb-2 text-sm font-semibold text-ink-soft">Chance of winning{edited && " (after your changes)"}</p>
+        <WinBar probA={probA} labelA="Team A" labelB="Team B" />
       </div>
 
-      {sizeGap > 1 && (
-        <p className="rounded-xl bg-amber-50 p-3 text-sm text-amber-900 dark:bg-amber-950 dark:text-amber-100">
-          The teams differ by {sizeGap} players.
-        </p>
-      )}
+      {sizeGap > 1 && <ErrorText>The teams differ by {sizeGap} players. Move someone back.</ErrorText>}
 
-      <div className="grid grid-cols-2 gap-1 rounded-full bg-zinc-100 p-1 text-sm font-medium dark:bg-zinc-900">
+      <div className="grid grid-cols-2" role="group" aria-label="View">
         {(["list", "pitch"] as const).map((v) => (
-          <button
-            key={v}
-            type="button"
-            onClick={() => setView(v)}
-            aria-pressed={view === v}
-            className={`rounded-full py-2 ${view === v ? "bg-background shadow" : "text-zinc-500"}`}
-          >
+          <button key={v} type="button" onClick={() => setView(v)} aria-pressed={view === v} className={tab(view === v)}>
             {v === "list" ? "Edit teams" : "See on the pitch"}
           </button>
         ))}
       </div>
 
       {view === "list" ? (
-        <div className="grid grid-cols-2 gap-3">
-          <TeamColumn title="Team A" strength={sA} ids={teamA} byId={byId} onTap={move} />
-          <TeamColumn title="Team B" strength={sB} ids={teamB} byId={byId} onTap={move} />
-        </div>
+        <>
+          <p className="flex items-center gap-2 text-sm text-ink-soft">
+            <ArrowLeftRight className="size-4" aria-hidden /> Tap a player to send them to the other team.
+          </p>
+          <div className="grid grid-cols-2 gap-3">
+            <TeamColumn title="Team A" strength={sA} ids={teamA} byId={byId} onTap={move} />
+            <TeamColumn title="Team B" strength={sB} ids={teamB} byId={byId} onTap={move} />
+          </div>
+        </>
       ) : (
         <Lineup
           teamA={onPitch(teamA, byId, format)}
@@ -150,12 +136,12 @@ export function TeamEditor({
         />
       )}
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <ErrorText>{error}</ErrorText>}
       <button
         type="button"
         disabled={saving || teamA.length === 0 || teamB.length === 0}
         onClick={save}
-        className="h-12 w-full rounded-full bg-foreground font-medium text-background disabled:opacity-40"
+        className={`${button.primary} w-full`}
       >
         {saving ? "Saving…" : "Use these teams"}
       </button>
@@ -178,27 +164,28 @@ function TeamColumn({
 }) {
   const sorted = [...ids].sort((a, b) => byId.get(b)!.overall - byId.get(a)!.overall);
   return (
-    <div className="space-y-2">
-      <div className="flex items-baseline justify-between">
-        <h2 className="font-bold">{title}</h2>
-        <span className="text-sm tabular-nums text-zinc-500">{strength.toFixed(1)}</span>
+    <div className="border-2 border-ink bg-sheet">
+      <div className="flex items-baseline justify-between border-b-2 border-ink px-3 py-2">
+        <h2 className="font-display text-lg font-extrabold uppercase">{title}</h2>
+        <Mark value={strength.toFixed(1)} size="sm" />
       </div>
-      <ul className="space-y-1.5">
+      <ul>
         {sorted.map((id) => {
           const p = byId.get(id)!;
           return (
-            <li key={id}>
+            <li key={id} className="border-b border-rule last:border-b-0">
               <button
                 type="button"
                 onClick={() => onTap(id)}
-                className="flex w-full items-center justify-between rounded-lg border border-zinc-200 px-3 py-2 text-left text-sm hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-900"
+                className="flex min-h-12 w-full items-center justify-between gap-2 px-3 text-left transition-colors duration-150 hover:bg-paper"
               >
-                <span className="truncate">
+                <span className="min-w-0 truncate font-semibold">
                   {p.name}
-                  {p.positions.includes("GK") && <span className="ml-1 text-xs text-zinc-500">GK</span>}
+                  {p.positions.includes("GK") && <span className="ml-1 text-xs font-bold text-ink-soft">GK</span>}
                 </span>
-                <span className="shrink-0 tabular-nums text-zinc-500">
-                  {p.overall} {formIcon(p.form)}
+                <span className="flex shrink-0 items-center gap-1">
+                  <FormIcon form={p.form} className="size-4" />
+                  <Mark value={p.overall} size="sm" />
                 </span>
               </button>
             </li>

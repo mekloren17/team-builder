@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { button, choice, ErrorText, input } from "@/components/ui";
 import { createMatch } from "../actions";
 
 export function NewMatchForm({ groupId, defaultFormat }: { groupId: string; defaultFormat: 5 | 7 }) {
@@ -21,41 +22,23 @@ export function NewMatchForm({ groupId, defaultFormat }: { groupId: string; defa
   }
 
   return (
-    <form onSubmit={submit} className="space-y-5">
+    <form onSubmit={submit} className="mt-6 space-y-6">
       <label className="block space-y-2">
-        <span className="font-medium">Date and time</span>
-        <input
-          type="datetime-local"
-          required
-          value={when}
-          onChange={(e) => setWhen(e.target.value)}
-          className="h-12 w-full rounded-xl border border-zinc-300 bg-transparent px-4 dark:border-zinc-700"
-        />
+        <span className="font-semibold">Kick-off</span>
+        <input type="datetime-local" required value={when} onChange={(e) => setWhen(e.target.value)} className={input} />
       </label>
       <fieldset className="space-y-2">
-        <legend className="font-medium">Format</legend>
-        <div className="grid grid-cols-2 gap-3">
+        <legend className="mb-2 font-semibold">Format</legend>
+        <div className="grid grid-cols-2 gap-2">
           {([5, 7] as const).map((f) => (
-            <button
-              key={f}
-              type="button"
-              onClick={() => setFormat(f)}
-              aria-pressed={format === f}
-              className={`h-12 rounded-xl border ${
-                format === f ? "border-foreground bg-foreground text-background" : "border-zinc-300 dark:border-zinc-700"
-              }`}
-            >
+            <button key={f} type="button" onClick={() => setFormat(f)} aria-pressed={format === f} className={`${choice(format === f)} text-center`}>
               {f}-a-side
             </button>
           ))}
         </div>
       </fieldset>
-      {error && <p className="text-sm text-red-600">{error}</p>}
-      <button
-        type="submit"
-        disabled={!when || saving}
-        className="h-12 w-full rounded-full bg-foreground font-medium text-background disabled:opacity-40"
-      >
+      {error && <ErrorText>{error}</ErrorText>}
+      <button type="submit" disabled={!when || saving} className={`${button.primary} w-full`}>
         {saving ? "Creating…" : "Create match"}
       </button>
     </form>

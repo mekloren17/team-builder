@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { button, ErrorText, FormIcon } from "@/components/ui";
 import { FORM_LEVELS } from "@/lib/match";
 import { setAttendance } from "../actions";
 
@@ -30,44 +31,44 @@ export function MyAttendance({
   }
 
   return (
-    <section className="space-y-3 rounded-2xl bg-zinc-100 p-5 dark:bg-zinc-900">
-      <h2 className="font-semibold">{imIn ? "You're in. How do you feel today?" : "Are you playing? How do you feel today?"}</h2>
-      <div className="grid grid-cols-5 gap-2">
-        {FORM_LEVELS.map((l) => (
-          <button
-            key={l.value}
-            type="button"
-            disabled={busy}
-            onClick={() => {
-              setForm(l.value);
-              if (imIn) save(true, l.value);
-            }}
-            aria-pressed={form === l.value}
-            className={`flex flex-col items-center rounded-xl border px-1 py-2 text-xs ${
-              form === l.value ? "border-foreground bg-foreground text-background" : "border-zinc-300 dark:border-zinc-700"
-            }`}
-          >
-            <span className="text-xl leading-none">{l.icon}</span>
-            <span className="mt-1">{l.label}</span>
-          </button>
-        ))}
-      </div>
+    <div className="space-y-3">
+      <fieldset>
+        <legend className="mb-2 font-semibold">{imIn ? "You're in. How are the legs today?" : "How are the legs today?"}</legend>
+        <div className="grid grid-cols-5 border-2 border-ink">
+          {FORM_LEVELS.map((l) => {
+            const on = form === l.value;
+            return (
+              <button
+                key={l.value}
+                type="button"
+                disabled={busy}
+                onClick={() => {
+                  setForm(l.value);
+                  if (imIn) save(true, l.value);
+                }}
+                aria-pressed={on}
+                className={`flex min-h-16 flex-col items-center justify-center gap-1 border-r border-rule px-1 text-xs font-semibold transition-colors duration-150 last:border-r-0 ${
+                  on ? "bg-ink text-paper" : "bg-sheet text-ink hover:bg-paper-deep"
+                }`}
+              >
+                <FormIcon form={l.value} className="size-6" />
+                {l.label}
+              </button>
+            );
+          })}
+        </div>
+      </fieldset>
       {imIn ? (
-        <button type="button" disabled={busy} onClick={() => save(false)} className="text-sm text-zinc-500 underline">
-          I can&apos;t make it anymore
+        <button type="button" disabled={busy} onClick={() => save(false)} className={button.quiet}>
+          Something came up, take me off the list
         </button>
       ) : (
-        <button
-          type="button"
-          disabled={busy}
-          onClick={() => save(true)}
-          className="h-12 w-full rounded-full bg-foreground font-medium text-background disabled:opacity-50"
-        >
-          I&apos;m in
+        <button type="button" disabled={busy} onClick={() => save(true)} className={`${button.primary} w-full`}>
+          {busy ? "Signing you up…" : "I'm in"}
         </button>
       )}
-      {error && <p className="text-sm text-red-600">{error}</p>}
-    </section>
+      {error && <ErrorText>{error}</ErrorText>}
+    </div>
   );
 }
 
@@ -91,9 +92,9 @@ export function AttendanceToggle({
       type="button"
       disabled={busy}
       onClick={() => start(async () => void (await setAttendance(groupId, matchId, playerId, attending)))}
-      className="text-sm underline disabled:opacity-50"
+      className={attending ? button.small : button.danger}
     >
-      {label}
+      {busy ? "…" : label}
     </button>
   );
 }

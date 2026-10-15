@@ -3,14 +3,18 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { joinGroup } from "@/app/groups/actions";
+import { button, Dateline, Headline, Masthead, Page } from "@/components/ui";
 
 export default function JoinPage({ params }: { params: Promise<{ code: string }> }) {
   return (
-    <main className="mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center gap-6 px-6 text-center">
-      <Suspense>
-        <Invite params={params} />
-      </Suspense>
-    </main>
+    <>
+      <Masthead title="Team Builder" />
+      <Page>
+        <Suspense>
+          <Invite params={params} />
+        </Suspense>
+      </Page>
+    </>
   );
 }
 
@@ -26,8 +30,8 @@ async function Invite({ params }: { params: Promise<{ code: string }> }) {
   if (!group) {
     return (
       <>
-        <h1 className="text-2xl font-bold">Invite link not valid</h1>
-        <p className="text-zinc-600 dark:text-zinc-400">Ask the person who invited you for a new link.</p>
+        <Headline>This link has expired</Headline>
+        <Dateline>Ask whoever sent it for a fresh one.</Dateline>
       </>
     );
   }
@@ -35,22 +39,19 @@ async function Invite({ params }: { params: Promise<{ code: string }> }) {
 
   return (
     <>
-      <p className="text-zinc-500">You&apos;re invited to join</p>
-      <h1 className="text-3xl font-bold tracking-tight">{group.name}</h1>
-      <p className="text-zinc-600 dark:text-zinc-400">
-        {group.member_count} {group.member_count === 1 ? "player" : "players"}
-      </p>
+      <Headline>You&apos;re called up to {group.name}</Headline>
+      <Dateline>
+        {group.member_count} {group.member_count === 1 ? "player is" : "players are"} already in. Join, make your card, and
+        sign up for the next match.
+      </Dateline>
       {user ? (
-        <form action={joinGroup.bind(null, code)} className="w-full">
-          <button type="submit" className="h-12 w-full rounded-full bg-foreground font-medium text-background">
-            Join group
+        <form action={joinGroup.bind(null, code)} className="mt-6">
+          <button type="submit" className={`${button.primary} w-full`}>
+            Join the group
           </button>
         </form>
       ) : (
-        <Link
-          href={`/login?next=${encodeURIComponent(`/join/${code}`)}`}
-          className="flex h-12 w-full items-center justify-center rounded-full bg-foreground font-medium text-background"
-        >
+        <Link href={`/login?next=${encodeURIComponent(`/join/${code}`)}`} className={`${button.primary} mt-6 w-full`}>
           Sign in to join
         </Link>
       )}

@@ -1,42 +1,38 @@
-import Link from "next/link";
+import { BackLink, button, Dateline, Headline, input, Masthead, Page } from "@/components/ui";
 import { createGroup } from "../actions";
 
 export default function NewGroupPage() {
   return (
-    <main className="mx-auto w-full max-w-md flex-1 space-y-6 px-6 py-12">
-      <Link href="/" className="text-sm text-zinc-500">
-        ← Back
-      </Link>
-      <h1 className="text-3xl font-bold tracking-tight">Create a group</h1>
-      <form action={createGroup} className="space-y-5">
-        <label className="block space-y-2">
-          <span className="font-medium">Group name</span>
-          <input
-            name="name"
-            required
-            maxLength={60}
-            placeholder="Tuesday football"
-            className="h-12 w-full rounded-xl border border-zinc-300 bg-transparent px-4 dark:border-zinc-700"
-          />
-        </label>
-        <fieldset className="space-y-2">
-          <legend className="font-medium">Usual format</legend>
-          <div className="grid grid-cols-2 gap-3">
-            {[5, 7].map((f) => (
-              <label
-                key={f}
-                className="flex h-12 cursor-pointer items-center justify-center rounded-xl border border-zinc-300 has-checked:border-foreground has-checked:bg-foreground has-checked:text-background dark:border-zinc-700"
-              >
-                <input type="radio" name="format" value={f} defaultChecked={f === 5} className="sr-only" />
-                {f}-a-side
-              </label>
-            ))}
-          </div>
-        </fieldset>
-        <button type="submit" className="h-12 w-full rounded-full bg-foreground font-medium text-background">
-          Create group
-        </button>
-      </form>
-    </main>
+    <>
+      <Masthead title="Team Builder" />
+      <Page>
+        <BackLink href="/">Your groups</BackLink>
+        <Headline>Start a group</Headline>
+        <Dateline>Name it like the chat. You&apos;ll get an invite link for everyone else.</Dateline>
+        <form action={createGroup} className="mt-6 space-y-6">
+          <label className="block space-y-2">
+            <span className="font-semibold">Group name</span>
+            <input name="name" required maxLength={60} placeholder="Tuesday football" className={input} />
+          </label>
+          <fieldset>
+            <legend className="mb-2 font-semibold">Usual format</legend>
+            <div className="grid grid-cols-2 gap-2">
+              {[5, 7].map((f) => (
+                <label
+                  key={f}
+                  className="flex min-h-12 cursor-pointer items-center justify-center border-2 border-ink bg-sheet font-medium transition-colors duration-150 hover:bg-paper-deep has-checked:bg-ink has-checked:text-paper has-focus-visible:outline-3 has-focus-visible:outline-red"
+                >
+                  <input type="radio" name="format" value={f} defaultChecked={f === 5} className="sr-only" />
+                  {f}-a-side
+                </label>
+              ))}
+            </div>
+          </fieldset>
+          <button type="submit" className={`${button.primary} w-full`}>
+            Create group
+          </button>
+        </form>
+      </Page>
+    </>
   );
 }
