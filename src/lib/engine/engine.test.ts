@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  initialOverall, cardAttributes, winProbability, updateAfterMatch, balanceTeams, assignPositions, estimateRatings, isProvisional, ageFromBirthYear, DEFAULT_PARAMS,
+  initialOverall, cardAttributes, winProbability, updateAfterMatch, balanceTeams, assignPositions, estimateRatings, isProvisional, ageFromBirthYear, splitStrengths, DEFAULT_PARAMS,
   type Profile, type BalancePlayer, type HistoryMatch,
 } from './engine.ts';
 
@@ -103,4 +103,37 @@ test('provisional badge: fewer than 10 matches played', () => {
 
 test('age from birth year', () => {
   assert.equal(ageFromBirthYear(1998, 2026), 28);
+});
+
+test('odd number: one team has an extra player, and gets the weaker players', () => {
+  const ps = players(11);
+  const props = balanceTeams(ps);
+  assert.equal(props.length, 3);
+  const mu = new Map(ps.map((p) => [p.id, p.mu]));
+  for (const p of props) {
+    assert.equal(p.teamA.length + p.teamB.length, 11);
+    assert.equal(Math.abs(p.teamA.length - p.teamB.length), 1);
+  }
+  const [best] = props;
+  const [big, small] = best.teamA.length > best.teamB.length ? [best.teamA, best.teamB] : [best.teamB, best.teamA];
+  const avg = (ids: string[]) => ids.reduce((s, id) => s + mu.get(id)!, 0) / ids.length;
+  assert.ok(avg(big) < avg(small), `bigger team avg ${avg(big)} should be below ${avg(small)}`);
+  assert.ok(Math.abs(best.winProbA - 0.5) < 0.1);
+});
+
+test('split strengths: equal teams -> mean level; the extra player is worth extraPlayer points', () => {
+  assert.deepEqual(splitStrengths([60, 70], [65, 65]), { sA: 65, sB: 65 });
+  const { sA, sB } = splitStrengths([60, 60, 60], [60, 60], 5);
+  assert.equal(sA - sB, 5);
+  // 6 against 5 equal players: the bigger team is favourite, but far from certain
+  const p = winProbability(...Object.values(splitStrengths(Array(6).fill(70), Array(5).fill(70))) as [number, number]);
+  assert.ok(p > 0.6 && p < 0.75, `p = ${p}`);
+});
+
+test('batch rating: a bigger team winning by the expected margin moves nobody much', () => {
+  const prior = new Map([['a', 60], ['b', 60], ['c', 60], ['d', 60], ['e', 60]]);
+  // 3 against 2 with equal levels: expected margin = kappa * extraPlayer ≈ 1.5 goals
+  const h: HistoryMatch = { teamA: ['a', 'b', 'c'], teamB: ['d', 'e'], formA: [3, 3, 3], formB: [3, 3], goalsA: 2, goalsB: 0, format: 5 };
+  const est = estimateRatings(prior, [h]);
+  for (const id of prior.keys()) assert.ok(Math.abs(est.get(id)! - 60) < 0.5, `${id} = ${est.get(id)}`);
 });

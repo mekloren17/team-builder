@@ -30,6 +30,7 @@ export interface Params {
   sigmaDecay: number; // sigma multiplier after each match
   D: number; // logistic scale: points of team difference
   formStep: number; // points per form step away from 3
+  extraPlayer: number; // points of strength of having one player more (odd number of players); a guess, to calibrate with real matches
 }
 
 export const DEFAULT_PARAMS: Params = {
@@ -39,6 +40,7 @@ export const DEFAULT_PARAMS: Params = {
   sigmaDecay: 0.93,
   D: 15,
   formStep: 2,
+  extraPlayer: 5,
 };
 
 // ---------- 1. Starting overall ----------
@@ -168,6 +170,7 @@ export interface BatchParams {
   kappa: Record<5 | 7, number>; // goals of difference per point of team-level difference
   goalVar: Record<5 | 7, number>; // variance of goal difference in an even match
   formStep: number;
+  extraPlayer: number; // as in Params: strength of having one player more
 }
 
 export const DEFAULT_BATCH: BatchParams = {
@@ -175,6 +178,7 @@ export const DEFAULT_BATCH: BatchParams = {
   kappa: { 5: 0.305, 7: 0.333 },
   goalVar: { 5: 10, 7: 12 },
   formStep: 2,
+  extraPlayer: 5,
 };
 
 export function estimateRatings(prior: Map<string, number>, history: HistoryMatch[], params: BatchParams = DEFAULT_BATCH): Map<string, number> {
@@ -190,7 +194,9 @@ export function estimateRatings(prior: Map<string, number>, history: HistoryMatc
     const row = new Map<number, number>();
     for (const id of h.teamA) if (ix.has(id)) row.set(ix.get(id)!, 1 / h.teamA.length);
     for (const id of h.teamB) if (ix.has(id)) row.set(ix.get(id)!, -1 / h.teamB.length);
-    const y = (h.goalsA - h.goalsB) / kappa - params.formStep * (mean(h.formA) - mean(h.formB));
+    // known part of the strength difference: form, and the extra player (as in splitStrengths)
+    const known = params.formStep * (mean(h.formA) - mean(h.formB)) + params.extraPlayer * (h.teamA.length - h.teamB.length);
+    const y = (h.goalsA - h.goalsB) / kappa - known;
     for (const [i, ai] of row) {
       v[i] += w * ai * y;
       for (const [j, aj] of row) M[i][j] += w * ai * aj;
@@ -249,15 +255,32 @@ export interface Proposal {
 
 const DEFAULT_WEIGHTS = { gk: 10, role: 1.5, repeat: 0.2 };
 
-/** Exhaustive search over all splits (even number of players). 10 → 126 splits, 14 → 1716. */
+/**
+ * Strength of two teams that may differ by one player: mean level, plus half of `extraPlayer` points
+ * to the bigger team and minus half to the smaller one. With equal teams it is the mean level.
+ * (Counting the extra player in full would give 6 against 5 equal players ~97% to win: far too much.)
+ */
+export function splitStrengths(
+  effA: number[],
+  effB: number[],
+  extraPlayer: number = DEFAULT_PARAMS.extraPlayer,
+): { sA: number; sB: number } {
+  const bonus = (extraPlayer * (effA.length - effB.length)) / 2;
+  return { sA: mean(effA) + bonus, sB: mean(effB) - bonus };
+}
+
+/**
+ * Exhaustive search over all splits. 10 → 126 splits, 14 → 1716.
+ * With an odd number of players one team has one player more (decided with Lorenzo, 15/10/2026).
+ */
 export function balanceTeams(
   players: BalancePlayer[],
   opts: BalanceOptions = {},
   params: Params = DEFAULT_PARAMS,
 ): Proposal[] {
   const n = players.length;
-  if (n < 2 || n % 2 !== 0) throw new Error('balanceTeams needs an even number of players');
-  const half = n / 2;
+  if (n < 2) throw new Error('balanceTeams needs at least 2 players');
+  const sizesA = n % 2 === 0 ? [n / 2] : [Math.floor(n / 2), Math.ceil(n / 2)];
   const w = opts.weights ?? DEFAULT_WEIGHTS;
   const eff = players.map((p) => effectiveMu(p.mu, p.form, params));
   const isGk = players.map((p) => p.positions.includes('GK'));
@@ -276,26 +299,27 @@ export function balanceTeams(
   const results: { mask: number; penalty: number; sA: number; sB: number }[] = [];
   // player 0 always in team A → each split counted once
   const rest = n - 1;
-  const iterate = (start: number, chosen: number, mask: number) => {
-    if (chosen === half) {
+  const iterate = (start: number, chosen: number, mask: number, size: number) => {
+    if (chosen === size) {
       evaluate(mask);
       return;
     }
     for (let i = start; i <= rest; i++) {
-      if (rest - i + 1 < half - chosen) break;
-      iterate(i + 1, chosen + 1, mask | (1 << i));
+      if (rest - i + 1 < size - chosen) break;
+      iterate(i + 1, chosen + 1, mask | (1 << i), size);
     }
   };
   const evaluate = (mask: number) => {
     const inA = (i: number) => (mask & (1 << i)) !== 0;
     for (const [a, b] of together) if (inA(a) !== inA(b)) return;
     for (const [a, b] of apart) if (inA(a) === inA(b)) return;
-    let sumA = 0, sumB = 0, gkA = 0, gkB = 0;
+    let sumA = 0, sumB = 0, nA = 0, gkA = 0, gkB = 0;
     let defA = 0, defB = 0, attA = 0, attB = 0;
     for (let i = 0; i < n; i++) {
       const p = players[i];
       if (inA(i)) {
         sumA += eff[i];
+        nA++;
         if (isGk[i]) gkA++;
         if (p.positions.includes('DEF')) defA++;
         if (p.positions.includes('ATT')) attA++;
@@ -306,7 +330,9 @@ export function balanceTeams(
         if (p.positions.includes('ATT')) attB++;
       }
     }
-    const sA = sumA / half, sB = sumB / half;
+    // same as splitStrengths, inlined for speed
+    const nB = n - nA, bonus = (params.extraPlayer * (nA - nB)) / 2;
+    const sA = sumA / nA + bonus, sB = sumB / nB - bonus;
     let penalty = Math.abs(sA - sB);
     if (gkCount >= 2 && (gkA === 0 || gkB === 0)) penalty += w.gk;
     if (defA === 0) penalty += w.role;
@@ -320,7 +346,7 @@ export function balanceTeams(
     }
     results.push({ mask, penalty, sA, sB });
   };
-  iterate(1, 1, 1); // bit 0 = player 0, already in A
+  for (const size of sizesA) iterate(1, 1, 1, size); // bit 0 = player 0, already in A
 
   results.sort((x, y) => x.penalty - y.penalty);
   const want = opts.proposals ?? 3;
@@ -344,11 +370,14 @@ function pairKey(a: number, b: number) {
   return a < b ? `${a}-${b}` : `${b}-${a}`;
 }
 
-/** Players in team A of one split that are not in team A of the other (player 0 is always in A). */
+/** How many players change team between two splits (player 0 is always in A; teams may differ by one). */
 function splitDistance(m1: number, m2: number, n: number): number {
-  let d = 0;
-  for (let i = 0; i < n; i++) if ((m1 & (1 << i)) && !(m2 & (1 << i))) d++;
-  return d;
+  let out = 0, inn = 0;
+  for (let i = 0; i < n; i++) {
+    if ((m1 & (1 << i)) && !(m2 & (1 << i))) out++;
+    if (!(m1 & (1 << i)) && (m2 & (1 << i))) inn++;
+  }
+  return Math.max(out, inn);
 }
 
 // ---------- 4. Positions on the pitch ----------

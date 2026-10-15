@@ -7,7 +7,7 @@
 
 import {
   ageFactor, experienceScore, frequencyScore, initialOverall, newRating, updateAfterMatch, balanceTeams,
-  DEFAULT_PARAMS, clamp, estimateRatings, type HistoryMatch, type BatchParams, type Profile, type Params, type Rating, type Level, type Years, type Freq, type Pos,
+  DEFAULT_PARAMS, DEFAULT_BATCH, clamp, estimateRatings, type HistoryMatch, type BatchParams, type Profile, type Params, type Rating, type Level, type Years, type Freq, type Pos,
 } from '../src/lib/engine/engine.ts';
 
 // ---------- population settings (edit these to change the simulated group) ----------
@@ -125,6 +125,7 @@ const batchParams = (formStep: number): BatchParams => ({
   kappa: { 5: 2 * LAM[5] * C[5], 7: 2 * LAM[7] * C[7] },
   goalVar: { 5: 2 * LAM[5], 7: 2 * LAM[7] },
   formStep,
+  extraPlayer: DEFAULT_BATCH.extraPlayer, // the simulator only plays even matches
 });
 
 // ---------- one season ----------
