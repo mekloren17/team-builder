@@ -4,6 +4,9 @@ import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
+// Email sign-in stays hidden until a custom SMTP is set up (see CLAUDE.md, open decisions).
+const EMAIL_LOGIN_ENABLED = false;
+
 export function LoginForm() {
   const searchParams = useSearchParams();
   const linkError = searchParams.get("error") === "link";
@@ -49,35 +52,39 @@ export function LoginForm() {
         Continue with Google
       </button>
 
-      <div className="flex items-center gap-3 text-sm text-zinc-500">
-        <span className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800" />
-        or
-        <span className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800" />
-      </div>
+      {EMAIL_LOGIN_ENABLED && (
+        <>
+          <div className="flex items-center gap-3 text-sm text-zinc-500">
+            <span className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800" />
+            or
+            <span className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800" />
+          </div>
 
-      {status === "sent" ? (
-        <p className="rounded-lg bg-emerald-50 p-4 text-center text-emerald-900 dark:bg-emerald-950 dark:text-emerald-100">
-          Check your inbox: we sent a sign-in link to <strong>{email}</strong>.
-        </p>
-      ) : (
-        <form onSubmit={sendMagicLink} className="space-y-3">
-          <input
-            type="email"
-            required
-            autoComplete="email"
-            placeholder="you@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="h-12 w-full rounded-full border border-zinc-300 bg-transparent px-5 dark:border-zinc-700"
-          />
-          <button
-            type="submit"
-            disabled={status === "sending"}
-            className="h-12 w-full rounded-full bg-foreground font-medium text-background disabled:opacity-60"
-          >
-            {status === "sending" ? "Sending…" : "Email me a sign-in link"}
-          </button>
-        </form>
+          {status === "sent" ? (
+            <p className="rounded-lg bg-emerald-50 p-4 text-center text-emerald-900 dark:bg-emerald-950 dark:text-emerald-100">
+              Check your inbox: we sent a sign-in link to <strong>{email}</strong>.
+            </p>
+          ) : (
+            <form onSubmit={sendMagicLink} className="space-y-3">
+              <input
+                type="email"
+                required
+                autoComplete="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="h-12 w-full rounded-full border border-zinc-300 bg-transparent px-5 dark:border-zinc-700"
+              />
+              <button
+                type="submit"
+                disabled={status === "sending"}
+                className="h-12 w-full rounded-full bg-foreground font-medium text-background disabled:opacity-60"
+              >
+                {status === "sending" ? "Sending…" : "Email me a sign-in link"}
+              </button>
+            </form>
+          )}
+        </>
       )}
 
       {error && <p className="text-center text-sm text-red-600">{error}</p>}
