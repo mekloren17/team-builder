@@ -107,7 +107,7 @@ returns boolean
 language sql
 immutable
 set search_path = ''
-as $
+as $$
   select url is null or url like 'https://%/storage/v1/object/public/player-photos/%';
 $$;
 
