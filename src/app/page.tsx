@@ -36,6 +36,24 @@ async function Account() {
         <Link href="/login" className={`${button.primary} mt-6 w-full`}>
           Sign in
         </Link>
+
+        <SectionTitle>How it works</SectionTitle>
+        <ol className="border-2 border-ink bg-sheet">
+          {[
+            ["Say you're in", "Tap I'm in for the next match and tell us how the legs feel."],
+            ["Rate yourself honestly", "Two minutes of questions give you a card and a starting mark."],
+            ["Get two fair teams", "The app tries every split and shows the chance of winning."],
+          ].map(([title, text], i) => (
+            <li key={title} className="grid grid-cols-[2.5rem_1fr] items-baseline gap-2 border-b border-rule px-4 py-3 last:border-b-0">
+              <Mark value={i + 1} />
+              <span>
+                <span className="block font-semibold">{title}</span>
+                <span className="block text-sm text-ink-soft">{text}</span>
+              </span>
+            </li>
+          ))}
+        </ol>
+        <p className="mt-4 text-sm text-ink-soft">Got an invite link? Open it and you&apos;re in the group.</p>
       </div>
     );
   }
@@ -73,7 +91,10 @@ async function Account() {
                       {g.default_format}-a-side{m.role !== "player" ? ` · ${m.role}` : ""}
                     </span>
                   </span>
-                  <Mark value={ovr ?? "–"} />
+                  <span className="text-right">
+                    <Mark value={ovr ?? "–"} />
+                    <span className="block text-xs text-ink-soft">your mark</span>
+                  </span>
                   <ChevronRight className="size-5 text-ink-soft" aria-hidden />
                 </Link>
               </li>

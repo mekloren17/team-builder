@@ -81,7 +81,7 @@ async function Match({ params }: Props) {
             {signed.map((s) => {
               const p = byId.get(s.player_id)!;
               return (
-                <tr key={s.player_id} className={`border-b border-rule last:border-b-0 ${p.id === me.id ? "bg-paper" : ""}`}>
+                <tr key={s.player_id} className={`border-b border-rule last:border-b-0 ${p.id === me.id ? "bg-paper-deep" : ""}`}>
                   <td className="py-2.5 pl-4">
                     <span className="font-semibold">{p.display_name}</span>
                     {!p.user_id && <span className="ml-2 text-xs font-semibold uppercase text-ink-soft">Guest</span>}

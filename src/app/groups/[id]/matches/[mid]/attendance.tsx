@@ -33,7 +33,16 @@ export function MyAttendance({
   return (
     <div className="space-y-3">
       <fieldset>
-        <legend className="mb-2 font-semibold">{imIn ? "You're in. How are the legs today?" : "How are the legs today?"}</legend>
+        <legend className="mb-2 font-semibold">
+          {imIn ? (
+            <span className="stamp-in inline-block">
+              <span className="mr-2 inline-block border-2 border-red px-2 font-display text-lg font-extrabold uppercase text-red">You&apos;re in</span>
+              How are the legs today?
+            </span>
+          ) : (
+            "How are the legs today?"
+          )}
+        </legend>
         <div className="grid grid-cols-5 border-2 border-ink">
           {FORM_LEVELS.map((l) => {
             const on = form === l.value;
@@ -47,7 +56,7 @@ export function MyAttendance({
                   if (imIn) save(true, l.value);
                 }}
                 aria-pressed={on}
-                className={`flex min-h-16 flex-col items-center justify-center gap-1 border-r border-rule px-1 text-xs font-semibold transition-colors duration-150 last:border-r-0 ${
+                className={`flex min-h-16 flex-col items-center justify-center gap-1 border-r border-rule px-0.5 text-sm font-semibold transition-colors duration-150 last:border-r-0 ${
                   on ? "bg-ink text-paper" : "bg-sheet text-ink hover:bg-paper-deep"
                 }`}
               >
@@ -63,7 +72,12 @@ export function MyAttendance({
           Something came up, take me off the list
         </button>
       ) : (
-        <button type="button" disabled={busy} onClick={() => save(true)} className={`${button.primary} w-full`}>
+        <button
+          type="button"
+          disabled={busy}
+          onClick={() => save(true)}
+          className={`${button.primary} min-h-14 w-full -rotate-1 text-2xl transition-transform duration-150 active:rotate-0 active:scale-[0.98]`}
+        >
           {busy ? "Signing you up…" : "I'm in"}
         </button>
       )}

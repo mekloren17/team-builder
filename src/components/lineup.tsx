@@ -42,18 +42,14 @@ export function Lineup({
       <TeamHeader name="Team A" strength={strengthA} count={teamA.length} />
       <div className="relative overflow-hidden border-2 border-ink bg-[#2f7d4f] px-2 py-4 text-white">
         {/* pitch markings */}
-        <div className="pointer-events-none absolute inset-3 rounded-lg border-2 border-white/30" />
+        <div className="pointer-events-none absolute inset-3 border-2 border-white/30" />
         <div className="pointer-events-none absolute inset-x-3 top-1/2 border-t-2 border-white/30" />
         <div className="pointer-events-none absolute left-1/2 top-1/2 size-20 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white/30" />
 
-        {/* each half has the same four rows (empty ones included), so the halfway line falls between the teams */}
-        <div className="relative grid grid-rows-[repeat(8,minmax(5.5rem,auto))]">
-          {LINES.map((pos) => (
-            <Line key={`A-${pos}`} players={teamA.filter((p) => (p.position ?? "MID") === pos)} />
-          ))}
-          {[...LINES].reverse().map((pos) => (
-            <Line key={`B-${pos}`} players={teamB.filter((p) => (p.position ?? "MID") === pos)} />
-          ))}
+        {/* two halves of equal height (1fr each), so the halfway line always falls between the teams */}
+        <div className="relative grid grid-rows-2 gap-4">
+          <Half players={teamA} lines={LINES} />
+          <Half players={teamB} lines={[...LINES].reverse()} />
         </div>
       </div>
       <TeamHeader name="Team B" strength={strengthB} count={teamB.length} />
@@ -70,6 +66,18 @@ function TeamHeader({ name, strength, count }: { name: string; strength: number;
       <span className="text-sm font-semibold text-ink-soft">
         Strength <Mark value={strength.toFixed(1)} size="sm" />
       </span>
+    </div>
+  );
+}
+
+/** One team's half: its lines from goal to centre (or centre to goal), empty lines skipped. */
+function Half({ players, lines }: { players: LineupPlayer[]; lines: Pos[] }) {
+  return (
+    <div className="flex min-h-40 flex-col justify-evenly gap-2">
+      {lines.map((pos) => {
+        const onLine = players.filter((p) => (p.position ?? "MID") === pos);
+        return onLine.length > 0 ? <Line key={pos} players={onLine} /> : null;
+      })}
     </div>
   );
 }
@@ -92,7 +100,7 @@ function Token({ player }: { player: LineupPlayer }) {
     .map((w) => w[0].toUpperCase())
     .join("");
   return (
-    <div className="flex w-16 flex-col items-center text-center">
+    <div className="flex w-20 flex-col items-center text-center">
       <div className={`relative size-12 overflow-hidden rounded-full bg-black/30 ring-2 ${TIER_RING[tier(player.overall)]}`}>
         {player.photoUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -105,7 +113,7 @@ function Token({ player }: { player: LineupPlayer }) {
         {player.overall}
         <FormIcon form={player.form} className="size-3.5" />
       </div>
-      <div className="mt-0.5 w-full truncate text-xs font-semibold">{player.name}</div>
+      <div className="mt-0.5 line-clamp-2 w-full text-xs font-semibold leading-tight">{player.name.split(" ")[0]}</div>
     </div>
   );
 }

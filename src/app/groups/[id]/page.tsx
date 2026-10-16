@@ -93,14 +93,21 @@ async function NextMatch({ groupId, match, me }: { groupId: string; match: Fixtu
   const when = `${formatMatchDate(match.starts_at)} · ${match.format}-a-side`;
   const matchHref = `/groups/${groupId}/matches/${match.id}`;
 
+  const mine = await mySignup(match.id, me.id);
+
   if (match.status !== "open") {
+    const team = mine?.team ?? null;
     return (
       <section>
-        <Headline>Teams are set</Headline>
+        <Headline>{team ? `You're on Team ${team}` : "Teams are set. You're on the bench"}</Headline>
         <Dateline>{when}</Dateline>
         {match.win_prob_a !== null && (
           <Panel className="mt-5 p-4">
-            <WinBar probA={match.win_prob_a} labelA="Team A" labelB="Team B" />
+            <WinBar
+              probA={match.win_prob_a}
+              labelA={team === "A" ? "Your team" : "Team A"}
+              labelB={team === "B" ? "Your team" : "Team B"}
+            />
           </Panel>
         )}
         <Link href={matchHref} className={`${button.primary} mt-4 w-full`}>
@@ -110,7 +117,6 @@ async function NextMatch({ groupId, match, me }: { groupId: string; match: Fixtu
     );
   }
 
-  const mine = await mySignup(match.id, me.id);
   const headline =
     signed === 0
       ? "Who's playing?"
@@ -130,22 +136,22 @@ async function NextMatch({ groupId, match, me }: { groupId: string; match: Fixtu
         </Link>
       </Dateline>
       <div className="mt-5">
-        <MyAttendance groupId={groupId} matchId={match.id} playerId={me.id} signedForm={mine} />
+        <MyAttendance groupId={groupId} matchId={match.id} playerId={me.id} signedForm={mine?.form ?? null} />
       </div>
     </section>
   );
 }
 
-/** My form for this match, or null if I'm not signed up. */
-async function mySignup(matchId: string, playerId: string): Promise<number | null> {
+/** My sign-up for this match (form and team), or null if I'm not signed up. */
+async function mySignup(matchId: string, playerId: string): Promise<{ form: number; team: "A" | "B" | null } | null> {
   const supabase = await createClient();
   const { data } = await supabase
     .from("match_players")
-    .select("form")
+    .select("form, team")
     .eq("match_id", matchId)
     .eq("player_id", playerId)
     .maybeSingle();
-  return data?.form ?? null;
+  return data ?? null;
 }
 
 function Card({ player }: { player: PlayerRow }) {

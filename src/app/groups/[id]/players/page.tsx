@@ -70,11 +70,11 @@ async function Players({ params }: Props) {
 function Row({ player: p, rank, isMe }: { player: PlayerRow; rank: number; isMe: boolean }) {
   const ovr = displayOverall(p);
   return (
-    <tr className={`border-b border-rule last:border-b-0 ${isMe ? "bg-paper" : ""}`}>
+    <tr className={`border-b border-rule last:border-b-0 ${isMe ? "bg-paper-deep" : ""}`}>
       <td className="tabular py-2.5 pl-3 text-right text-sm font-semibold text-ink-soft">{rank}</td>
       <td className="py-2.5 pl-3">
         <span className="font-semibold">{p.display_name}</span>
-        {isMe && <span className="ml-2 text-xs font-bold uppercase text-red">You</span>}
+        {isMe && <span className="ml-2 bg-ink px-1.5 py-0.5 text-xs font-bold uppercase text-paper">You</span>}
         <span className="block text-xs text-ink-soft">
           {isGuest(p) ? "Guest" : isProvisional(p.matches_played) ? "Provisional" : `${p.matches_played} matches`}
         </span>
