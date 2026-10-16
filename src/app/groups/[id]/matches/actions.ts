@@ -17,7 +17,7 @@ export async function createMatch(groupId: string, startsAt: string, format: 5 |
     p_format: format,
   });
   if (error) return { error: error.message };
-  revalidatePath(`/groups/${groupId}`);
+  revalidatePath(`/groups/${groupId}`, "layout");
   redirect(matchPath(groupId, matchId));
 }
 
@@ -25,7 +25,7 @@ export async function deleteMatch(groupId: string, matchId: string) {
   const { supabase } = await requireUser(matchPath(groupId, matchId));
   const { error } = await supabase.rpc("delete_match", { mid: matchId });
   if (error) throw new Error(error.message);
-  revalidatePath(`/groups/${groupId}`);
+  revalidatePath(`/groups/${groupId}`, "layout");
   redirect(`/groups/${groupId}`);
 }
 
@@ -38,7 +38,7 @@ export async function setAttendance(groupId: string, matchId: string, playerId: 
     p_form: form,
   });
   if (error) return { error: error.message };
-  revalidatePath(matchPath(groupId, matchId), "layout");
+  revalidatePath(`/groups/${groupId}`, "layout"); // home, match list and match pages all show it
 }
 
 export async function setPairConstraint(
@@ -56,7 +56,7 @@ export async function setPairConstraint(
     constraint_type: type,
   });
   if (error) return { error: error.message };
-  revalidatePath(matchPath(groupId, matchId), "layout");
+  revalidatePath(`/groups/${groupId}`, "layout");
 }
 
 /**
@@ -91,7 +91,7 @@ export async function saveTeams(groupId: string, matchId: string, teamA: string[
     p_win_prob_a: winProbability(sA, sB),
   });
   if (error) return { error: error.message };
-  revalidatePath(matchPath(groupId, matchId), "layout");
+  revalidatePath(`/groups/${groupId}`, "layout");
   redirect(matchPath(groupId, matchId));
 }
 
@@ -99,5 +99,5 @@ export async function reopenMatch(groupId: string, matchId: string) {
   const { supabase } = await requireUser(matchPath(groupId, matchId));
   const { error } = await supabase.rpc("reopen_match", { mid: matchId });
   if (error) throw new Error(error.message);
-  revalidatePath(matchPath(groupId, matchId), "layout");
+  revalidatePath(`/groups/${groupId}`, "layout");
 }
