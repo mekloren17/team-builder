@@ -203,6 +203,7 @@ function Teams({
           name: p.display_name,
           overall: displayOverall(p) ?? UNKNOWN_LEVEL,
           photoUrl: p.photo_url,
+          guest: !p.user_id,
           position: s.position,
           form: s.form,
         };

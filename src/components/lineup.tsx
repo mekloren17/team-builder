@@ -9,6 +9,7 @@ export interface LineupPlayer {
   photoUrl: string | null;
   position: Pos | null;
   form: number;
+  guest: boolean;
 }
 
 const TIER_RING: Record<Tier, string> = {
@@ -113,7 +114,14 @@ function Token({ player }: { player: LineupPlayer }) {
         {player.overall}
         <FormIcon form={player.form} className="size-3.5" />
       </div>
-      <div className="mt-0.5 line-clamp-2 w-full text-xs font-semibold leading-tight">{player.name.split(" ")[0]}</div>
+      <div className="mt-0.5 line-clamp-2 w-full text-xs font-semibold leading-tight">{pitchName(player)}</div>
     </div>
   );
+}
+
+/** Short enough for a token: "Emanuele F." for members; guests keep their full name, they have no other way to be told apart. */
+function pitchName(p: LineupPlayer): string {
+  if (p.guest) return p.name;
+  const [first, ...rest] = p.name.trim().split(/\s+/);
+  return rest.length > 0 ? `${first} ${rest[rest.length - 1][0]}.` : first;
 }

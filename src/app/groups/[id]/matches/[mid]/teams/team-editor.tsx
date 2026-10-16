@@ -11,6 +11,7 @@ export interface EditorPlayer extends BalancePlayer {
   name: string;
   overall: number;
   photoUrl: string | null;
+  guest: boolean;
 }
 
 export interface Option {
@@ -205,6 +206,7 @@ function onPitch(ids: string[], byId: Map<string, EditorPlayer>, format: 5 | 7):
     name: p.name,
     overall: p.overall,
     photoUrl: p.photoUrl,
+    guest: p.guest,
     position: pos.get(p.id) ?? null,
     form: p.form,
   }));
