@@ -249,6 +249,7 @@ Profilo e rating stanno in `players` (un record per persona per gruppo), così g
 | Group settings | admin | link d'invito, admin, ospiti |
 
 **Carta:** overall, posizione principale, nome, PAC/SHO/PAS/DRI/DEF/PHY, piede, icona forma, badge "provisional". Colore per fascia: bronzo <65, argento 65–74, oro ≥75. Grafica originale (stile da definire più avanti).
+**Aspetto dell'app (16/10/2026):** stile "Le pagelle" (carta rosa da quotidiano sportivo, titoli condensati, un solo rosso per l'azione principale). Regole e token in `DESIGN.md` e `.impeccable/design.json`; profilo prodotto in `PRODUCT.md`. Pezzi condivisi in `src/components/ui.tsx`: usarli invece di classi nuove. Le carte dei giocatori restano fuori da questo sistema.
 
 ---
 
