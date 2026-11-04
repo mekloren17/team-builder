@@ -50,7 +50,8 @@ export function ProfileForm({ groupId, initial }: { groupId: string; initial: Pl
   const year = Number(birthYear);
   const validYear = Number.isInteger(year) && year >= 1930 && year <= THIS_YEAR - 10;
   // one position is the main one by itself; with several, the one picked (if still among them)
-  const main: Pos | null = positions.length === 1 ? positions[0] : mainPos && positions.includes(mainPos) ? mainPos : null;
+  // the chosen main position; a profile saved before this question with a single position keeps that one
+  const main: Pos | null = mainPos && positions.includes(mainPos) ? mainPos : positions.length === 1 ? positions[0] : null;
   const keeper = main === "GK";
   // the skill step asks the keeper questions to a keeper, the outfield ones to everybody else
   const answers = keeper ? gkAttributes : attributes;
@@ -82,6 +83,12 @@ export function ProfileForm({ groupId, initial }: { groupId: string; initial: Pl
 
   function togglePosition(p: Pos) {
     setPositions((ps) => (ps.includes(p) ? ps.filter((x) => x !== p) : [...ps, p]));
+  }
+
+  /** The main position is always one of the positions played: the main one first. */
+  function chooseMain(p: Pos) {
+    setMainPos(p);
+    setPositions((ps) => [p, ...ps.filter((x) => x !== p)]);
   }
 
   function submit() {
@@ -185,31 +192,31 @@ export function ProfileForm({ groupId, initial }: { groupId: string; initial: Pl
 
       {step === 2 && (
         <div className="space-y-5">
-          <Field label="Where do you like to play? (one or more)">
+          <Field label="Your main position (it goes on your card)">
             <div className="grid grid-cols-2 gap-2">
               {POSITION_OPTIONS.map((o) => (
-                <OptionButton key={o.value} selected={positions.includes(o.value)} onClick={() => togglePosition(o.value)}>
+                <OptionButton key={o.value} selected={main === o.value} onClick={() => chooseMain(o.value)}>
                   {o.label}
                 </OptionButton>
               ))}
             </div>
           </Field>
-          <label className="flex min-h-12 items-center gap-3 font-medium">
-            <input type="checkbox" checked={gkRotation} onChange={(e) => setGkRotation(e.target.checked)} className="size-6" />
-            <span>I&apos;m fine taking turns in goal</span>
-          </label>
-          {positions.length > 1 && (
-            <Field label="Your main position (it goes on your card)">
+          {keeper && <p className="text-ink-soft">You&apos;re our keeper: the next step asks about goalkeeping.</p>}
+          {main && (
+            <Field label="Where else can you play? (optional)">
               <div className="grid grid-cols-2 gap-2">
-                {POSITION_OPTIONS.filter((o) => positions.includes(o.value)).map((o) => (
-                  <OptionButton key={o.value} selected={main === o.value} onClick={() => setMainPos(o.value)}>
+                {POSITION_OPTIONS.filter((o) => o.value !== main).map((o) => (
+                  <OptionButton key={o.value} selected={positions.includes(o.value)} onClick={() => togglePosition(o.value)}>
                     {o.label}
                   </OptionButton>
                 ))}
               </div>
             </Field>
           )}
-          {keeper && <p className="text-ink-soft">You&apos;re our keeper: the next step asks about goalkeeping.</p>}
+          <label className="flex min-h-12 items-center gap-3 font-medium">
+            <input type="checkbox" checked={gkRotation} onChange={(e) => setGkRotation(e.target.checked)} className="size-6" />
+            <span>I&apos;m fine taking turns in goal</span>
+          </label>
         </div>
       )}
 
