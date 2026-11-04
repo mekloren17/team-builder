@@ -76,7 +76,7 @@ export function MyAttendance({
           type="button"
           disabled={busy}
           onClick={() => save(true)}
-          className={`${button.primary} min-h-14 w-full -rotate-1 text-2xl transition-transform duration-150 active:rotate-0 active:scale-[0.98]`}
+          className={`${button.primary} min-h-14 w-full text-2xl transition-transform duration-150 active:scale-[0.98]`}
         >
           {busy ? "Signing you up…" : "I'm in"}
         </button>
