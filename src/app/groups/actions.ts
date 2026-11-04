@@ -33,8 +33,10 @@ export interface ProfileInput {
   positions: Pos[];
   gkRotation: boolean;
   foot: Foot;
-  attributes: number[];
-  gkRating: number | null;
+  /** Plays mostly in goal: rated on gkAttributes. */
+  keeper: boolean;
+  attributes: number[] | null; // outfield answers (required unless keeper)
+  gkAttributes: number[] | null; // keeper answers (required when keeper)
 }
 
 /** Saves the questionnaire; the starting overall is computed here with the engine. */
@@ -45,9 +47,11 @@ export async function saveProfile(groupId: string, input: ProfileInput) {
     level: input.level,
     years: input.years,
     freq: input.freq,
-    attrs: input.attributes,
+    attrs: input.attributes ?? [],
     positions: input.positions,
     gkRotation: input.gkRotation,
+    keeper: input.keeper,
+    gkAttrs: input.gkAttributes ?? undefined,
   });
 
   const { error } = await supabase.rpc("save_my_profile", {
@@ -59,8 +63,9 @@ export async function saveProfile(groupId: string, input: ProfileInput) {
     p_positions: input.positions,
     p_gk_rotation: input.gkRotation,
     p_foot: input.foot,
+    p_keeper: input.keeper,
     p_attributes: input.attributes,
-    p_gk_rating: input.gkRating,
+    p_gk_attributes: input.gkAttributes,
     p_prior_overall: overall,
   });
   if (error) return { error: error.message };

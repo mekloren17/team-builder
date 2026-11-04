@@ -91,10 +91,54 @@ export const ATTRIBUTE_LEVELS: string[][] = [
   ],
 ];
 
-export const GK_LEVELS: string[] = [
-  "I go in goal only if I have to.",
-  "I stop the easy ones.",
-  "A reliable keeper for a friendly game.",
-  "I make saves that change the result.",
-  "A real goalkeeper.",
+/** Keeper skills, one description per level (1..5), in the order of GK_ATTRIBUTE_NAMES. */
+export const GK_ATTRIBUTE_LEVELS: string[][] = [
+  // Reflexes
+  [
+    "Most shots go past me.",
+    "I stop the ones hit straight at me.",
+    "I save the shots I can see coming.",
+    "I pull off saves people talk about afterwards.",
+    "Close-range rockets don't get past me.",
+  ],
+  // Positioning
+  [
+    "I often end up in the wrong place.",
+    "I'm in position when the play is slow.",
+    "I'm usually where the shot is going.",
+    "I narrow the angle without thinking.",
+    "Attackers run out of space to shoot.",
+  ],
+  // Handling
+  [
+    "The ball often bounces off me.",
+    "I hold the easy ones and parry the rest.",
+    "I catch most shots cleanly.",
+    "I rarely give away a rebound.",
+    "Wet ball, hard shot: still in my hands.",
+  ],
+  // Coming out (1 v 1)
+  [
+    "I stay on my line, always.",
+    "I come out, but often too late.",
+    "I win a fair share of one-on-ones.",
+    "I close attackers down fast and make myself big.",
+    "One-on-one, I'm the favourite.",
+  ],
+  // Distribution
+  [
+    "I just kick it away.",
+    "My throws reach the nearest teammate.",
+    "I start attacks with a good throw or kick.",
+    "I find the free player across the pitch.",
+    "My throws are assists waiting to happen.",
+  ],
+  // Playing with feet
+  [
+    "With the ball at my feet I panic.",
+    "I can pass it out if nobody presses me.",
+    "I stay calm on the ball under some pressure.",
+    "I play like an extra outfield player.",
+    "I could play outfield and nobody would notice.",
+  ],
 ];

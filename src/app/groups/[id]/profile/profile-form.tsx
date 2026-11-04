@@ -5,12 +5,20 @@ import { ageFromBirthYear, initialOverall, type Freq, type Level, type Pos, type
 import { PhotoEditor } from "@/components/photo-editor";
 import { PlayerCard } from "@/components/player-card";
 import { BackLink, button, choice, ErrorText, Headline, input } from "@/components/ui";
-import { ATTRIBUTE_NAMES, mainPosition, type Foot, type PlayerRow } from "@/lib/player";
+import {
+  ATTRIBUTE_NAMES,
+  ATTRIBUTE_SHORT,
+  GK_ATTRIBUTE_NAMES,
+  GK_ATTRIBUTE_SHORT,
+  mainPosition,
+  type Foot,
+  type PlayerRow,
+} from "@/lib/player";
 import {
   ATTRIBUTE_LEVELS,
   FOOT_OPTIONS,
   FREQ_OPTIONS,
-  GK_LEVELS,
+  GK_ATTRIBUTE_LEVELS,
   LEVEL_OPTIONS,
   POSITION_OPTIONS,
   YEARS_OPTIONS,
@@ -19,6 +27,7 @@ import { saveProfile, setMyPhoto } from "../../actions";
 
 const STEPS = ["About you", "Experience", "Positions", "Skills"] as const;
 const THIS_YEAR = new Date().getFullYear();
+const EMPTY_ANSWERS: (number | null)[] = [null, null, null, null, null, null];
 
 export function ProfileForm({ groupId, initial }: { groupId: string; initial: PlayerRow }) {
   const [step, setStep] = useState(0);
@@ -31,26 +40,44 @@ export function ProfileForm({ groupId, initial }: { groupId: string; initial: Pl
   const [freq, setFreq] = useState<Freq | null>(initial.frequency);
   const [positions, setPositions] = useState<Pos[]>(initial.positions);
   const [gkRotation, setGkRotation] = useState(initial.gk_rotation);
-  const [gkRating, setGkRating] = useState<number | null>(initial.gk_rating);
-  const [attributes, setAttributes] = useState<(number | null)[]>(initial.attributes ?? [null, null, null, null, null, null]);
+  const [attributes, setAttributes] = useState<(number | null)[]>(initial.attributes ?? EMPTY_ANSWERS);
+  const [gkAttributes, setGkAttributes] = useState<(number | null)[]>(initial.gk_attributes ?? EMPTY_ANSWERS);
+  // Only asked when someone picks goal and other positions too; playing only in goal makes you the keeper.
+  const [mainInGoal, setMainInGoal] = useState<boolean | null>(initial.positions.includes("GK") ? initial.keeper : null);
   const [error, setError] = useState<string | null>(null);
   const [saving, startSaving] = useTransition();
 
   const year = Number(birthYear);
   const validYear = Number.isInteger(year) && year >= 1930 && year <= THIS_YEAR - 10;
   const isGk = positions.includes("GK");
+  const onlyGk = isGk && positions.length === 1;
+  const keeper = onlyGk || (isGk && mainInGoal === true);
+  // the skill step asks the keeper questions to a keeper, the outfield ones to everybody else
+  const answers = keeper ? gkAttributes : attributes;
+  const setAnswers = keeper ? setGkAttributes : setAttributes;
+  const complete = (xs: (number | null)[]) => xs.every((a) => a !== null);
   const stepValid = [
     displayName.trim().length > 0 && validYear && foot !== null,
     level !== null && years !== null && freq !== null,
-    positions.length > 0 && (!isGk || gkRating !== null),
-    attributes.every((a) => a !== null),
+    positions.length > 0 && (!isGk || onlyGk || mainInGoal !== null),
+    complete(answers),
   ];
 
   // Live preview: neutral 3s for the skills not answered yet, until the questionnaire is complete.
-  const previewAttrs = attributes.map((a) => a ?? 3);
+  const previewAnswers = answers.map((a) => a ?? 3);
   const overall =
     validYear && level && years && freq
-      ? initialOverall({ age: ageFromBirthYear(year), level, years, freq, attrs: previewAttrs, positions, gkRotation })
+      ? initialOverall({
+          age: ageFromBirthYear(year),
+          level,
+          years,
+          freq,
+          attrs: keeper ? [] : previewAnswers,
+          gkAttrs: keeper ? previewAnswers : undefined,
+          keeper,
+          positions,
+          gkRotation,
+        })
       : null;
 
   function togglePosition(p: Pos) {
@@ -69,8 +96,10 @@ export function ProfileForm({ groupId, initial }: { groupId: string; initial: Pl
         positions,
         gkRotation,
         foot: foot!,
-        attributes: attributes as number[],
-        gkRating: isGk ? gkRating : null,
+        keeper,
+        // the other role's answers are kept only if complete (for a later switch)
+        attributes: complete(attributes) ? (attributes as number[]) : null,
+        gkAttributes: complete(gkAttributes) ? (gkAttributes as number[]) : null,
       });
       if (result?.error) setError(result.error);
     });
@@ -94,8 +123,9 @@ export function ProfileForm({ groupId, initial }: { groupId: string; initial: Pl
         <PlayerCard
           name={displayName}
           overall={overall}
-          position={mainPosition(positions)}
-          attributes={overall !== null ? previewAttrs : null}
+          position={mainPosition(positions, keeper)}
+          attributes={overall !== null ? previewAnswers : null}
+          labels={keeper ? GK_ATTRIBUTE_SHORT : ATTRIBUTE_SHORT}
           foot={foot}
           photoUrl={photoUrl}
           size="sm"
@@ -168,23 +198,33 @@ export function ProfileForm({ groupId, initial }: { groupId: string; initial: Pl
             <input type="checkbox" checked={gkRotation} onChange={(e) => setGkRotation(e.target.checked)} className="size-6" />
             <span>I&apos;m fine taking turns in goal</span>
           </label>
-          {isGk && (
-            <Field label="Goalkeeping">
-              <Levels descriptions={GK_LEVELS} value={gkRating} onChange={setGkRating} />
+          {isGk && !onlyGk && (
+            <Field label="Where do you play most?">
+              <div className="grid grid-cols-2 gap-2">
+                <OptionButton selected={mainInGoal === true} onClick={() => setMainInGoal(true)}>
+                  In goal
+                </OptionButton>
+                <OptionButton selected={mainInGoal === false} onClick={() => setMainInGoal(false)}>
+                  Outfield
+                </OptionButton>
+              </div>
             </Field>
           )}
+          {keeper && <p className="text-ink-soft">You&apos;re our keeper: the next step asks about goalkeeping.</p>}
         </div>
       )}
 
       {step === 3 && (
         <div className="space-y-6">
-          <p className="text-ink-soft">Be honest: the teams are only as fair as these answers. Nobody sees them but the app.</p>
-          {ATTRIBUTE_NAMES.map((name, i) => (
+          <p className="text-ink-soft">
+            Be honest: the teams are only as fair as these answers. They set your mark and the numbers on your card.
+          </p>
+          {(keeper ? GK_ATTRIBUTE_NAMES : ATTRIBUTE_NAMES).map((name, i) => (
             <Field key={name} label={name}>
               <Levels
-                descriptions={ATTRIBUTE_LEVELS[i]}
-                value={attributes[i]}
-                onChange={(v) => setAttributes((as) => as.map((a, j) => (j === i ? v : a)))}
+                descriptions={(keeper ? GK_ATTRIBUTE_LEVELS : ATTRIBUTE_LEVELS)[i]}
+                value={answers[i]}
+                onChange={(v) => setAnswers((as) => as.map((a, j) => (j === i ? v : a)))}
               />
             </Field>
           ))}

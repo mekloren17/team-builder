@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { isProvisional } from "@/lib/engine/engine";
 import { PlayerCard } from "@/components/player-card";
 import { Dateline, Headline, Mark, Page, SectionTitle } from "@/components/ui";
-import { displayOverall, isGuest, mainPosition, type PlayerRow } from "@/lib/player";
+import { cardStats, displayOverall, isGuest, mainPosition, type PlayerRow } from "@/lib/player";
 import { loadGroup } from "../data";
 
 type Props = { params: Promise<{ id: string }> };
@@ -53,8 +53,9 @@ async function Players({ params }: Props) {
             key={p.id}
             name={p.display_name}
             overall={displayOverall(p)}
-            position={mainPosition(p.positions)}
-            attributes={p.attributes}
+            position={mainPosition(p.positions, p.keeper)}
+            attributes={cardStats(p).values}
+            labels={cardStats(p).labels}
             foot={p.foot}
             provisional={isProvisional(p.matches_played)}
             guest={isGuest(p)}
@@ -79,7 +80,7 @@ function Row({ player: p, rank, isMe }: { player: PlayerRow; rank: number; isMe:
           {isGuest(p) ? "Guest" : isProvisional(p.matches_played) ? "Provisional" : `${p.matches_played} matches`}
         </span>
       </td>
-      <td className="py-2.5 pl-2 text-sm font-semibold">{mainPosition(p.positions) ?? "–"}</td>
+      <td className="py-2.5 pl-2 text-sm font-semibold">{mainPosition(p.positions, p.keeper) ?? "–"}</td>
       <td className="py-2.5 pr-4 text-right">
         <Mark value={ovr ?? "–"} size="md" />
       </td>

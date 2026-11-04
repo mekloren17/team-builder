@@ -15,6 +15,14 @@ export interface Profile {
   attrs: number[]; // Pace, Shooting, Passing, Dribbling, Defending, Physical — each 1..5
   positions: Pos[];
   gkRotation: boolean;
+  /** Plays mostly in goal: rated on the keeper answers instead of the outfield ones. */
+  keeper?: boolean;
+  gkAttrs?: number[]; // Reflexes, Positioning, Handling, Coming out, Distribution, Playing with feet — each 1..5
+}
+
+/** The six self-assessed skills that count for this player: the keeper ones for a keeper, else the outfield ones. */
+export function skillAnswers(p: Pick<Profile, "attrs" | "keeper" | "gkAttrs">): number[] {
+  return p.keeper && p.gkAttrs && p.gkAttrs.length > 0 ? p.gkAttrs : p.attrs;
 }
 
 export interface Rating {
@@ -67,7 +75,7 @@ export function frequencyScore(p: Profile): number {
   return FREQ_POINTS[p.freq];
 }
 export function attributeScore(p: Profile): number {
-  return 30 + 15 * (mean(p.attrs) - 1);
+  return 30 + 15 * (mean(skillAnswers(p)) - 1);
 }
 
 export function initialOverall(p: Profile): number {

@@ -5,7 +5,7 @@ import { Fixtures, type FixtureMatch } from "@/components/fixtures";
 import { PlayerCard } from "@/components/player-card";
 import { button, Dateline, Headline, inWords, Page, Panel, SectionTitle, WinBar } from "@/components/ui";
 import { formatMatchDate } from "@/lib/match";
-import { displayOverall, hasProfile, isGuest, mainPosition, type PlayerRow } from "@/lib/player";
+import { cardStats, displayOverall, hasProfile, isGuest, mainPosition, type PlayerRow } from "@/lib/player";
 import { MyAttendance } from "./matches/[mid]/attendance";
 import { loadGroup, loadMatches } from "./data";
 import { createClient } from "@/lib/supabase/server";
@@ -159,8 +159,9 @@ function Card({ player }: { player: PlayerRow }) {
     <PlayerCard
       name={player.display_name}
       overall={displayOverall(player)}
-      position={mainPosition(player.positions)}
-      attributes={player.attributes}
+      position={mainPosition(player.positions, player.keeper)}
+      attributes={cardStats(player).values}
+      labels={cardStats(player).labels}
       foot={player.foot}
       provisional={isProvisional(player.matches_played)}
       guest={isGuest(player)}

@@ -215,7 +215,8 @@ I permessi vanno applicati **nel database** (RLS): un giocatore vede solo i grup
 | Posizioni preferite | GK · DEF · MID · ATT (più di una) + "goalkeeper rotation ok" |
 | Piede | right · left · both (solo sulla carta) |
 | Attributi 1–5 | Pace, Shooting, Passing, Dribbling, Defending, Physical — ogni livello con una **descrizione ancorata a un comportamento** (es. *Pace 4: rarely does anyone outrun me*) |
-| Goalkeeping 1–5 | solo se indica GK |
+| Ruolo principale | chiesto solo a chi indica GK insieme ad altre posizioni: "In goal" / "Outfield". Chi indica solo GK è portiere. |
+| Abilità da portiere 1–5 | **solo per i portieri** (deciso il 04/11/2026), al posto delle 6 di movimento: Reflexes, Positioning, Handling, Coming out (1 v 1), Distribution, Playing with feet. Overall e carta (REF/POS/HAN/OUT/DIS/FEET) vengono da queste. Il vecchio  non si chiede più. |
 | Forma del momento 1–5 | **non nel profilo**: chiesta quando ci si segna a una partita |
 
 Durante il questionario l'anteprima della carta si aggiorna dal vivo.
@@ -226,7 +227,7 @@ Durante il questionario l'anteprima della carta si aggiorna dal vivo.
 | --- | --- |
 | `profiles` | id (= utente di Supabase Auth), name, email, avatar_url; creata da un trigger al primo login, ognuno vede solo la propria |
 | `groups` | id, name, invite_code, default_format (5/7), owner_id |
-| `players` | id, group_id, user_id (null per gli ospiti), display_name, role (owner/admin/player), birth_year, max_level, years_played, frequency, positions, foot, attributes, gk_rating, **prior_overall** (overall del questionario o stima dell'admin per gli ospiti: è il `prior` di `estimateRatings`), mu, matches_played |
+| `players` | id, group_id, user_id (null per gli ospiti), display_name, role (owner/admin/player), birth_year, max_level, years_played, frequency, positions, foot, attributes, gk_rating (non più usato), **keeper**, **gk_attributes**, **prior_overall** (overall del questionario o stima dell'admin per gli ospiti: è il `prior` di `estimateRatings`), mu, matches_played |
 | `matches` | id, group_id, format, starts_at, status (open/teams_set/played), score_a, score_b, result_status (pending/confirmed/disputed), result_by, confirmed_by, win_prob_a, created_by |
 | `match_players` | match_id, player_id, form, team (A/B), position, mu_before, mu_after |
 | `team_proposals` | match_id, rank, team_a, team_b, win_prob_a |

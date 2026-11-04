@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  initialOverall, cardAttributes, winProbability, updateAfterMatch, balanceTeams, assignPositions, estimateRatings, isProvisional, ageFromBirthYear, splitStrengths, DEFAULT_PARAMS,
+  initialOverall, cardAttributes, winProbability, updateAfterMatch, balanceTeams, assignPositions, estimateRatings, isProvisional, ageFromBirthYear, splitStrengths, skillAnswers, DEFAULT_PARAMS,
   type Profile, type BalancePlayer, type HistoryMatch,
 } from './engine.ts';
 
@@ -155,4 +155,17 @@ test('positions: with no keeper, a player without preferences goes in goal befor
   ];
   const out = assignPositions(team, 5);
   assert.equal(out.slots.find((s) => s.pos === 'GK')!.id, 'guest');
+});
+
+test('keeper: the overall comes from the keeper answers, not the outfield ones', () => {
+  // a good keeper who would be a poor outfield player
+  const keeper: Profile = { ...base, positions: ['GK'], keeper: true, attrs: [1, 1, 2, 1, 2, 2], gkAttrs: [4, 3, 4, 3, 3, 4] };
+  // same answers as the spec example (attrs mean 3.5) -> same overall, 75
+  assert.equal(initialOverall(keeper), 75);
+  assert.deepEqual(skillAnswers(keeper), [4, 3, 4, 3, 3, 4]);
+  // an outfield player who also likes goal is still rated on the outfield answers
+  const outfield: Profile = { ...base, positions: ['MID', 'GK'], keeper: false, gkAttrs: [5, 5, 5, 5, 5, 5] };
+  assert.equal(initialOverall(outfield), 75);
+  // a keeper with no keeper answers yet falls back to the outfield ones
+  assert.equal(initialOverall({ ...base, keeper: true }), 75);
 });

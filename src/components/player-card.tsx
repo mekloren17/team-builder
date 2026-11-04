@@ -6,6 +6,7 @@ export interface PlayerCardProps {
   overall: number | null; // null: questionnaire not filled in yet
   position: Pos | null;
   attributes: number[] | null; // self-assessment 1..5, turned into card values around the overall
+  labels?: readonly string[]; // stat names, in the order of attributes (keeper or outfield)
   foot?: Foot | null;
   provisional?: boolean;
   guest?: boolean;
@@ -29,6 +30,7 @@ export function PlayerCard({
   overall,
   position,
   attributes,
+  labels = ATTRIBUTE_SHORT,
   foot,
   provisional,
   guest,
@@ -66,7 +68,7 @@ export function PlayerCard({
       <div className={`relative border-t border-current/25 ${lg ? "mt-3 pt-3" : "mt-2 pt-2"}`}>
         {values ? (
           <div className={`grid grid-cols-2 gap-x-4 ${lg ? "gap-y-1 text-sm" : "gap-y-0.5 text-[11px]"}`}>
-            {ATTRIBUTE_SHORT.map((label, i) => (
+            {labels.map((label, i) => (
               <div key={label} className="flex justify-between">
                 <span className="font-black tabular-nums">{values[i]}</span>
                 <span className="font-medium opacity-80">{label}</span>
