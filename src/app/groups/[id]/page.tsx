@@ -159,7 +159,7 @@ function Card({ player }: { player: PlayerRow }) {
     <PlayerCard
       name={player.display_name}
       overall={displayOverall(player)}
-      position={mainPosition(player.positions, player.keeper)}
+      position={mainPosition(player.positions, player.main_position)}
       attributes={cardStats(player).values}
       labels={cardStats(player).labels}
       foot={player.foot}

@@ -1,13 +1,17 @@
--- Team Builder — goalkeepers get their own questionnaire
--- A player who plays mostly in goal ("keeper") answers six keeper skills instead of the outfield ones:
+-- Team Builder — main position, and goalkeepers get their own questionnaire
+-- Every player picks a main position among the ones they play. A player whose main position is GK (a keeper) answers six keeper skills instead of the outfield ones:
 -- Reflexes, Positioning, Handling, Coming out, Distribution, Playing with feet (each 1..5).
 -- Their overall and card come from those answers. The old single gk_rating stays in the table but is no longer asked.
 
 alter table public.players
-  add column keeper boolean not null default false,
+  add column main_position text,
   add column gk_attributes smallint[] check (
     gk_attributes is null
     or (array_length(gk_attributes, 1) = 6 and 1 <= all (gk_attributes) and 5 >= all (gk_attributes))
+  ),
+  -- the main position is one of the positions the player plays (null until the questionnaire is saved again)
+  add constraint players_main_position_check check (
+    main_position is null or (main_position in ('GK', 'DEF', 'MID', 'ATT') and main_position = any (positions))
   );
 
 -- New members copy the questionnaire from their other groups: now including the keeper answers.
@@ -23,14 +27,14 @@ begin
   insert into public.players (
     group_id, user_id, display_name, role,
     birth_year, max_level, years_played, frequency, positions, gk_rotation, foot, attributes, gk_rating,
-    keeper, gk_attributes,
+    main_position, gk_attributes,
     prior_overall, mu, photo_url
   )
   select
     gid, uid, coalesce(src.display_name, pr.name), member_role,
     src.birth_year, src.max_level, src.years_played, src.frequency, coalesce(src.positions, '{}'),
     coalesce(src.gk_rotation, false), src.foot, src.attributes, src.gk_rating,
-    coalesce(src.keeper, false), src.gk_attributes,
+    src.main_position, src.gk_attributes,
     src.prior_overall, src.prior_overall, coalesce(src.photo_url, pr.avatar_url)
   from public.profiles pr
   left join lateral (
@@ -64,7 +68,7 @@ create function public.save_my_profile(
   p_positions text[],
   p_gk_rotation boolean,
   p_foot text,
-  p_keeper boolean,
+  p_main_position text,
   p_attributes smallint[],
   p_gk_attributes smallint[],
   p_prior_overall smallint
@@ -81,10 +85,13 @@ begin
   if coalesce(array_length(p_positions, 1), 0) = 0 then
     raise exception 'Choose at least one position';
   end if;
-  if p_keeper and (p_gk_attributes is null or not 'GK' = any (p_positions)) then
+  if p_main_position is null or not p_main_position = any (p_positions) then
+    raise exception 'Choose your main position among the ones you play';
+  end if;
+  if p_main_position = 'GK' and p_gk_attributes is null then
     raise exception 'A keeper needs the goalkeeper answers';
   end if;
-  if not p_keeper and p_attributes is null then
+  if p_main_position <> 'GK' and p_attributes is null then
     raise exception 'Answer the skill questions';
   end if;
   update public.players set
@@ -96,7 +103,7 @@ begin
     positions = p_positions,
     gk_rotation = p_gk_rotation,
     foot = p_foot,
-    keeper = p_keeper,
+    main_position = p_main_position,
     -- keep the answers of the other role, in case the player switches back later
     attributes = coalesce(p_attributes, attributes),
     gk_attributes = coalesce(p_gk_attributes, gk_attributes),

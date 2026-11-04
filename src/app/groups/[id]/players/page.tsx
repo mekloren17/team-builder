@@ -53,7 +53,7 @@ async function Players({ params }: Props) {
             key={p.id}
             name={p.display_name}
             overall={displayOverall(p)}
-            position={mainPosition(p.positions, p.keeper)}
+            position={mainPosition(p.positions, p.main_position)}
             attributes={cardStats(p).values}
             labels={cardStats(p).labels}
             foot={p.foot}
@@ -80,7 +80,7 @@ function Row({ player: p, rank, isMe }: { player: PlayerRow; rank: number; isMe:
           {isGuest(p) ? "Guest" : isProvisional(p.matches_played) ? "Provisional" : `${p.matches_played} matches`}
         </span>
       </td>
-      <td className="py-2.5 pl-2 text-sm font-semibold">{mainPosition(p.positions, p.keeper) ?? "–"}</td>
+      <td className="py-2.5 pl-2 text-sm font-semibold">{mainPosition(p.positions, p.main_position) ?? "–"}</td>
       <td className="py-2.5 pr-4 text-right">
         <Mark value={ovr ?? "–"} size="md" />
       </td>

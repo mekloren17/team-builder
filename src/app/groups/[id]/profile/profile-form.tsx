@@ -42,16 +42,16 @@ export function ProfileForm({ groupId, initial }: { groupId: string; initial: Pl
   const [gkRotation, setGkRotation] = useState(initial.gk_rotation);
   const [attributes, setAttributes] = useState<(number | null)[]>(initial.attributes ?? EMPTY_ANSWERS);
   const [gkAttributes, setGkAttributes] = useState<(number | null)[]>(initial.gk_attributes ?? EMPTY_ANSWERS);
-  // Only asked when someone picks goal and other positions too; playing only in goal makes you the keeper.
-  const [mainInGoal, setMainInGoal] = useState<boolean | null>(initial.positions.includes("GK") ? initial.keeper : null);
+  // Asked when someone plays more than one position; GK as main position makes you the keeper.
+  const [mainPos, setMainPos] = useState<Pos | null>(initial.main_position);
   const [error, setError] = useState<string | null>(null);
   const [saving, startSaving] = useTransition();
 
   const year = Number(birthYear);
   const validYear = Number.isInteger(year) && year >= 1930 && year <= THIS_YEAR - 10;
-  const isGk = positions.includes("GK");
-  const onlyGk = isGk && positions.length === 1;
-  const keeper = onlyGk || (isGk && mainInGoal === true);
+  // one position is the main one by itself; with several, the one picked (if still among them)
+  const main: Pos | null = positions.length === 1 ? positions[0] : mainPos && positions.includes(mainPos) ? mainPos : null;
+  const keeper = main === "GK";
   // the skill step asks the keeper questions to a keeper, the outfield ones to everybody else
   const answers = keeper ? gkAttributes : attributes;
   const setAnswers = keeper ? setGkAttributes : setAttributes;
@@ -59,7 +59,7 @@ export function ProfileForm({ groupId, initial }: { groupId: string; initial: Pl
   const stepValid = [
     displayName.trim().length > 0 && validYear && foot !== null,
     level !== null && years !== null && freq !== null,
-    positions.length > 0 && (!isGk || onlyGk || mainInGoal !== null),
+    main !== null,
     complete(answers),
   ];
 
@@ -96,7 +96,7 @@ export function ProfileForm({ groupId, initial }: { groupId: string; initial: Pl
         positions,
         gkRotation,
         foot: foot!,
-        keeper,
+        mainPosition: main!,
         // the other role's answers are kept only if complete (for a later switch)
         attributes: complete(attributes) ? (attributes as number[]) : null,
         gkAttributes: complete(gkAttributes) ? (gkAttributes as number[]) : null,
@@ -123,7 +123,7 @@ export function ProfileForm({ groupId, initial }: { groupId: string; initial: Pl
         <PlayerCard
           name={displayName}
           overall={overall}
-          position={mainPosition(positions, keeper)}
+          position={mainPosition(positions, main)}
           attributes={overall !== null ? previewAnswers : null}
           labels={keeper ? GK_ATTRIBUTE_SHORT : ATTRIBUTE_SHORT}
           foot={foot}
@@ -198,15 +198,14 @@ export function ProfileForm({ groupId, initial }: { groupId: string; initial: Pl
             <input type="checkbox" checked={gkRotation} onChange={(e) => setGkRotation(e.target.checked)} className="size-6" />
             <span>I&apos;m fine taking turns in goal</span>
           </label>
-          {isGk && !onlyGk && (
-            <Field label="Where do you play most?">
+          {positions.length > 1 && (
+            <Field label="Your main position (it goes on your card)">
               <div className="grid grid-cols-2 gap-2">
-                <OptionButton selected={mainInGoal === true} onClick={() => setMainInGoal(true)}>
-                  In goal
-                </OptionButton>
-                <OptionButton selected={mainInGoal === false} onClick={() => setMainInGoal(false)}>
-                  Outfield
-                </OptionButton>
+                {POSITION_OPTIONS.filter((o) => positions.includes(o.value)).map((o) => (
+                  <OptionButton key={o.value} selected={main === o.value} onClick={() => setMainPos(o.value)}>
+                    {o.label}
+                  </OptionButton>
+                ))}
               </div>
             </Field>
           )}

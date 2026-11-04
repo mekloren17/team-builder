@@ -33,8 +33,8 @@ export interface ProfileInput {
   positions: Pos[];
   gkRotation: boolean;
   foot: Foot;
-  /** Plays mostly in goal: rated on gkAttributes. */
-  keeper: boolean;
+  /** Chosen among positions; GK means a keeper, rated on gkAttributes. */
+  mainPosition: Pos;
   attributes: number[] | null; // outfield answers (required unless keeper)
   gkAttributes: number[] | null; // keeper answers (required when keeper)
 }
@@ -50,7 +50,7 @@ export async function saveProfile(groupId: string, input: ProfileInput) {
     attrs: input.attributes ?? [],
     positions: input.positions,
     gkRotation: input.gkRotation,
-    keeper: input.keeper,
+    keeper: input.mainPosition === "GK",
     gkAttrs: input.gkAttributes ?? undefined,
   });
 
@@ -63,7 +63,7 @@ export async function saveProfile(groupId: string, input: ProfileInput) {
     p_positions: input.positions,
     p_gk_rotation: input.gkRotation,
     p_foot: input.foot,
-    p_keeper: input.keeper,
+    p_main_position: input.mainPosition,
     p_attributes: input.attributes,
     p_gk_attributes: input.gkAttributes,
     p_prior_overall: overall,

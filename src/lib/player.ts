@@ -24,12 +24,12 @@ export interface PlayerRow {
   mu: number | null;
   matches_played: number;
   photo_url: string | null;
-  keeper: boolean;
+  main_position: Pos | null;
   gk_attributes: number[] | null;
 }
 
 export const PLAYER_COLUMNS =
-  "id, group_id, user_id, display_name, role, birth_year, max_level, years_played, frequency, positions, gk_rotation, foot, attributes, gk_rating, prior_overall, mu, matches_played, photo_url, keeper, gk_attributes";
+  "id, group_id, user_id, display_name, role, birth_year, max_level, years_played, frequency, positions, gk_rotation, foot, attributes, gk_rating, prior_overall, mu, matches_played, photo_url, main_position, gk_attributes";
 
 export const ATTRIBUTE_NAMES = ["Pace", "Shooting", "Passing", "Dribbling", "Defending", "Physical"] as const;
 export const ATTRIBUTE_SHORT = ["PAC", "SHO", "PAS", "DRI", "DEF", "PHY"] as const;
@@ -39,11 +39,16 @@ export const GK_ATTRIBUTE_NAMES = ["Reflexes", "Positioning", "Handling", "Comin
 export const GK_ATTRIBUTE_SHORT = ["REF", "POS", "HAN", "OUT", "DIS", "FEET"] as const;
 
 /** The skill answers and labels to show on the card: keeper ones for a keeper. */
-export function cardStats(p: Pick<PlayerRow, "keeper" | "attributes" | "gk_attributes">): {
+/** Plays mostly in goal: rated on the keeper questions. */
+export function isKeeper(p: Pick<PlayerRow, "main_position">): boolean {
+  return p.main_position === "GK";
+}
+
+export function cardStats(p: Pick<PlayerRow, "main_position" | "attributes" | "gk_attributes">): {
   values: number[] | null;
   labels: readonly string[];
 } {
-  return p.keeper ? { values: p.gk_attributes, labels: GK_ATTRIBUTE_SHORT } : { values: p.attributes, labels: ATTRIBUTE_SHORT };
+  return isKeeper(p) ? { values: p.gk_attributes, labels: GK_ATTRIBUTE_SHORT } : { values: p.attributes, labels: ATTRIBUTE_SHORT };
 }
 
 export type Tier = "bronze" | "silver" | "gold";
@@ -54,9 +59,9 @@ export function tier(overall: number): Tier {
   return "bronze";
 }
 
-/** The position shown on the card: GK for a keeper, else the first preferred one, in pitch order. */
-export function mainPosition(positions: Pos[], keeper = false): Pos | null {
-  if (keeper) return "GK";
+/** The position shown on the card: the chosen main one, else the first preferred one in pitch order. */
+export function mainPosition(positions: Pos[], main: Pos | null = null): Pos | null {
+  if (main && positions.includes(main)) return main;
   return (["ATT", "MID", "DEF", "GK"] as Pos[]).find((p) => positions.includes(p)) ?? null;
 }
 
@@ -67,7 +72,7 @@ export function displayOverall(p: Pick<PlayerRow, "mu" | "prior_overall">): numb
 }
 
 export function hasProfile(p: PlayerRow): boolean {
-  return p.prior_overall !== null && (p.keeper ? p.gk_attributes !== null : p.attributes !== null);
+  return p.prior_overall !== null && (isKeeper(p) ? p.gk_attributes !== null : p.attributes !== null);
 }
 
 export function isGuest(p: PlayerRow): boolean {
@@ -85,7 +90,7 @@ export function toEngineProfile(p: PlayerRow): Profile | null {
     attrs: p.attributes ?? [],
     positions: p.positions,
     gkRotation: p.gk_rotation,
-    keeper: p.keeper,
+    keeper: isKeeper(p),
     gkAttrs: p.gk_attributes ?? undefined,
   };
 }
