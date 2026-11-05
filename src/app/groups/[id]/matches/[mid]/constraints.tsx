@@ -36,7 +36,7 @@ export function Constraints({
     });
   }
 
-  const select = "min-h-12 min-w-0 flex-1 border-2 border-ink bg-sheet px-3 font-medium";
+  const select = "min-h-12 min-w-0 flex-1 rounded-md border-2 border-line bg-panel px-3 font-medium";
 
   return (
     <div className="space-y-3">
@@ -45,7 +45,7 @@ export function Constraints({
           {constraints.map((c) => (
             <li key={c.id} className="flex min-h-10 items-center justify-between gap-3">
               <span>
-                {name(c.player_a)} <span className="font-semibold text-ink-soft">{c.type === "together" ? "with" : "not with"}</span>{" "}
+                {name(c.player_a)} <span className="font-semibold text-chalk-soft">{c.type === "together" ? "with" : "not with"}</span>{" "}
                 {name(c.player_b)}
               </span>
               <button

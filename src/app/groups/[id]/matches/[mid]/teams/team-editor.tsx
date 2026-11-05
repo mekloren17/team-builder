@@ -76,8 +76,8 @@ export function TeamEditor({
   }
 
   const tab = (on: boolean) =>
-    `min-h-11 shrink-0 border-2 border-ink px-4 text-sm font-semibold transition-colors duration-150 ${
-      on ? "bg-ink text-paper" : "bg-sheet text-ink hover:bg-paper-deep"
+    `min-h-11 shrink-0 rounded-md border-2 border-line px-4 text-sm font-semibold transition-colors duration-150 ${
+      on ? "bg-chalk text-turf" : "bg-panel text-chalk hover:bg-raised"
     }`;
 
   return (
@@ -95,15 +95,15 @@ export function TeamEditor({
               choose(shown);
               setShown(shown + 1);
             }}
-            className="inline-flex min-h-11 shrink-0 items-center gap-1 border-2 border-dashed border-ink px-4 text-sm font-semibold hover:bg-sheet"
+            className="inline-flex min-h-11 shrink-0 items-center gap-1 rounded-md border-2 border-dashed border-line px-4 text-sm font-semibold hover:bg-panel"
           >
             <Plus className="size-4" aria-hidden /> Another option
           </button>
         )}
       </div>
 
-      <div className="border-2 border-ink bg-sheet p-4">
-        <p className="mb-2 text-sm font-semibold text-ink-soft">Chance of winning{edited && " (after your changes)"}</p>
+      <div className="rounded-md border-2 border-line bg-panel p-4">
+        <p className="mb-2 text-sm font-semibold text-chalk-soft">Chance of winning{edited && " (after your changes)"}</p>
         <WinBar probA={probA} labelA="Team A" labelB="Team B" />
       </div>
 
@@ -119,7 +119,7 @@ export function TeamEditor({
 
       {view === "list" ? (
         <>
-          <p className="flex items-center gap-2 text-sm text-ink-soft">
+          <p className="flex items-center gap-2 text-sm text-chalk-soft">
             <ArrowLeftRight className="size-4" aria-hidden /> Tap a player to send them to the other team.
           </p>
           <div className="grid grid-cols-2 gap-3">
@@ -165,9 +165,9 @@ function TeamColumn({
 }) {
   const sorted = [...ids].sort((a, b) => byId.get(b)!.overall - byId.get(a)!.overall);
   return (
-    <div className="border-2 border-ink bg-sheet">
-      <div className="flex items-baseline justify-between border-b-2 border-ink px-3 py-2">
-        <h2 className="font-display text-lg font-extrabold uppercase">{title}</h2>
+    <div className="rounded-md border-2 border-line bg-panel">
+      <div className="flex items-baseline justify-between border-b-2 border-line px-3 py-2">
+        <h2 className={`font-display text-lg font-black uppercase ${title.endsWith("B") ? "text-bib-orange" : "text-bib"}`}>{title}</h2>
         <Mark value={strength.toFixed(1)} size="sm" />
       </div>
       <ul>
@@ -178,11 +178,11 @@ function TeamColumn({
               <button
                 type="button"
                 onClick={() => onTap(id)}
-                className="flex min-h-12 w-full items-center justify-between gap-2 px-3 text-left transition-colors duration-150 hover:bg-paper"
+                className="flex min-h-12 w-full items-center justify-between gap-2 px-3 text-left transition-colors duration-150 hover:bg-raised"
               >
                 <span className="min-w-0 truncate font-semibold">
                   {p.name}
-                  {p.positions.includes("GK") && <span className="ml-1 text-xs font-bold text-ink-soft">GK</span>}
+                  {p.positions.includes("GK") && <span className="ml-1 text-xs font-bold text-chalk-soft">GK</span>}
                 </span>
                 <span className="flex shrink-0 items-center gap-1">
                   <FormIcon form={p.form} className="size-4" />

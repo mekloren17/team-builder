@@ -1,4 +1,4 @@
-// Shared pieces of the "pagelle" look: pink paper, ink rules, condensed marks, one red.
+// Shared pieces of the "Floodlights" look: dark turf, chalk lines, bib yellow, lit scoreboard numbers.
 // See DESIGN.md for the rules behind them.
 
 import Link from "next/link";
@@ -10,43 +10,50 @@ const BUTTON_BASE =
   "inline-flex min-h-12 items-center justify-center gap-2 px-5 font-semibold transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-45";
 
 export const button = {
-  /** The one primary action on a screen: the red stamp. */
-  primary: `${BUTTON_BASE} border-2 border-ink bg-red font-display text-xl font-extrabold uppercase tracking-wide text-white hover:bg-red-deep`,
-  /** Secondary actions: ink outline on white. */
-  secondary: `${BUTTON_BASE} border-2 border-ink bg-sheet text-ink hover:bg-paper-deep`,
+  /** The one primary action on a screen: bib yellow. */
+  primary: `${BUTTON_BASE} rounded-md border-2 border-bib bg-bib font-display text-2xl font-black uppercase tracking-wide text-night hover:border-bib-deep hover:bg-bib-deep`,
+  /** Secondary actions: chalk outline on a dark panel. */
+  secondary: `${BUTTON_BASE} rounded-md border-2 border-line bg-panel text-chalk hover:bg-raised`,
   /** Small inline actions inside lists. */
   small:
-    "inline-flex min-h-10 items-center justify-center gap-1.5 border-2 border-ink bg-sheet px-3 text-sm font-semibold text-ink transition-colors duration-150 hover:bg-paper-deep disabled:opacity-45",
+    "inline-flex min-h-10 items-center justify-center gap-1.5 rounded-md border-2 border-line bg-panel px-3 text-sm font-semibold text-chalk transition-colors duration-150 hover:bg-raised disabled:opacity-45",
   /** Destructive text action. */
-  danger: "text-sm font-semibold text-red underline decoration-2 hover:text-red-deep disabled:opacity-45",
+  danger: "text-sm font-semibold text-foul underline decoration-2 hover:text-foul-deep disabled:opacity-45",
   /** Quiet text action. */
-  quiet: "text-sm font-semibold text-ink-soft underline decoration-1 hover:text-ink disabled:opacity-45",
+  quiet: "text-sm font-semibold text-chalk-soft underline decoration-1 hover:text-chalk disabled:opacity-45",
 };
 
 export const input =
-  "min-h-12 w-full border-2 border-ink bg-sheet px-4 text-base text-ink placeholder:text-ink-faint focus:outline-none focus-visible:outline-3 focus-visible:outline-red";
+  "min-h-12 w-full rounded-md border-2 border-line bg-panel px-4 text-base text-chalk placeholder:text-chalk-faint focus:outline-none focus-visible:outline-3 focus-visible:outline-bib";
 
-/** Toggle-style choice button (radio-like), pressed = ink. */
+/** Toggle-style choice button (radio-like), pressed = chalk fill. */
 export function choice(selected: boolean) {
-  return `min-h-12 w-full border-2 border-ink px-4 py-2 text-left font-medium transition-colors duration-150 ${
-    selected ? "bg-ink text-paper" : "bg-sheet text-ink hover:bg-paper-deep"
+  return `min-h-12 w-full rounded-md border-2 border-line px-4 py-2 text-left font-medium transition-colors duration-150 ${
+    selected ? "bg-chalk text-turf" : "bg-panel text-chalk hover:bg-raised"
   }`;
 }
 
 // ---------- Layout ----------
 
-/** Page body: one column, readable on a phone, centred on a desktop. */
-export function Page({ children }: { children: React.ReactNode }) {
-  return <main className="mx-auto w-full max-w-2xl flex-1 px-4 py-6 sm:px-6">{children}</main>;
+/** Shared page width: one column on the phone, a wide frame from 1024px so the PC isn't a narrow strip. */
+export const FRAME = "mx-auto w-full max-w-2xl px-4 sm:px-6 lg:max-w-6xl lg:px-8";
+
+/** Page body. Reading pages keep a 672px column (left-aligned on a PC); `wide` pages use the whole frame. */
+export function Page({ children, wide = false }: { children: React.ReactNode; wide?: boolean }) {
+  return (
+    <main className={`${FRAME} flex-1 py-6`}>
+      <div className={wide ? "" : "lg:max-w-2xl"}>{children}</div>
+    </main>
+  );
 }
 
-/** The top of the paper: name of the publication and an ink rule. */
+/** The top of the page: the group's name, like the sign over the sports centre. */
 export function Masthead({ title, right }: { title: string; right?: React.ReactNode }) {
   return (
-    <header className="border-b-[3px] border-ink bg-paper">
-      <div className="mx-auto flex max-w-2xl items-baseline justify-between gap-4 px-4 pb-2 pt-4 sm:px-6">
-        <span className="truncate font-display text-[1.75rem] font-extrabold uppercase leading-none tracking-tight">{title}</span>
-        {right && <span className="shrink-0 text-sm font-semibold text-ink-soft">{right}</span>}
+    <header className="border-b border-rule">
+      <div className={`${FRAME} flex items-baseline justify-between gap-4 pb-3 pt-5`}>
+        <span className="truncate font-display text-[1.75rem] font-black lg:text-[2rem] uppercase leading-[1.15]">{title}</span>
+        {right && <span className="shrink-0 text-sm font-semibold text-chalk-soft">{right}</span>}
       </div>
     </header>
   );
@@ -54,17 +61,17 @@ export function Masthead({ title, right }: { title: string; right?: React.ReactN
 
 export function BackLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
-    <Link href={href} className="inline-flex min-h-10 items-center gap-1 text-sm font-semibold text-ink-soft hover:text-ink">
+    <Link href={href} className="inline-flex min-h-10 items-center gap-1 text-sm font-semibold text-chalk-soft hover:text-chalk">
       <ChevronLeft className="size-4" aria-hidden />
       {children}
     </Link>
   );
 }
 
-/** Newspaper headline: condensed heavy caps. */
+/** Page headline: tall heavy caps. */
 export function Headline({ children, as: Tag = "h1" }: { children: React.ReactNode; as?: "h1" | "h2" }) {
   return (
-    <Tag className="text-balance font-display text-[2.5rem] font-extrabold uppercase leading-[0.95] tracking-tight">
+    <Tag className="text-balance font-display text-[2.75rem] font-black uppercase leading-[0.92]">
       {children}
     </Tag>
   );
@@ -72,37 +79,37 @@ export function Headline({ children, as: Tag = "h1" }: { children: React.ReactNo
 
 /** The line under a headline: when, where, how many. */
 export function Dateline({ children }: { children: React.ReactNode }) {
-  return <p className="mt-2 text-base font-medium text-ink-soft">{children}</p>;
+  return <p className="mt-2 text-base font-medium text-chalk-soft">{children}</p>;
 }
 
-/** Section heading: condensed caps on an ink rule. */
+/** Section heading: caps on a chalk line. */
 export function SectionTitle({ children, action }: { children: React.ReactNode; action?: React.ReactNode }) {
   return (
-    <div className="mb-3 mt-10 flex items-end justify-between gap-4 border-t-2 border-ink pt-2">
-      <h2 className="font-display text-xl font-extrabold uppercase tracking-wide">{children}</h2>
+    <div className="mb-3 mt-10 flex items-end justify-between gap-4 border-t border-line pt-2">
+      <h2 className="font-display text-xl font-black uppercase tracking-wider">{children}</h2>
       {action}
     </div>
   );
 }
 
-/** A white boxed panel ruled in ink. */
+/** A dark boxed panel on the turf. */
 export function Panel({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return <div className={`border-2 border-ink bg-sheet ${className}`}>{children}</div>;
+  return <div className={`rounded-md border-2 border-line bg-panel ${className}`}>{children}</div>;
 }
 
 /** Empty states teach what happens next. */
 export function Empty({ title, children }: { title: string; children?: React.ReactNode }) {
   return (
-    <div className="border-2 border-dashed border-ink-soft px-5 py-6">
-      <p className="font-display text-xl font-extrabold uppercase">{title}</p>
-      {children && <div className="mt-1 text-ink-soft">{children}</div>}
+    <div className="rounded-md border-2 border-dashed border-chalk-soft px-5 py-6">
+      <p className="font-display text-xl font-black uppercase">{title}</p>
+      {children && <div className="mt-1 text-chalk-soft">{children}</div>}
     </div>
   );
 }
 
 export function ErrorText({ children }: { children: React.ReactNode }) {
   return (
-    <p role="alert" className="text-sm font-semibold text-red">
+    <p role="alert" className="text-sm font-semibold text-foul">
       {children}
     </p>
   );
@@ -110,10 +117,11 @@ export function ErrorText({ children }: { children: React.ReactNode }) {
 
 // ---------- Marks ----------
 
-/** A mark as printed next to a name: heavy condensed numerals. */
-export function Mark({ value, size = "md" }: { value: number | string; size?: "sm" | "md" | "lg" }) {
+/** A mark next to a name: heavy tall numerals. `led` lights it like the scoreboard (big numbers only). */
+export function Mark({ value, size = "md", led = false }: { value: number | string; size?: "sm" | "md" | "lg"; led?: boolean }) {
   const cls = { sm: "text-xl", md: "text-3xl", lg: "text-6xl" }[size];
-  return <span className={`tabular font-display font-extrabold leading-none ${cls}`}>{value}</span>;
+  const face = led ? "led font-black" : "font-display font-black";
+  return <span className={`tabular leading-none ${face} ${cls}`}>{value}</span>;
 }
 
 const FORM_ICONS: Record<number, LucideIcon> = {
@@ -130,22 +138,22 @@ export function FormIcon({ form, className = "size-5" }: { form: number; classNa
   return <Icon className={className} strokeWidth={2.75} aria-label={`Form ${form} of 5`} />;
 }
 
-/** Win chance as one ruled bar split at the exact percentage. */
+/** Win chance as one bar split at the exact percentage: bib yellow for A, bib orange for B. */
 export function WinBar({ probA, labelA = "A", labelB = "B" }: { probA: number; labelA?: string; labelB?: string }) {
   const a = Math.round(probA * 100);
   return (
     <div>
       <div className="flex items-baseline justify-between">
-        <span className="font-semibold">
-          {labelA} <Mark value={`${a}%`} size="sm" />
+        <span className="font-display text-lg font-black uppercase tracking-wide text-bib">
+          {labelA} <Mark value={`${a}%`} size="md" led />
         </span>
-        <span className="font-semibold">
-          <Mark value={`${100 - a}%`} size="sm" /> {labelB}
+        <span className="font-display text-lg font-black uppercase tracking-wide text-bib-orange">
+          <Mark value={`${100 - a}%`} size="md" led /> {labelB}
         </span>
       </div>
-      <div className="mt-1 flex h-3 border-2 border-ink" role="img" aria-label={`Chance of winning: ${labelA} ${a}%, ${labelB} ${100 - a}%`}>
-        <div className="bg-ink" style={{ width: `${probA * 100}%` }} />
-        <div className="flex-1 bg-sheet" />
+      <div className="mt-2 flex h-3 overflow-hidden rounded-full bg-night" role="img" aria-label={`Chance of winning: ${labelA} ${a}%, ${labelB} ${100 - a}%`}>
+        <div className="bg-bib" style={{ width: `${probA * 100}%` }} />
+        <div className="flex-1 bg-bib-orange" />
       </div>
     </div>
   );

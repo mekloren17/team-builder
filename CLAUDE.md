@@ -251,7 +251,7 @@ Profilo e rating stanno in `players` (un record per persona per gruppo), così g
 
 **Carta:** overall, posizione principale, nome, PAC/SHO/PAS/DRI/DEF/PHY, piede, icona forma, badge "provisional". Colore per fascia: bronzo <65, argento 65–74, oro ≥75. Grafica originale (stile da definire più avanti).
 
-**Aspetto dell'app (16/10/2026):** stile "Le pagelle" (carta rosa da quotidiano sportivo, titoli condensati, un solo rosso per l'azione principale). Regole e token in `DESIGN.md` e `.impeccable/design.json`; profilo prodotto in `PRODUCT.md`. Pezzi condivisi in `src/components/ui.tsx`: usarli invece di classi nuove. Le carte dei giocatori restano fuori da questo sistema.
+**Aspetto dell'app (05/11/2026):** stile "Floodlights" (il centro sportivo alle 21: erba sintetica scura, linee bianche, giallo pettorina per l'azione principale e la squadra A, arancione per la squadra B, numeri accesi come un tabellone). Sostituisce "Le pagelle" (16/10/2026); analisi e alternative in `docs/design-directions.html`. Su PC la pagina si allarga (da 1024 px) e la home va su due colonne. Regole e token in `DESIGN.md` (`.impeccable/design.json` è ancora quello vecchio); profilo prodotto in `PRODUCT.md`. Pezzi condivisi in `src/components/ui.tsx`: usarli invece di classi nuove. Le carte dei giocatori restano com'erano.
 
 ---
 

@@ -38,7 +38,7 @@ async function Account() {
         </Link>
 
         <SectionTitle>How it works</SectionTitle>
-        <ol className="border-2 border-ink bg-sheet">
+        <ol className="overflow-hidden rounded-md border-2 border-line bg-panel">
           {[
             ["Say you're in", "Tap I'm in for the next match and tell us how the legs feel."],
             ["Rate yourself honestly", "Two minutes of questions give you a card and a starting mark."],
@@ -48,12 +48,12 @@ async function Account() {
               <Mark value={i + 1} />
               <span>
                 <span className="block font-semibold">{title}</span>
-                <span className="block text-sm text-ink-soft">{text}</span>
+                <span className="block text-sm text-chalk-soft">{text}</span>
               </span>
             </li>
           ))}
         </ol>
-        <p className="mt-4 text-sm text-ink-soft">Got an invite link? Open it and you&apos;re in the group.</p>
+        <p className="mt-4 text-sm text-chalk-soft">Got an invite link? Open it and you&apos;re in the group.</p>
       </div>
     );
   }
@@ -75,7 +75,7 @@ async function Account() {
 
       <SectionTitle>Your groups</SectionTitle>
       {memberships && memberships.length > 0 ? (
-        <ul className="border-2 border-ink bg-sheet">
+        <ul className="overflow-hidden rounded-md border-2 border-line bg-panel">
           {memberships.map((m) => {
             const g = m.groups as unknown as { id: string; name: string; default_format: number };
             const ovr = displayOverall(m);
@@ -83,19 +83,19 @@ async function Account() {
               <li key={g.id} className="border-b border-rule last:border-b-0">
                 <Link
                   href={`/groups/${g.id}`}
-                  className="grid min-h-16 grid-cols-[1fr_auto_auto] items-center gap-3 px-4 py-2 transition-colors duration-150 hover:bg-paper"
+                  className="grid min-h-16 grid-cols-[1fr_auto_auto] items-center gap-3 px-4 py-2 transition-colors duration-150 hover:bg-raised"
                 >
                   <span>
                     <span className="block font-semibold">{g.name}</span>
-                    <span className="block text-sm text-ink-soft">
+                    <span className="block text-sm text-chalk-soft">
                       {g.default_format}-a-side{m.role !== "player" ? ` · ${m.role}` : ""}
                     </span>
                   </span>
                   <span className="text-right">
                     <Mark value={ovr ?? "–"} />
-                    <span className="block text-xs text-ink-soft">your mark</span>
+                    <span className="block text-xs text-chalk-soft">your mark</span>
                   </span>
-                  <ChevronRight className="size-5 text-ink-soft" aria-hidden />
+                  <ChevronRight className="size-5 text-chalk-soft" aria-hidden />
                 </Link>
               </li>
             );
@@ -108,7 +108,7 @@ async function Account() {
         Create a group
       </Link>
 
-      <div className="mt-12 flex items-center justify-between border-t border-rule pt-4 text-sm text-ink-soft">
+      <div className="mt-12 flex items-center justify-between border-t border-rule pt-4 text-sm text-chalk-soft">
         <span>Signed in as {profile?.name ?? user.email}</span>
         <form action={signOut}>
           <button type="submit" className={button.quiet}>

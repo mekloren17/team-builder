@@ -61,16 +61,16 @@ async function Match({ params }: Props) {
 
       <SectionTitle>
         Who&apos;s in{" "}
-        <span className="tabular font-semibold text-ink-soft">
+        <span className="tabular font-semibold text-chalk-soft">
           {signed.length}/{target}
         </span>
       </SectionTitle>
       {signed.length === 0 ? (
         <Empty title="Nobody yet">Be the first: the others always follow.</Empty>
       ) : (
-        <table className="w-full border-2 border-ink bg-sheet">
+        <div className="overflow-hidden rounded-md border-2 border-line bg-panel"><table className="w-full">
           <thead>
-            <tr className="border-b-2 border-ink text-left font-display text-sm font-bold uppercase tracking-wide">
+            <tr className="border-b-2 border-line text-left font-display text-sm font-bold uppercase tracking-wide">
               <th className="py-2 pl-4">Player</th>
               <th className="py-2 text-center">Form</th>
               <th className="py-2 pr-4 text-right">Mark</th>
@@ -81,12 +81,12 @@ async function Match({ params }: Props) {
             {signed.map((s) => {
               const p = byId.get(s.player_id)!;
               return (
-                <tr key={s.player_id} className={`border-b border-rule last:border-b-0 ${p.id === me.id ? "bg-paper-deep" : ""}`}>
+                <tr key={s.player_id} className={`border-b border-rule last:border-b-0 ${p.id === me.id ? "bg-raised" : ""}`}>
                   <td className="py-2.5 pl-4">
                     <span className="font-semibold">{p.display_name}</span>
-                    {!p.user_id && <span className="ml-2 text-xs font-semibold uppercase text-ink-soft">Guest</span>}
+                    {!p.user_id && <span className="ml-2 text-xs font-semibold uppercase text-chalk-soft">Guest</span>}
                     {!hasProfile(p) && p.user_id && (
-                      <span className="block text-xs font-semibold text-red">No card yet: counts as {UNKNOWN_LEVEL}</span>
+                      <span className="block text-xs font-semibold text-foul">No card yet: counts as {UNKNOWN_LEVEL}</span>
                     )}
                   </td>
                   <td className="py-2.5">
@@ -108,7 +108,7 @@ async function Match({ params }: Props) {
               );
             })}
           </tbody>
-        </table>
+        </table></div>
       )}
 
       {canManage && open && (
@@ -122,17 +122,17 @@ async function Match({ params }: Props) {
             >
               Make the teams
             </Link>
-            {signed.length < 4 && <p className="-mt-4 text-sm text-ink-soft">You need at least 4 players to make teams.</p>}
+            {signed.length < 4 && <p className="-mt-4 text-sm text-chalk-soft">You need at least 4 players to make teams.</p>}
 
             {notSigned.length > 0 && (
               <Panel>
-                <h3 className="border-b-2 border-ink px-4 py-2 font-display text-lg font-extrabold uppercase">Add players</h3>
+                <h3 className="border-b-2 border-line px-4 py-2 font-display text-lg font-extrabold uppercase">Add players</h3>
                 <ul>
                   {notSigned.map((p) => (
                     <li key={p.id} className="flex min-h-14 items-center justify-between border-b border-rule px-4 last:border-b-0">
                       <span>
                         <span className="font-semibold">{p.display_name}</span>
-                        {!p.user_id && <span className="ml-2 text-xs font-semibold uppercase text-ink-soft">Guest</span>}
+                        {!p.user_id && <span className="ml-2 text-xs font-semibold uppercase text-chalk-soft">Guest</span>}
                       </span>
                       <AttendanceToggle groupId={id} matchId={mid} playerId={p.id} attending label="Add" />
                     </li>
@@ -144,7 +144,7 @@ async function Match({ params }: Props) {
             {signed.length >= 2 && (
               <Panel className="p-4">
                 <h3 className="font-display text-lg font-extrabold uppercase">Together or apart</h3>
-                <p className="mb-3 text-sm text-ink-soft">For the brothers who always argue, or the two who carpool.</p>
+                <p className="mb-3 text-sm text-chalk-soft">For the brothers who always argue, or the two who carpool.</p>
                 <Constraints
                   groupId={id}
                   matchId={mid}

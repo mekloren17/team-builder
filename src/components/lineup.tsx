@@ -37,11 +37,11 @@ export function Lineup({
 }) {
   return (
     <div className="space-y-3">
-      <div className="border-2 border-ink bg-sheet p-4">
+      <div className="rounded-md border-2 border-line bg-panel p-4">
         <WinBar probA={winProbA} labelA="Team A" labelB="Team B" />
       </div>
-      <TeamHeader name="Team A" strength={strengthA} count={teamA.length} />
-      <div className="relative overflow-hidden border-2 border-ink bg-[#2f7d4f] px-2 py-4 text-white">
+      <TeamHeader name="Team A" strength={strengthA} count={teamA.length} team="A" />
+      <div className="relative overflow-hidden rounded-md border-2 border-line bg-[#163a24] bg-[repeating-linear-gradient(180deg,#1a4029_0_48px,#143520_48px_96px)] px-2 py-4 text-chalk">
         {/* pitch markings */}
         <div className="pointer-events-none absolute inset-3 border-2 border-white/30" />
         <div className="pointer-events-none absolute inset-x-3 top-1/2 border-t-2 border-white/30" />
@@ -49,22 +49,24 @@ export function Lineup({
 
         {/* two halves of equal height (1fr each), so the halfway line always falls between the teams */}
         <div className="relative grid grid-rows-2 gap-4">
-          <Half players={teamA} lines={LINES} />
-          <Half players={teamB} lines={[...LINES].reverse()} />
+          <Half players={teamA} lines={LINES} team="A" />
+          <Half players={teamB} lines={[...LINES].reverse()} team="B" />
         </div>
       </div>
-      <TeamHeader name="Team B" strength={strengthB} count={teamB.length} />
+      <TeamHeader name="Team B" strength={strengthB} count={teamB.length} team="B" />
     </div>
   );
 }
 
-function TeamHeader({ name, strength, count }: { name: string; strength: number; count: number }) {
+const BIB = { A: { text: "text-bib", tag: "bg-bib" }, B: { text: "text-bib-orange", tag: "bg-bib-orange" } } as const;
+
+function TeamHeader({ name, strength, count, team }: { name: string; strength: number; count: number; team: "A" | "B" }) {
   return (
     <div className="flex items-baseline justify-between">
-      <span className="font-display text-xl font-extrabold uppercase">
-        {name} <span className="font-sans text-sm font-semibold normal-case text-ink-soft">· {count} players</span>
+      <span className={`font-display text-xl font-black uppercase ${BIB[team].text}`}>
+        {name} <span className="font-sans text-sm font-semibold normal-case text-chalk-soft">· {count} players</span>
       </span>
-      <span className="text-sm font-semibold text-ink-soft">
+      <span className="text-sm font-semibold text-chalk-soft">
         Strength <Mark value={strength.toFixed(1)} size="sm" />
       </span>
     </div>
@@ -72,28 +74,29 @@ function TeamHeader({ name, strength, count }: { name: string; strength: number;
 }
 
 /** One team's half: its lines from goal to centre (or centre to goal), empty lines skipped. */
-function Half({ players, lines }: { players: LineupPlayer[]; lines: Pos[] }) {
+function Half({ players, lines, team }: { players: LineupPlayer[]; lines: Pos[]; team: "A" | "B" }) {
   return (
     <div className="flex min-h-40 flex-col justify-evenly gap-2">
       {lines.map((pos) => {
         const onLine = players.filter((p) => (p.position ?? "MID") === pos);
-        return onLine.length > 0 ? <Line key={pos} players={onLine} /> : null;
+        return onLine.length > 0 ? <Line key={pos} players={onLine} team={team} /> : null;
       })}
     </div>
   );
 }
 
-function Line({ players }: { players: LineupPlayer[] }) {
+function Line({ players, team }: { players: LineupPlayer[]; team: "A" | "B" }) {
   return (
     <div className="flex items-center justify-center gap-2">
       {players.map((p) => (
-        <Token key={p.id} player={p} />
+        <Token key={p.id} player={p} team={team} />
       ))}
     </div>
   );
 }
 
-function Token({ player }: { player: LineupPlayer }) {
+/** A player on the pitch: photo ringed in their card tier, overall on a tag in their team's bib colour. */
+function Token({ player, team }: { player: LineupPlayer; team: "A" | "B" }) {
   const initials = player.name
     .split(/\s+/)
     .filter(Boolean)
@@ -110,7 +113,7 @@ function Token({ player }: { player: LineupPlayer }) {
           <span className="flex size-full items-center justify-center text-sm font-bold">{initials}</span>
         )}
       </div>
-      <div className="mt-1 flex items-center gap-0.5 bg-ink px-1.5 font-display text-sm font-extrabold leading-5 tabular-nums">
+      <div className={`mt-1 flex items-center gap-0.5 rounded-sm ${BIB[team].tag} px-1.5 font-display text-sm font-black leading-5 tabular-nums text-night`}>
         {player.overall}
         <FormIcon form={player.form} className="size-3.5" />
       </div>

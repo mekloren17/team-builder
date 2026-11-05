@@ -55,14 +55,14 @@ export function LoginForm() {
 
       {EMAIL_LOGIN_ENABLED && (
         <>
-          <div className="flex items-center gap-3 text-sm text-ink-soft">
+          <div className="flex items-center gap-3 text-sm text-chalk-soft">
             <span className="h-px flex-1 bg-rule" />
             or
             <span className="h-px flex-1 bg-rule" />
           </div>
 
           {status === "sent" ? (
-            <p className="border-2 border-ink bg-sheet p-4">
+            <p className="rounded-md border-2 border-line bg-panel p-4">
               Check your inbox: we sent a sign-in link to <strong>{email}</strong>.
             </p>
           ) : (

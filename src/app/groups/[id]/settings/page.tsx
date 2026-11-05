@@ -38,11 +38,11 @@ async function Settings({ params }: Props) {
       <Dateline>Invite people, add the friends who don&apos;t use the app, choose who helps you run things.</Dateline>
 
       <SectionTitle>Invite link</SectionTitle>
-      <p className="mb-3 text-ink-soft">Drop it in the group chat: they sign in with Google and they&apos;re in.</p>
+      <p className="mb-3 text-chalk-soft">Drop it in the group chat: they sign in with Google and they&apos;re in.</p>
       <CopyInvite url={`${origin}/join/${group.invite_code}`} />
 
       <SectionTitle>Guests</SectionTitle>
-      <p className="mb-3 text-ink-soft">
+      <p className="mb-3 text-chalk-soft">
         Friends without an account. Guess their level: 60 is an average Sunday player, 75 a good club player.
       </p>
       {guests.length > 0 && (
@@ -73,7 +73,7 @@ async function Settings({ params }: Props) {
           </ul>
         </Panel>
       )}
-      <form action={addGuest.bind(null, id)} className="space-y-4 border-2 border-dashed border-ink p-4">
+      <form action={addGuest.bind(null, id)} className="space-y-4 rounded-md border-2 border-dashed border-line p-4">
         <div className="grid grid-cols-[1fr_6.5rem] gap-3">
           <label className="space-y-1">
             <span className="text-sm font-semibold">Name</span>
@@ -101,14 +101,14 @@ async function Settings({ params }: Props) {
       </form>
 
       <SectionTitle>Members</SectionTitle>
-      {isOwner && <p className="mb-3 text-ink-soft">Admins can create matches, make teams, add guests and invite people.</p>}
+      {isOwner && <p className="mb-3 text-chalk-soft">Admins can create matches, make teams, add guests and invite people.</p>}
       <Panel>
         <ul>
           {members.map((m) => (
             <li key={m.id} className="flex min-h-14 items-center justify-between gap-3 border-b border-rule px-4 last:border-b-0">
               <span>
                 <span className="font-semibold">{m.display_name}</span>
-                <span className="ml-2 text-xs font-bold uppercase text-ink-soft">{m.role}</span>
+                <span className="ml-2 text-xs font-bold uppercase text-chalk-soft">{m.role}</span>
               </span>
               {isOwner && m.role !== "owner" && (
                 <form action={setMemberRole.bind(null, id, m.id, m.role === "admin" ? "player" : "admin")}>

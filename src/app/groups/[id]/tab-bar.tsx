@@ -20,9 +20,9 @@ export function TabBar({ groupId, canManage }: { groupId: string; canManage: boo
   return (
     <nav
       aria-label="Group"
-      className="fixed inset-x-0 bottom-0 z-30 border-t-2 border-ink bg-ink pb-[env(safe-area-inset-bottom)] md:static md:border-b-2 md:border-t-0 md:bg-paper md:pb-0"
+      className="fixed inset-x-0 bottom-0 z-30 border-t border-rule bg-night pb-[env(safe-area-inset-bottom)] md:static md:border-b md:border-t-0 md:bg-transparent md:pb-0"
     >
-      <ul className="mx-auto flex max-w-2xl md:gap-1 md:px-2">
+      <ul className="mx-auto flex max-w-2xl md:gap-1 md:px-4 lg:max-w-6xl lg:px-6">
         {tabs.map(({ href, label, icon: Icon, active }) => (
           <li key={href} className="flex-1 md:flex-none">
             <Link
@@ -30,8 +30,8 @@ export function TabBar({ groupId, canManage }: { groupId: string; canManage: boo
               aria-current={active ? "page" : undefined}
               className={`flex min-h-16 flex-col items-center justify-center gap-0.5 border-t-4 font-display text-sm font-bold uppercase tracking-wide transition-colors duration-150 md:min-h-11 md:flex-row md:gap-2 md:border-b-4 md:border-t-0 md:px-4 md:text-base ${
                 active
-                  ? "border-red text-white md:text-ink"
-                  : "border-transparent text-paper/70 hover:text-white md:text-ink-soft md:hover:text-ink"
+                  ? "border-bib text-bib md:text-chalk"
+                  : "border-transparent text-chalk-soft hover:text-chalk"
               }`}
             >
               <Icon className="size-5" strokeWidth={2.25} aria-hidden />

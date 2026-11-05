@@ -20,7 +20,7 @@ export default function NewGroupPage() {
               {[5, 7].map((f) => (
                 <label
                   key={f}
-                  className="flex min-h-12 cursor-pointer items-center justify-center border-2 border-ink bg-sheet font-medium transition-colors duration-150 hover:bg-paper-deep has-checked:bg-ink has-checked:text-paper has-focus-visible:outline-3 has-focus-visible:outline-red"
+                  className="flex min-h-12 cursor-pointer items-center justify-center rounded-md border-2 border-line bg-panel font-medium transition-colors duration-150 hover:bg-raised has-checked:bg-chalk has-checked:text-turf has-focus-visible:outline-3 has-focus-visible:outline-bib"
                 >
                   <input type="radio" name="format" value={f} defaultChecked={f === 5} className="sr-only" />
                   {f}-a-side

@@ -137,11 +137,11 @@ export function PhotoEditor({
       {error && <ErrorText>{error}</ErrorText>}
 
       {crop && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/80 p-4" role="dialog" aria-modal="true" aria-label="Frame your face">
-          <div className="w-full max-w-sm space-y-4 border-2 border-ink bg-paper p-5">
-            <h2 className="font-display text-2xl font-extrabold uppercase">Frame your face</h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-night/80 p-4" role="dialog" aria-modal="true" aria-label="Frame your face">
+          <div className="w-full max-w-sm space-y-4 rounded-md border-2 border-line bg-panel p-5">
+            <h2 className="font-display text-2xl font-black uppercase">Frame your face</h2>
             <div
-              className="relative mx-auto touch-none select-none overflow-hidden border-2 border-ink bg-paper-deep"
+              className="relative mx-auto touch-none select-none overflow-hidden rounded-md border-2 border-line bg-raised"
               style={{ width: VIEW, height: VIEW }}
               onPointerDown={(e) => {
                 e.currentTarget.setPointerCapture(e.pointerId);
@@ -180,7 +180,7 @@ export function PhotoEditor({
                 className="w-full"
               />
             </label>
-            <p className="text-sm text-ink-soft">Drag the photo to centre your face.</p>
+            <p className="text-sm text-chalk-soft">Drag the photo to centre your face.</p>
             <div className="flex gap-3">
               <button
                 type="button"
