@@ -30,7 +30,7 @@ export const POSITION_OPTIONS: { value: Pos; label: string }[] = [
   { value: "GK", label: "Goalkeeper" },
   { value: "DEF", label: "Defender" },
   { value: "MID", label: "Midfielder" },
-  { value: "ATT", label: "Attacker" },
+  { value: "ATT", label: "Striker" },
 ];
 
 export const FOOT_OPTIONS: { value: Foot; label: string }[] = [

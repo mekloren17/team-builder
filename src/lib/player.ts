@@ -51,6 +51,9 @@ export function cardStats(p: Pick<PlayerRow, "main_position" | "attributes" | "g
   return isKeeper(p) ? { values: p.gk_attributes, labels: GK_ATTRIBUTE_SHORT } : { values: p.attributes, labels: ATTRIBUTE_SHORT };
 }
 
+/** How a position is written in the app (English abbreviations: a striker is ST). The stored value stays ATT. */
+export const POSITION_SHORT: Record<Pos, string> = { GK: "GK", DEF: "DEF", MID: "MID", ATT: "ST" };
+
 export type Tier = "bronze" | "silver" | "gold";
 
 export function tier(overall: number): Tier {

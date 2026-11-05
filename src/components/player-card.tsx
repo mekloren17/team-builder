@@ -1,5 +1,5 @@
 import { cardAttributes, type Pos } from "@/lib/engine/engine";
-import { ATTRIBUTE_SHORT, tier, type Foot, type Tier } from "@/lib/player";
+import { ATTRIBUTE_SHORT, POSITION_SHORT, tier, type Foot, type Tier } from "@/lib/player";
 
 export interface PlayerCardProps {
   name: string;
@@ -54,7 +54,7 @@ export function PlayerCard({
       <div className="relative flex items-start justify-between gap-2">
         <div className="flex flex-col items-start gap-1 leading-none">
           <div className={`font-black tabular-nums ${lg ? "text-5xl" : "text-3xl"}`}>{overall ?? "–"}</div>
-          <div className={`font-bold tracking-widest ${lg ? "text-sm" : "text-xs"}`}>{position ?? ""}</div>
+          <div className={`font-bold tracking-widest ${lg ? "text-sm" : "text-xs"}`}>{position ? POSITION_SHORT[position] : ""}</div>
           {provisional && overall !== null && <span className={`${BADGE} ${badgeSize}`}>Provisional</span>}
           {guest && <span className={`${BADGE} ${badgeSize}`}>Guest</span>}
         </div>

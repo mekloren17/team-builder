@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { isProvisional } from "@/lib/engine/engine";
 import { PlayerCard } from "@/components/player-card";
 import { Dateline, Headline, Mark, Page, SectionTitle } from "@/components/ui";
-import { cardStats, displayOverall, isGuest, mainPosition, type PlayerRow } from "@/lib/player";
+import { cardStats, displayOverall, isGuest, mainPosition, POSITION_SHORT, type PlayerRow } from "@/lib/player";
 import { loadGroup } from "../data";
 
 type Props = { params: Promise<{ id: string }> };
@@ -68,6 +68,11 @@ async function Players({ params }: Props) {
   );
 }
 
+function positionLabel(p: PlayerRow): string {
+  const pos = mainPosition(p.positions, p.main_position);
+  return pos ? POSITION_SHORT[pos] : "–";
+}
+
 function Row({ player: p, rank, isMe }: { player: PlayerRow; rank: number; isMe: boolean }) {
   const ovr = displayOverall(p);
   return (
@@ -80,7 +85,7 @@ function Row({ player: p, rank, isMe }: { player: PlayerRow; rank: number; isMe:
           {isGuest(p) ? "Guest" : isProvisional(p.matches_played) ? "Provisional" : `${p.matches_played} matches`}
         </span>
       </td>
-      <td className="py-2.5 pl-2 text-sm font-semibold">{mainPosition(p.positions, p.main_position) ?? "–"}</td>
+      <td className="py-2.5 pl-2 text-sm font-semibold">{positionLabel(p)}</td>
       <td className="py-2.5 pr-4 text-right">
         <Mark value={ovr ?? "–"} size="md" />
       </td>
