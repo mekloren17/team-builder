@@ -11,7 +11,7 @@ type Props = { params: Promise<{ id: string }> };
 
 export default function PlayersPage({ params }: Props) {
   return (
-    <Page>
+    <Page wide>
       <Suspense>
         <Players params={params} />
       </Suspense>
@@ -23,67 +23,60 @@ async function Players({ params }: Props) {
   const { id } = await params;
   const { players, me } = await loadGroup(id, `/groups/${id}/players`);
   const ranked = [...players].sort((a, b) => (displayOverall(b) ?? -1) - (displayOverall(a) ?? -1));
-  const scorers = await topScorers(id);
-  const byId = new Map(players.map((p) => [p.id, p]));
-  const scorerRows = scorers.filter((s) => byId.has(s.id));
+  const names = new Map(players.map((p) => [p.id, p.display_name]));
+  const totals = (await playerTotals(id)).filter((t) => names.has(t.id));
 
   return (
     <div>
-      <Headline>The ratings</Headline>
-      <Dateline>
-        {players.length} {players.length === 1 ? "player" : "players"}. Marks start from the questionnaire and follow the
-        results.
-      </Dateline>
+      <div className="lg:max-w-2xl">
+        <Headline>The ratings</Headline>
+        <Dateline>
+          {players.length} {players.length === 1 ? "player" : "players"}. Marks start from the questionnaire and follow
+          the results.
+        </Dateline>
+      </div>
 
-      <div className="mt-5 overflow-hidden rounded-md border-2 border-line bg-panel"><table className="w-full">
-        <thead>
-          <tr className="border-b-2 border-line text-left font-display text-sm font-bold uppercase tracking-wide">
-            <th className="w-10 py-2 pl-3 text-right">#</th>
-            <th className="py-2 pl-3">Player</th>
-            <th className="py-2 pl-2">Role</th>
-            <th className="py-2 pr-4 text-right">Mark</th>
-          </tr>
-        </thead>
-        <tbody>
-          {ranked.map((p, i) => (
-            <Row key={p.id} groupId={id} player={p} rank={i + 1} isMe={p.id === me.id} />
-          ))}
-        </tbody>
-      </table></div>
+      {/* on a PC the two leaderboards sit beside the ratings; on a phone they follow them */}
+      <div className="mt-5 lg:grid lg:grid-cols-[minmax(0,42rem)_minmax(0,1fr)] lg:items-start lg:gap-8">
+        <div className="overflow-hidden rounded-md border-2 border-line bg-panel">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b-2 border-line text-left font-display text-sm font-bold uppercase tracking-wide">
+                <th className="w-10 py-2 pl-3 text-right">#</th>
+                <th className="py-2 pl-3">Player</th>
+                <th className="py-2 pl-2">Role</th>
+                <th className="py-2 pr-4 text-right">Mark</th>
+              </tr>
+            </thead>
+            <tbody>
+              {ranked.map((p, i) => (
+                <Row key={p.id} groupId={id} player={p} rank={i + 1} isMe={p.id === me.id} />
+              ))}
+            </tbody>
+          </table>
+        </div>
 
-      {scorerRows.length > 0 && (
-        <>
-          <SectionTitle>Top scorers</SectionTitle>
-          <div className="overflow-hidden rounded-md border-2 border-line bg-panel">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b-2 border-line text-left font-display text-sm font-bold uppercase tracking-wide">
-                  <th className="w-10 py-2 pl-3 text-right">#</th>
-                  <th className="py-2 pl-3">Player</th>
-                  <th className="w-14 py-2 text-right" title="Matches">MP</th>
-                  <th className="w-14 py-2 text-right" title="Goals">G</th>
-                  <th className="w-14 py-2 pr-4 text-right" title="Assists">A</th>
-                </tr>
-              </thead>
-              <tbody>
-                {scorerRows.slice(0, 10).map((s, i) => (
-                  <tr key={s.id} className={`border-b border-rule last:border-b-0 ${s.id === me.id ? "bg-raised" : ""}`}>
-                    <td className="tabular py-2.5 pl-3 text-right text-sm font-semibold text-chalk-soft">{i + 1}</td>
-                    <td className="py-2.5 pl-3">
-                      <Link href={`/groups/${id}/players/${s.id}`} className="font-semibold underline-offset-4 hover:underline">
-                        {byId.get(s.id)!.display_name}
-                      </Link>
-                    </td>
-                    <td className="tabular py-2.5 text-right text-sm text-chalk-soft">{s.matches}</td>
-                    <td className="tabular py-2.5 text-right font-display text-xl font-black">{s.goals}</td>
-                    <td className="tabular py-2.5 pr-4 text-right font-display text-xl font-black">{s.assists}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </>
-      )}
+        <aside className="lg:space-y-6">
+          <Leaderboard
+            title="Top scorers"
+            column="Goals"
+            groupId={id}
+            meId={me.id}
+            names={names}
+            rows={totals.filter((t) => t.goals > 0).map((t) => ({ id: t.id, value: t.goals, matches: t.matches }))}
+            empty="No goals yet."
+          />
+          <Leaderboard
+            title="Top assists"
+            column="Assists"
+            groupId={id}
+            meId={me.id}
+            names={names}
+            rows={totals.filter((t) => t.assists > 0).map((t) => ({ id: t.id, value: t.assists, matches: t.matches }))}
+            empty="No assists yet."
+          />
+        </aside>
+      </div>
 
       <SectionTitle>The cards</SectionTitle>
       <div className="flex flex-wrap justify-center gap-3 sm:justify-start">
@@ -139,8 +132,8 @@ function Row({ groupId, player: p, rank, isMe }: { groupId: string; player: Play
   );
 }
 
-/** Goals and assists of each player over the group's confirmed results, best first (players with none left out). */
-async function topScorers(groupId: string) {
+/** Matches, goals and assists of each player over the group's confirmed results. */
+async function playerTotals(groupId: string) {
   const supabase = await createClient();
   const { data } = await supabase
     .from("match_players")
@@ -156,7 +149,66 @@ async function topScorers(groupId: string) {
     t.assists += r.assists;
     totals.set(r.player_id, t);
   }
-  return [...totals.values()]
-    .filter((t) => t.goals > 0 || t.assists > 0)
-    .sort((a, b) => b.goals - a.goals || b.assists - a.assists || a.matches - b.matches);
+  return [...totals.values()];
+}
+
+/** Top 10 by one number (goals or assists); on a tie, fewer matches first. */
+function Leaderboard({
+  title,
+  column,
+  groupId,
+  meId,
+  names,
+  rows,
+  empty,
+}: {
+  title: string;
+  column: string;
+  groupId: string;
+  meId: string;
+  names: Map<string, string>;
+  rows: { id: string; value: number; matches: number }[];
+  empty: string;
+}) {
+  const top = [...rows].sort((a, b) => b.value - a.value || a.matches - b.matches).slice(0, 10);
+  return (
+    <section>
+      <h2 className="mb-3 mt-8 font-display text-xl font-black uppercase lg:mt-0">{title}</h2>
+      {top.length === 0 ? (
+        <p className="rounded-md border-2 border-dashed border-line px-4 py-3 text-sm text-chalk-soft">{empty}</p>
+      ) : (
+        <div className="overflow-hidden rounded-md border-2 border-line bg-panel">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b-2 border-line text-left font-display text-sm font-bold uppercase tracking-wide">
+                <th className="w-10 py-2 pl-3 text-right">#</th>
+                <th className="py-2 pl-3">Player</th>
+                <th className="w-12 py-2 text-right" title="Matches played">
+                  MP
+                </th>
+                <th className="w-20 py-2 pr-4 text-right">{column}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {top.map((r, i) => (
+                <tr key={r.id} className={`border-b border-rule last:border-b-0 ${r.id === meId ? "bg-raised" : ""}`}>
+                  <td className="tabular py-2.5 pl-3 text-right text-sm font-semibold text-chalk-soft">{i + 1}</td>
+                  <td className="py-2.5 pl-3">
+                    <Link
+                      href={`/groups/${groupId}/players/${r.id}`}
+                      className="font-semibold underline-offset-4 hover:underline"
+                    >
+                      {names.get(r.id)}
+                    </Link>
+                  </td>
+                  <td className="tabular py-2.5 text-right text-sm text-chalk-soft">{r.matches}</td>
+                  <td className="tabular py-2.5 pr-4 text-right font-display text-xl font-black">{r.value}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </section>
+  );
 }
