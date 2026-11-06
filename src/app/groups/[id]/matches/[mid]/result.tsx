@@ -276,7 +276,11 @@ function ScoreForm({
                   <span className={`font-display font-black uppercase ${t === "A" ? "text-bib" : "text-bib-orange"}`}>
                     Team {t}
                   </span>
-                  <span className="text-xs font-semibold uppercase text-chalk-soft">Goals · Assists</span>
+                  {/* each label as wide as its counter below (MINI_WIDTH), same gap as in the rows */}
+                  <span className="flex shrink-0 gap-2 text-center text-xs font-semibold uppercase text-chalk-soft">
+                    <span className={MINI_WIDTH}>Goals</span>
+                    <span className={MINI_WIDTH}>Assists</span>
+                  </span>
                 </div>
                 <ul>
                   {players
@@ -380,6 +384,9 @@ function Stepper({
   );
 }
 
+/** Width of a Mini counter: two 2rem buttons, a 1.25rem number and two 0.125rem gaps. */
+const MINI_WIDTH = "w-[5.5rem]";
+
 /** Small counter for one player's goals or assists. */
 function Mini({
   label,
@@ -395,7 +402,7 @@ function Mini({
   const btn =
     "grid size-8 place-items-center rounded-md border-2 border-line text-chalk transition-colors hover:bg-raised disabled:opacity-35";
   return (
-    <span className="flex items-center gap-0.5">
+    <span className={`flex items-center justify-between gap-0.5 ${MINI_WIDTH}`}>
       <button
         type="button"
         onClick={() => onChange(value - 1)}
