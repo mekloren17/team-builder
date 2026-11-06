@@ -10,7 +10,16 @@
 
 **Live app:** [team-builder-phi-six.vercel.app](https://team-builder-phi-six.vercel.app). Groups are private, so you need an invite link to see one.
 
-<!-- SCREENSHOTS -->
+<table>
+  <tr>
+    <td align="center"><img src="docs/screenshots/match.jpg" width="200" alt="Match sign-up with form of the day"><br><sub>Sign up with your form of the day</sub></td>
+    <td align="center"><img src="docs/screenshots/teams.jpg" width="200" alt="Team proposals with win probability"><br><sub>Balanced proposals and win chance</sub></td>
+    <td align="center"><img src="docs/screenshots/pitch.jpg" width="200" alt="Line-up on the pitch"><br><sub>Line-up on the pitch</sub></td>
+    <td align="center"><img src="docs/screenshots/cards.jpg" width="200" alt="Player cards"><br><sub>Player cards</sub></td>
+  </tr>
+</table>
+
+<sub>Screenshots from the live app; player names and photos replaced to protect the group's privacy.</sub>
 
 ## The problem
 
