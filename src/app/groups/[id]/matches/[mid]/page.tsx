@@ -16,7 +16,7 @@ type Props = { params: Promise<{ id: string; mid: string }> };
 
 export default function MatchPage({ params }: Props) {
   return (
-    <Page>
+    <Page wide>
       <Suspense>
         <Match params={params} />
       </Suspense>
@@ -48,8 +48,12 @@ async function Match({ params }: Props) {
       ? "Who's playing?"
       : `${inWords(signed.length)} in`;
 
+  const marksReady = match.result_status === "confirmed" && signed.some((s) => s.mu_after !== null);
+
+  // Wide page so that, on a PC, the marks can sit beside the pitch; everything else keeps the 672px column.
   return (
     <div>
+      <div className="lg:max-w-2xl">
       <BackLink href={`/groups/${id}/matches`}>Matches</BackLink>
       <Headline>{headline}</Headline>
       <Dateline>
@@ -62,11 +66,21 @@ async function Match({ params }: Props) {
         </div>
       )}
 
+      </div>
+
       {match.status !== "open" && (
-        <div className="mt-6">
+        <div className="mt-6 lg:grid lg:grid-cols-[minmax(0,42rem)_minmax(0,1fr)] lg:items-start lg:gap-8">
           <Teams players={byId} signups={signed} winProbA={match.win_prob_a} />
+          {marksReady && (
+            <aside className="hidden lg:block">
+              <h2 className="mb-3 font-display text-xl font-black uppercase">Marks after this match</h2>
+              <MarkChanges players={byId} signups={signed} meId={me.id} stacked />
+            </aside>
+          )}
         </div>
       )}
+
+      <div className="lg:max-w-2xl">
 
       {!open && (started || match.result_status) && (
         <>
@@ -96,11 +110,11 @@ async function Match({ params }: Props) {
         </>
       )}
 
-      {match.result_status === "confirmed" && signed.some((s) => s.mu_after !== null) && (
-        <>
+      {marksReady && (
+        <div className="lg:hidden">
           <SectionTitle>Marks after this match</SectionTitle>
           <MarkChanges players={byId} signups={signed} meId={me.id} />
-        </>
+        </div>
       )}
 
       <SectionTitle>
@@ -224,6 +238,7 @@ async function Match({ params }: Props) {
           </button>
         </form>
       )}
+      </div>
     </div>
   );
 }
@@ -272,9 +287,20 @@ function Teams({
 }
 
 /** Each player's mark before and after this match, by team, biggest change first. */
-function MarkChanges({ players, signups, meId }: { players: Map<string, PlayerRow>; signups: MatchPlayerRow[]; meId: string }) {
+function MarkChanges({
+  players,
+  signups,
+  meId,
+  stacked = false,
+}: {
+  players: Map<string, PlayerRow>;
+  signups: MatchPlayerRow[];
+  meId: string;
+  /** One table under the other (beside the pitch), instead of side by side. */
+  stacked?: boolean;
+}) {
   return (
-    <div className="grid gap-3 sm:grid-cols-2">
+    <div className={`grid gap-3 ${stacked ? "" : "sm:grid-cols-2"}`}>
       {(["A", "B"] as const).map((t) => {
         const rows = signups
           .filter((s) => s.team === t && s.mu_before !== null && s.mu_after !== null)
