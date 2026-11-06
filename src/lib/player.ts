@@ -111,3 +111,10 @@ export function toBalancePlayer(p: PlayerRow, form: number): BalancePlayer {
     gkRotation: p.gk_rotation,
   };
 }
+
+/** Short enough for a token or a tight row: "Emanuele F." for members; guests keep their full name, they have no other way to be told apart. */
+export function shortName(name: string, guest: boolean): string {
+  if (guest) return name;
+  const [first, ...rest] = name.trim().split(/\s+/);
+  return rest.length > 0 ? `${first} ${rest[rest.length - 1][0]}.` : first;
+}
