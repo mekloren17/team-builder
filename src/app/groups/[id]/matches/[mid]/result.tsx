@@ -283,10 +283,14 @@ function ScoreForm({
             const team = players.filter((p) => p.team === t);
             return (
               <div key={t} className="rounded-md border-2 border-line">
-                <div className="border-b-2 border-line px-3 py-2">
-                  <span className={`font-display font-black uppercase ${t === "A" ? "text-bib" : "text-bib-orange"}`}>
-                    Team {t}
+                <div className="grid grid-cols-[1.25rem_1fr_1fr] items-baseline gap-2 border-b-2 border-line px-3 py-2">
+                  <span
+                    className={`col-span-1 font-display font-black uppercase ${t === "A" ? "text-bib" : "text-bib-orange"}`}
+                  >
+                    {t}
                   </span>
+                  <span className="text-xs font-semibold uppercase text-chalk-soft">Scorer</span>
+                  <span className="text-xs font-semibold uppercase text-chalk-soft">Assist</span>
                 </div>
                 {slots[t].length === 0 ? (
                   <p className="px-3 py-3 text-sm text-chalk-soft">No goals.</p>
@@ -295,14 +299,16 @@ function ScoreForm({
                     {slots[t].map((s, i) => (
                       <li
                         key={i}
-                        className="grid grid-cols-[2.5rem_1fr_1fr] items-center gap-2 border-b border-rule px-3 py-2 last:border-b-0"
+                        className="grid grid-cols-[1.25rem_1fr_1fr] items-center gap-2 border-b border-rule px-3 py-2 last:border-b-0"
                       >
-                        <span className="text-xs font-semibold uppercase text-chalk-soft">Goal {i + 1}</span>
+                        <span className="tabular text-sm font-semibold text-chalk-soft" aria-hidden>
+                          {i + 1}.
+                        </span>
                         <select
                           aria-label={`Team ${t}, goal ${i + 1}: scorer`}
                           value={s.scorer ?? ""}
                           onChange={(e) => setSlot(t, i, { ...s, scorer: e.target.value || null })}
-                          className={`${input} min-h-11 px-2 text-sm`}
+                          className={`${input} min-h-11 min-w-0 px-2 text-sm`}
                         >
                           <option value="">Scorer?</option>
                           {team.map((p) => (
@@ -316,7 +322,7 @@ function ScoreForm({
                           value={s.assist ?? ""}
                           disabled={!s.scorer}
                           onChange={(e) => setSlot(t, i, { ...s, assist: e.target.value || null })}
-                          className={`${input} min-h-11 px-2 text-sm disabled:opacity-45`}
+                          className={`${input} min-h-11 min-w-0 px-2 text-sm disabled:opacity-45`}
                         >
                           <option value="">No assist</option>
                           {team
