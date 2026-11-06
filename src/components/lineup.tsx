@@ -28,18 +28,23 @@ export function Lineup({
   strengthA,
   strengthB,
   winProbA,
+  showOdds = true,
 }: {
   teamA: LineupPlayer[];
   teamB: LineupPlayer[];
   strengthA: number;
   strengthB: number;
   winProbA: number;
+  /** Off when the page shows the odds elsewhere (with the result). */
+  showOdds?: boolean;
 }) {
   return (
     <div className="space-y-3">
-      <div className="rounded-md border-2 border-line bg-panel p-4">
-        <WinBar probA={winProbA} labelA="Team A" labelB="Team B" />
-      </div>
+      {showOdds && (
+        <div className="rounded-md border-2 border-line bg-panel p-4">
+          <WinBar probA={winProbA} labelA="Team A" labelB="Team B" />
+        </div>
+      )}
       <TeamHeader name="Team A" strength={strengthA} count={teamA.length} team="A" />
       <div className="relative overflow-hidden rounded-md border-2 border-line bg-[#163a24] bg-[repeating-linear-gradient(180deg,#1a4029_0_48px,#143520_48px_96px)] px-2 py-4 text-chalk">
         {/* pitch markings */}

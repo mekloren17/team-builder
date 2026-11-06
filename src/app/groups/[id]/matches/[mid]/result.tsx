@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { ChevronDown, Minus, Plus } from "lucide-react";
-import { button, ErrorText, input, Mark, Panel } from "@/components/ui";
+import { button, ErrorText, input, Mark, Panel, WinBar } from "@/components/ui";
 import { RESULT_LABEL, type GoalEntry, type ResultStatus } from "@/lib/match";
 import { confirmResult, disputeResult, submitResult } from "../actions";
 
@@ -33,6 +33,7 @@ export function Result({
   matchId,
   result,
   players,
+  winProbA,
   canEnter,
   canAnswer,
   canManage,
@@ -41,6 +42,8 @@ export function Result({
   matchId: string;
   result: ResultState;
   players: ResultPlayer[];
+  /** Chance of team A winning, as computed when the teams were made (shown under the score). */
+  winProbA: number | null;
   canEnter: boolean;
   canAnswer: boolean;
   canManage: boolean;
@@ -94,6 +97,12 @@ export function Result({
           <span className="font-display text-lg font-black uppercase text-bib-orange">Team B</span>
         </div>
         <Scorers goals={result.goals} players={players} />
+        {winProbA !== null && (
+          <div className="mt-3 border-t border-rule pt-3">
+            <p className="mb-2 text-xs font-semibold uppercase text-chalk-soft">Chance of winning before kick-off</p>
+            <WinBar probA={winProbA} labelA="Team A" labelB="Team B" />
+          </div>
+        )}
         <p className="mt-3 text-center text-sm font-semibold">
           <span
             className={
