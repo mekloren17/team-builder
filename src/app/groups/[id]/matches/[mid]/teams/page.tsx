@@ -56,7 +56,7 @@ async function Teams({ params }: Props) {
       apart: constraints.filter((c) => c.type === "apart").map((c) => [c.player_a, c.player_b]),
     });
     proposals.forEach((p, i) => options.push({ label: `Proposal ${i + 1}`, teamA: p.teamA, teamB: p.teamB }));
-    if (proposals.length === 0) error = "No split respects all the constraints: remove one and try again.";
+    if (proposals.length === 0) error = "No split respects all the constraints: remove one, or pick the teams yourself.";
   } catch (e) {
     error = e instanceof Error ? e.message : "Could not generate the teams.";
   }
@@ -66,10 +66,10 @@ async function Teams({ params }: Props) {
       <header>
         <BackLink href={`/groups/${id}/matches/${mid}`}>{formatMatchDate(match.starts_at)}</BackLink>
         <Headline>Make the teams</Headline>
-        <Dateline>Pick a proposal, swap players if you like, then save. The win chance follows every move.</Dateline>
+        <Dateline>Pick a proposal and swap players if you like, or pick the teams yourself. The win chance follows every move.</Dateline>
       </header>
       {error && <ErrorText>{error}</ErrorText>}
-      {options.length > 0 && (
+      {editorPlayers.length >= 2 && (
         <TeamEditor
           groupId={id}
           matchId={mid}
