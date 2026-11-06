@@ -6,6 +6,8 @@ import { assignPositions, effectiveMu, splitStrengths, winProbability, type Pos 
 import { requireUser } from "@/lib/auth";
 import { PLAYER_COLUMNS, toBalancePlayer, type PlayerRow } from "@/lib/player";
 import type { MatchPlayerRow } from "@/lib/match";
+import { groupRatings, type ConfirmedMatch, type RatingPlayer } from "@/lib/ratings";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 const matchPath = (groupId: string, matchId: string) => `/groups/${groupId}/matches/${matchId}`;
 
@@ -100,4 +102,65 @@ export async function reopenMatch(groupId: string, matchId: string) {
   const { error } = await supabase.rpc("reopen_match", { mid: matchId });
   if (error) throw new Error(error.message);
   revalidatePath(`/groups/${groupId}`, "layout");
+}
+
+// ---------- Result and ratings ----------
+
+/** Enters the score. An owner or admin makes it final at once; a player's waits for the other team. */
+export async function submitResult(groupId: string, matchId: string, scoreA: number, scoreB: number) {
+  const { supabase } = await requireUser(matchPath(groupId, matchId));
+  const { data: status, error } = await supabase.rpc("submit_result", {
+    mid: matchId,
+    p_score_a: scoreA,
+    p_score_b: scoreB,
+  });
+  if (error) return { error: error.message };
+  if (status === "confirmed") {
+    const failed = await recomputeRatings(groupId, matchId);
+    if (failed) return failed;
+  }
+  revalidatePath(`/groups/${groupId}`, "layout");
+}
+
+export async function confirmResult(groupId: string, matchId: string) {
+  const { supabase } = await requireUser(matchPath(groupId, matchId));
+  const { error } = await supabase.rpc("confirm_result", { mid: matchId });
+  if (error) return { error: error.message };
+  const failed = await recomputeRatings(groupId, matchId);
+  if (failed) return failed;
+  revalidatePath(`/groups/${groupId}`, "layout");
+}
+
+export async function disputeResult(groupId: string, matchId: string) {
+  const { supabase } = await requireUser(matchPath(groupId, matchId));
+  const { error } = await supabase.rpc("dispute_result", { mid: matchId });
+  if (error) return { error: error.message };
+  revalidatePath(`/groups/${groupId}`, "layout");
+}
+
+/**
+ * Recomputes every rating of the group from all its confirmed results and saves them, with the
+ * before/after of the match just confirmed. Everything is read again from the database here:
+ * nothing comes from the browser.
+ */
+async function recomputeRatings(groupId: string, matchId: string) {
+  const admin = createAdminClient();
+  const [{ data: players, error: e1 }, { data: matches, error: e2 }] = await Promise.all([
+    admin.from("players").select("id, prior_overall").eq("group_id", groupId),
+    admin
+      .from("matches")
+      .select("format, score_a, score_b, match_players (player_id, team, form)")
+      .eq("group_id", groupId)
+      .eq("result_status", "confirmed"),
+  ]);
+  if (e1 || e2 || !players || !matches) return { error: "Result saved, but the ratings could not be updated." };
+
+  const ratings = groupRatings(players as RatingPlayer[], matches as ConfirmedMatch[]);
+  const { error } = await admin.rpc("apply_ratings", {
+    gid: groupId,
+    ratings: Object.fromEntries(ratings),
+    mid: matchId,
+  });
+  if (error) return { error: `Result saved, but the ratings could not be updated: ${error.message}` };
+  return null;
 }

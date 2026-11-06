@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import Link from "next/link";
 import { isProvisional } from "@/lib/engine/engine";
 import { PlayerCard } from "@/components/player-card";
 import { Dateline, Headline, Mark, Page, SectionTitle } from "@/components/ui";
@@ -41,7 +42,7 @@ async function Players({ params }: Props) {
         </thead>
         <tbody>
           {ranked.map((p, i) => (
-            <Row key={p.id} player={p} rank={i + 1} isMe={p.id === me.id} />
+            <Row key={p.id} groupId={id} player={p} rank={i + 1} isMe={p.id === me.id} />
           ))}
         </tbody>
       </table></div>
@@ -49,8 +50,12 @@ async function Players({ params }: Props) {
       <SectionTitle>The cards</SectionTitle>
       <div className="flex flex-wrap justify-center gap-3 sm:justify-start">
         {ranked.map((p) => (
-          <PlayerCard
+          <Link
             key={p.id}
+            href={`/groups/${id}/players/${p.id}`}
+            className="rounded-2xl transition-transform duration-150 hover:-translate-y-0.5"
+          >
+          <PlayerCard
             name={p.display_name}
             overall={displayOverall(p)}
             position={mainPosition(p.positions, p.main_position)}
@@ -62,6 +67,7 @@ async function Players({ params }: Props) {
             photoUrl={p.photo_url}
             size="sm"
           />
+          </Link>
         ))}
       </div>
     </div>
@@ -73,13 +79,15 @@ function positionLabel(p: PlayerRow): string {
   return pos ? POSITION_SHORT[pos] : "–";
 }
 
-function Row({ player: p, rank, isMe }: { player: PlayerRow; rank: number; isMe: boolean }) {
+function Row({ groupId, player: p, rank, isMe }: { groupId: string; player: PlayerRow; rank: number; isMe: boolean }) {
   const ovr = displayOverall(p);
   return (
     <tr className={`border-b border-rule last:border-b-0 ${isMe ? "bg-raised" : ""}`}>
       <td className="tabular py-2.5 pl-3 text-right text-sm font-semibold text-chalk-soft">{rank}</td>
       <td className="py-2.5 pl-3">
-        <span className="font-semibold">{p.display_name}</span>
+        <Link href={`/groups/${groupId}/players/${p.id}`} className="font-semibold underline-offset-4 hover:underline">
+          {p.display_name}
+        </Link>
         {isMe && <span className="ml-2 bg-chalk px-1.5 py-0.5 text-xs font-bold uppercase text-turf">You</span>}
         <span className="block text-xs text-chalk-soft">
           {isGuest(p) ? "Guest" : isProvisional(p.matches_played) ? "Provisional" : `${p.matches_played} matches`}

@@ -11,7 +11,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --experimental-strip-types --test src/lib/engine/engine.test.ts",
+    "test": "node --experimental-strip-types --test src/lib/engine/engine.test.ts src/lib/ratings.test.ts",
     "sim": "node --experimental-strip-types sim/simulate.ts 30 > sim/results.json",
     "sim:extra": "node --experimental-strip-types sim/extra.ts 30 > sim/extra.json"
   },

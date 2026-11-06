@@ -28,6 +28,19 @@ export async function loadGroup(groupId: string, path: string) {
   return { group: group as GroupRow, players: all, me, canManage: me.role !== "player" };
 }
 
+/** Every played match of the group, newest first, with who played. */
+export async function loadResults(groupId: string) {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("matches")
+    .select(`${MATCH_COLUMNS}, match_players (player_id)`)
+    .eq("group_id", groupId)
+    .eq("status", "played")
+    .order("starts_at", { ascending: false })
+    .limit(200);
+  return (data ?? []) as FixtureMatch[];
+}
+
 /** Matches from a week ago on, oldest first, with who signed up. */
 export async function loadMatches(groupId: string) {
   const supabase = await createClient();
