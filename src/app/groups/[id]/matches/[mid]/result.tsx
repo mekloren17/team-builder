@@ -185,7 +185,7 @@ function ScoreForm({
     <Panel className="p-4">
       <h3 className="font-display text-lg font-extrabold uppercase">{title}</h3>
       <p className="mb-4 text-sm text-chalk-soft">{note}</p>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid gap-3">
         <Stepper label="Team A" color="text-bib" value={a} onChange={setA} />
         <Stepper label="Team B" color="text-bib-orange" value={b} onChange={setB} />
       </div>
@@ -220,7 +220,7 @@ function Stepper({
   onChange: (v: number) => void;
 }) {
   return (
-    <div className="flex flex-col items-center gap-2 rounded-md border-2 border-line p-3">
+    <div className="flex items-center justify-between gap-3 rounded-md border-2 border-line px-4 py-2">
       <span className={`font-display text-base font-black uppercase ${color}`}>{label}</span>
       <div className="flex items-center gap-3">
         <button
