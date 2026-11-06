@@ -1,0 +1,453 @@
+<title>Team Builder Look Directions</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo+Narrow:wght@500;700&family=Barlow+Condensed:wght@700;800&family=Barlow:wght@500;600;700;900&family=Big+Shoulders+Display:wght@700;900&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Doto:wght@800;900&family=Kanit:ital,wght@0,500;0,700;1,800;1,900&family=Schibsted+Grotesk:wght@400;500;700&display=swap">
+<style>
+/* Layout: a long report column. Each style direction is shown twice, on a PC browser and on a phone,
+   with the same content and the same unchanged player cards, so only the environment differs. */
+:root {
+  --bg: #f1f3ee;
+  --surface: #ffffff;
+  --fg: #151a16;
+  --muted: #59625b;
+  --line: #d6dbd2;
+  --accent: #0f5c3a;
+  --accent-soft: #dcebe2;
+  --display: "Bricolage Grotesque", "Arial Narrow", system-ui, sans-serif;
+  --body: "Schibsted Grotesk", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111512; --surface: #1a201c; --fg: #e8ece7; --muted: #9ba59d; --line: #2c342e; --accent: #5fc18e; --accent-soft: #1d3326; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111512; --surface: #1a201c; --fg: #e8ece7; --muted: #9ba59d; --line: #2c342e; --accent: #5fc18e; --accent-soft: #1d3326; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg);
+  font: 400 16px/1.55 var(--body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 64px;
+}
+.wrap { max-width: 1100px; margin: 0 auto; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; letter-spacing: -0.02em; }
+h1 { font-size: clamp(2.2rem, 6vw, 3.6rem); line-height: 1; font-weight: 800; }
+h2 { font-size: clamp(1.6rem, 3.6vw, 2.2rem); line-height: 1.1; font-weight: 800; }
+h3 { font-size: 1.15rem; line-height: 1.25; font-weight: 700; }
+p { margin: 0; max-width: 68ch; }
+a { color: var(--accent); }
+code { font-size: 0.9em; }
+.eyebrow { font: 700 0.78rem/1 var(--body); letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
+.muted { color: var(--muted); }
+.stack { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+section { border-top: 1px solid var(--line); padding-block: 48px; display: flex; flex-direction: column; gap: 24px; }
+
+header.hero { padding-block: 56px 40px; display: flex; flex-direction: column; gap: 18px; }
+.hero .lede { font-size: 1.15rem; color: var(--muted); }
+.verdict { background: var(--accent-soft); border-left: 4px solid var(--accent); padding: 16px 18px; max-width: 76ch; }
+.verdict strong { font-family: var(--display); }
+
+.findings { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 16px; }
+.finding { background: var(--surface); border: 1px solid var(--line); padding: 18px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.finding .so { font-size: 0.9rem; color: var(--muted); border-top: 1px dashed var(--line); padding-top: 8px; margin-top: auto; }
+.finding .so b { color: var(--fg); }
+
+.twocol { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 32px; align-items: start; }
+.twocol ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 8px; }
+.tag { display: inline-block; align-self: flex-start; font: 700 0.75rem/1 var(--body); letter-spacing: 0.08em; text-transform: uppercase; padding: 6px 8px; border: 1px solid var(--accent); color: var(--accent); }
+.spec { display: grid; grid-template-columns: 96px minmax(0,1fr); gap: 8px 16px; font-size: 0.95rem; margin: 0; }
+.spec dt { font-weight: 700; }
+.spec dd { margin: 0; color: var(--muted); }
+.swatches { display: flex; gap: 6px; flex-wrap: wrap; }
+.sw { width: 26px; height: 26px; border: 1px solid var(--line); }
+.risk { font-size: 0.95rem; }
+
+/* Stage: PC browser + phone side by side */
+.stage { display: flex; gap: 28px; align-items: flex-start; }
+.stage > figure { margin: 0; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.stage > figure:first-child { flex: 1; }
+.stage figcaption { font-size: 0.85rem; color: var(--muted); text-align: center; }
+@media (max-width: 860px) {
+  .stage { flex-direction: column; align-items: stretch; }
+  .stage > figure:last-child { align-self: center; }
+  .twocol { grid-template-columns: 1fr; }
+}
+
+.tablewrap { overflow-x: auto; border: 1px solid var(--line); background: var(--surface); }
+table { border-collapse: collapse; width: 100%; min-width: 660px; font-size: 0.95rem; }
+th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font: 700 0.78rem/1.2 var(--body); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+tr:last-child td { border-bottom: 0; }
+td.rec { background: var(--accent-soft); }
+.dots { letter-spacing: 2px; color: var(--accent); font-size: 1.05rem; white-space: nowrap; }
+.dots i { font-style: normal; color: var(--line); }
+ol.steps { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 10px; max-width: 74ch; }
+.sources { font-size: 0.9rem; columns: 2 300px; column-gap: 32px; padding-left: 18px; margin: 0; }
+.sources li { break-inside: avoid; margin-bottom: 6px; }
+
+/* ===================== Device frames ===================== */
+.browser { border: 1px solid #0003; border-radius: 10px; overflow: hidden; background: #e7e9ec; box-shadow: 0 18px 40px -22px #0007; container-type: inline-size; }
+.chrome { height: 30px; display: flex; align-items: center; gap: 6px; padding: 0 10px; background: #e7e9ec; border-bottom: 1px solid #0002; }
+.chrome i { width: 9px; height: 9px; border-radius: 50%; background: #c3c7cc; }
+.chrome .url { margin-left: 12px; flex: 1; max-width: 300px; height: 18px; border-radius: 9px; background: #fff; font: 500 10px/18px var(--body); color: #555; padding: 0 10px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.phone { width: 250px; height: 520px; border-radius: 30px; border: 8px solid #0d0f0e; overflow: hidden; position: relative; box-shadow: 0 18px 40px -18px #0007; }
+
+/* ===================== The player card (copy of the existing one, unchanged) ===================== */
+.pc { font-size: var(--card, 6.4px); width: 14.4em; padding: 1.2em; border-radius: 1.6em; position: relative; overflow: hidden; flex: none;
+  display: flex; flex-direction: column; font-family: "Barlow", system-ui, sans-serif;
+  box-shadow: 0 10px 15px -3px #00000040, 0 4px 6px -4px #00000033; }
+.pc::before { content: ""; position: absolute; left: -3.2em; top: 33%; height: 4em; width: 160%; transform: rotate(-12deg); background: #ffffff26; pointer-events: none; }
+.pc.gold { background: linear-gradient(to bottom right, #f6dd8a, #d9a93c, #8f6514); color: #2a1c02; }
+.pc.silver { background: linear-gradient(to bottom right, #e4e8ee, #b9c1cc, #7d8796); color: #141a22; }
+.pc.bronze { background: linear-gradient(to bottom right, #c98a5a, #a86a3f, #6e4024); color: #fff4ea; }
+.pc .top { display: flex; justify-content: space-between; align-items: flex-start; position: relative; }
+.pc .ov { font-weight: 900; font-size: 3em; line-height: 1; font-variant-numeric: tabular-nums; }
+.pc .ps { font-weight: 700; font-size: 1.2em; letter-spacing: .1em; margin-top: .3em; }
+.pc .ph { width: 6.4em; height: 6.4em; border-radius: 1.2em; background: #00000026; box-shadow: 0 0 0 .2em #ffffff66; display: grid; place-items: center; font-weight: 900; font-size: 1em; opacity: .75; }
+.pc .ph span { font-size: 1.8em; }
+.pc .nm { position: relative; text-align: center; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; font-size: 1.4em; margin-top: .55em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pc .st { position: relative; border-top: 1px solid color-mix(in srgb, currentColor 25%, transparent); margin-top: .8em; padding-top: .8em;
+  display: grid; grid-template-columns: 1fr 1fr; gap: .2em 1.6em; font-size: 1.1em; }
+.pc .st div { display: flex; justify-content: space-between; }
+.pc .st b { font-weight: 900; font-variant-numeric: tabular-nums; }
+.pc .st span { font-weight: 500; opacity: .8; }
+.slot { font-size: var(--card, 6.4px); width: 14.4em; border-radius: 1.6em; flex: none; display: grid; place-items: center; text-align: center;
+  font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
+.slot span { font-size: 1.3em; }
+
+/* ===================== Shared app skeleton (driven by per-direction tokens) ===================== */
+.app { background: var(--a-bg); color: var(--a-fg); font-family: var(--a-text); display: flex; flex-direction: column; }
+.browser .app { min-height: 430px; }
+.app .ah { background: var(--a-head-bg, transparent); color: var(--a-head-fg, var(--a-fg)); border-bottom: var(--a-head-rule, 0); }
+.app .ah-in { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; padding: 16px 22px 0; flex-wrap: wrap; }
+.app .grp { font-family: var(--a-display); font-weight: var(--a-display-w, 800); font-style: var(--a-display-style, normal); text-transform: uppercase; font-size: 26px; line-height: .95; letter-spacing: var(--a-display-track, -0.01em); padding-bottom: 12px; }
+.app .grp small { display: block; font: 700 10px/1 var(--a-text); letter-spacing: .14em; color: var(--a-kicker, var(--a-muted)); margin-bottom: 6px; font-style: normal; }
+.app nav { display: flex; gap: 2px; }
+.app nav a { font: 700 12px/1 var(--a-label, var(--a-text)); text-transform: uppercase; letter-spacing: .08em; padding: 10px 12px 12px; color: var(--a-nav, var(--a-muted)); border-bottom: 3px solid transparent; text-decoration: none; }
+.app nav a.on { color: var(--a-head-fg, var(--a-fg)); border-color: var(--a-cta); }
+.app .main { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 18px; padding: 18px 22px 22px; flex: 1; }
+@container (max-width: 600px) { .app .main { grid-template-columns: 1fr; } .app .ah-in { flex-direction: column; align-items: flex-start; } }
+.app .box { background: var(--a-surface); border: var(--a-border); border-radius: var(--a-radius); padding: 14px; display: flex; flex-direction: column; gap: 12px; box-shadow: var(--a-box-shadow, none); min-width: 0; }
+.app .lbl { font: 700 11px/1 var(--a-label, var(--a-text)); text-transform: uppercase; letter-spacing: .12em; color: var(--a-muted); }
+.app .when { font-family: var(--a-display); font-weight: var(--a-display-w, 800); font-style: var(--a-display-style, normal); text-transform: uppercase; font-size: 21px; line-height: 1; }
+.app .sub { font-size: 12px; color: var(--a-muted); font-weight: 500; margin-top: -6px; }
+.app .count { display: flex; align-items: baseline; gap: 6px; }
+.app .count b { font-family: var(--a-num); font-weight: 900; font-style: var(--a-num-style, normal); font-size: 44px; line-height: 1; color: var(--a-num-fg, var(--a-fg)); text-shadow: var(--a-num-glow, none); font-variant-numeric: tabular-nums; }
+.app .count span { font: 700 12px/1.2 var(--a-label, var(--a-text)); text-transform: uppercase; letter-spacing: .08em; color: var(--a-muted); }
+.app .cta { height: 46px; border: var(--a-cta-border, 0); border-radius: var(--a-cta-radius, var(--a-radius)); background: var(--a-cta); color: var(--a-cta-fg);
+  font-family: var(--a-display); font-weight: var(--a-display-w, 800); font-style: var(--a-display-style, normal); text-transform: uppercase; font-size: 20px; letter-spacing: .02em;
+  display: grid; place-items: center; transform: var(--a-cta-tilt, none); box-shadow: var(--a-cta-shadow, none); background-image: var(--a-cta-tex, none); background-size: 4px 4px; }
+.app .win { display: flex; flex-direction: column; gap: 6px; }
+.app .win .n { display: flex; justify-content: space-between; font-family: var(--a-num); font-weight: 900; font-style: var(--a-num-style, normal); font-size: 18px; }
+.app .win .n .ta { color: var(--a-team-a-text, var(--a-fg)); } .app .win .n .tb { color: var(--a-team-b-text, var(--a-fg)); }
+.app .win .bar { display: flex; height: 10px; border: var(--a-bar-border, 0); border-radius: var(--a-bar-radius, 0); overflow: hidden; }
+.app .win .bar i:first-child { background: var(--a-team-a); width: 52%; } .app .win .bar i:last-child { background: var(--a-team-b); flex: 1; }
+.app .cards { display: flex; flex-wrap: wrap; gap: 10px; }
+.app .slot { border: 2px dashed var(--a-slot); color: var(--a-slot-fg, var(--a-muted)); background: var(--a-slot-bg, transparent); }
+
+/* phone variant of the skeleton */
+.phone .app { position: absolute; inset: 0; overflow: hidden; }
+.phone .app .ah-in { padding: 16px 14px 0; }
+.phone .app .grp { font-size: 22px; }
+.phone .app nav { display: none; }
+.phone .app .main { grid-template-columns: 1fr; padding: 12px 14px 0; gap: 12px; }
+.phone .app .box { padding: 12px; gap: 10px; }
+.phone .app .count b { font-size: 36px; }
+.phone .app .me { display: flex; gap: 12px; align-items: center; }
+.phone .app .me p { font-size: 12px; line-height: 1.35; color: var(--a-muted); font-weight: 500; }
+.phone .app .me p b { display: block; color: var(--a-fg); font: 700 11px/1.2 var(--a-label, var(--a-text)); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 4px; }
+.phone .tabs { position: absolute; left: 0; right: 0; bottom: 0; height: 52px; display: grid; grid-template-columns: repeat(4, 1fr); background: var(--a-tab-bg); border-top: var(--a-tab-rule, 0); }
+.phone .tabs span { display: grid; place-items: center; font: 700 10px/1 var(--a-label, var(--a-text)); text-transform: uppercase; letter-spacing: .08em; color: var(--a-tab-fg); border-top: 3px solid transparent; }
+.phone .tabs span.on { color: var(--a-tab-on); border-color: var(--a-cta); }
+
+/* ===================== Direction tokens ===================== */
+/* 0 · Le pagelle (current) */
+.d0 { --a-bg: #f7dde2; --a-fg: #1a1414; --a-muted: #5e3f46; --a-surface: #fff; --a-border: 2px solid #1a1414; --a-radius: 0;
+  --a-display: "Barlow Condensed", sans-serif; --a-text: "Barlow", sans-serif; --a-label: "Barlow Condensed", sans-serif; --a-num: "Barlow Condensed", sans-serif;
+  --a-head-rule: 3px solid #1a1414; --a-cta: #c8102e; --a-cta-fg: #fff; --a-cta-border: 2px solid #1a1414; --a-cta-tilt: rotate(-1deg);
+  --a-team-a: #1a1414; --a-team-b: #fff; --a-bar-border: 2px solid #1a1414; --a-slot: #5e3f46; --a-tab-bg: #1a1414; --a-tab-fg: #f7dde2b3; --a-tab-on: #fff; }
+
+/* A · Floodlights */
+.d1 { --a-bg: #0d1a12; --a-fg: #f2f5ef; --a-muted: #a5b0a7; --a-surface: #070c09e6; --a-border: 1px solid #ffffff1f; --a-radius: 6px;
+  --a-display: "Big Shoulders Display", sans-serif; --a-display-w: 900; --a-display-track: .01em; --a-text: "Schibsted Grotesk", sans-serif; --a-label: "Big Shoulders Display", sans-serif;
+  --a-num: "Doto", monospace; --a-num-fg: #ffb000; --a-num-glow: 0 0 12px #ffb00077;
+  --a-cta: #e5ff3a; --a-cta-fg: #10140a; --a-cta-radius: 4px; --a-cta-tex: radial-gradient(#00000014 1px, transparent 1.2px);
+  --a-team-a: #e5ff3a; --a-team-b: #ff6a1f; --a-team-a-text: #e5ff3a; --a-team-b-text: #ff6a1f; --a-bar-radius: 5px;
+  --a-slot: #f2f5ef40; --a-slot-fg: #f2f5ef80; --a-head-rule: 1px solid #ffffff1a; --a-kicker: #e5ff3a;
+  --a-tab-bg: #050806; --a-tab-fg: #a5b0a7; --a-tab-on: #e5ff3a; --a-tab-rule: 1px solid #ffffff1a;
+  background:
+    radial-gradient(ellipse 90% 340px at 50% -60px, #fff7d655, transparent 70%),
+    repeating-linear-gradient(90deg, #11221a 0 56px, #0c1912 56px 112px);
+}
+.phone .d1 { background:
+    radial-gradient(ellipse 120% 220px at 50% -50px, #fff7d655, transparent 70%),
+    repeating-linear-gradient(180deg, #11221a 0 40px, #0c1912 40px 80px); }
+
+/* B · The Album */
+.d2 { --a-bg: #e9eef6; --a-fg: #14171f; --a-muted: #4f5869; --a-surface: #fff; --a-border: 0; --a-radius: 8px; --a-box-shadow: 0 1px 0 #0000001a, 0 4px 10px -6px #0000004d;
+  --a-display: "Archivo Black", sans-serif; --a-display-w: 400; --a-text: "Archivo Narrow", sans-serif; --a-num: "Archivo Black", sans-serif; --a-num-fg: #23408e;
+  --a-head-bg: #23408e; --a-head-fg: #fff; --a-head-rule: 5px solid #ffcf1f; --a-nav: #c9d3ee; --a-kicker: #ffcf1f;
+  --a-cta: #ffcf1f; --a-cta-fg: #14171f; --a-cta-radius: 6px; --a-cta-shadow: 0 3px 0 #b8900a;
+  --a-team-a: #23408e; --a-team-b: #ffcf1f; --a-bar-radius: 5px; --a-slot: #b3bccb; --a-slot-bg: #ffffff80;
+  --a-tab-bg: #23408e; --a-tab-fg: #c9d3ee; --a-tab-on: #fff;
+  background-color: #e9eef6; background-image: radial-gradient(#23408e1f 1.2px, transparent 1.3px); background-size: 10px 10px; }
+.d2 .grp small { letter-spacing: .16em; }
+
+/* C · The Kit Room */
+.d3 { --a-bg: #1c1236; --a-fg: #fff; --a-muted: #c4bbe0; --a-surface: #2a1c50; --a-border: 0; --a-radius: 10px;
+  --a-display: "Kanit", sans-serif; --a-display-w: 900; --a-display-style: italic; --a-display-track: -0.02em; --a-text: "Kanit", sans-serif; --a-num: "Kanit", sans-serif; --a-num-style: italic; --a-num-fg: #ffd23f;
+  --a-cta: #ffd23f; --a-cta-fg: #1c1236; --a-cta-radius: 8px; --a-cta-tilt: skew(-6deg);
+  --a-team-a: #ffd23f; --a-team-b: #fff; --a-team-a-text: #ffd23f; --a-bar-radius: 5px; --a-slot: #ffffff40; --a-kicker: #ffd23f;
+  --a-head-fg: #fff; --a-head-rule: 4px solid #ffd23f; --a-nav: #c4bbe0;
+  --a-tab-bg: #120b24; --a-tab-fg: #c4bbe0; --a-tab-on: #ffd23f; }
+.d3 .ah { background:
+    linear-gradient(135deg, #43237fcc 25%, transparent 25%) -14px 0/28px 28px,
+    linear-gradient(225deg, #43237fcc 25%, transparent 25%) -14px 0/28px 28px,
+    linear-gradient(315deg, #2f1866 25%, transparent 25%) 0 0/28px 28px,
+    linear-gradient(45deg, #2f1866 25%, transparent 25%) 0 0/28px 28px,
+    #0b8c86; }
+.d3 .grp, .d3 nav a { text-shadow: 0 2px 0 #0007; }
+</style>
+
+<div class="wrap">
+
+<header class="hero">
+  <span class="eyebrow">Team Builder · design review · November 2026 · v2</span>
+  <h1>A new setting for the cards we already have</h1>
+  <p class="lede">The player cards stay exactly as they are. This page looks at what Italian amateur players find attractive and proposes three new environments for everything around the cards, each shown on a PC browser and on a phone.</p>
+  <div class="verdict"><strong>Short answer:</strong> the cards are glossy, rounded and metallic, while the current pink-newspaper style is flat and square, so they look stuck on. The environment that suits them best is <strong>Floodlights</strong> (direction A): a dark night-pitch setting, the way the sports centre looks at 21:00, where gold, silver and bronze cards shine like they do in a game menu. It also gives the two teams their natural colours: the yellow and orange bibs.</div>
+</header>
+
+<section>
+  <span class="eyebrow">1 · The audience</span>
+  <h2>What this crowd finds attractive</h2>
+  <p class="muted">Desk research plus knowledge of the culture, not a survey. There are no official figures on amateur calcetto; the real test is showing these screens to the group (last section).</p>
+  <div class="findings">
+    <div class="finding">
+      <h3>Calcetto is a ritual among friends</h3>
+      <p>Most amateur 5-a-side is played by fixed groups of friends or colleagues booking the same pitch every week. The ritual is concrete: the WhatsApp poll, the 21:00 slot, artificial turf under floodlights, yellow and orange bibs, the beer after.</p>
+      <p class="so"><b>So:</b> the materials of that evening feel personal in a way a generic sports app never does.</p>
+    </div>
+    <div class="finding">
+      <h3>Italians love a mark out of ten</h3>
+      <p>The Monday <i>pagelle</i> and the <i>voti</i> of Fantacalcio made rating players a national habit.</p>
+      <p class="so"><b>So:</b> the overall on the cards is already the star. The environment should frame the numbers, not compete with them.</p>
+    </div>
+    <div class="finding">
+      <h3>Collectible cards are shared childhood</h3>
+      <p>Football stickers have been around in Italy since the early 1960s ("ce l'ho, ce l'ho, mi manca"), and the video-game card is today's version. Everyone already reads "face, number, name" without thinking.</p>
+      <p class="so"><b>So:</b> keeping the cards is right. They need a setting that treats them as the valuable objects they are.</p>
+    </div>
+    <div class="finding">
+      <h3>1990s Serie A is peak nostalgia</h3>
+      <p>Clubs and brands keep reissuing that era, like Kappa's 90s-style Fiorentina shirt for 2025/26. Retro shirts are worn as fashion.</p>
+      <p class="so"><b>So:</b> loud shirt patterns and italic lettering read as cool, but they get busy next to colourful cards.</p>
+    </div>
+    <div class="finding">
+      <h3>Young fans read football on social media</h3>
+      <p>Cronache di Spogliatoio built its look from a player photo and big uppercase text in yellow and white. The Kings League uses the language of video games.</p>
+      <p class="so"><b>So:</b> few colours, very big type, dark grounds that make photos and cards pop. Screens should look good as a screenshot in a chat.</p>
+    </div>
+    <div class="finding">
+      <h3>It's a website, used on PCs too</h3>
+      <p>People open it from a WhatsApp link on the phone, but some use it on a computer, and admins build the teams there. Today the app is a single 672px column even on a wide screen.</p>
+      <p class="so"><b>So:</b> every direction needs a real desktop layout: navigation at the top, the match beside the squad, cards in a grid.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <span class="eyebrow">2 · Where we are</span>
+  <h2>The cards in today's "Le pagelle" setting</h2>
+  <div class="twocol">
+    <ul>
+      <li><b>Works:</b> big condensed numbers, strong contrast, nothing like the usual green-and-grey sports app.</li>
+      <li><b>Clash:</b> the system bans rounded corners, gradients and shadows, and the cards are made of exactly those. They look pasted onto a newspaper.</li>
+      <li><b>Mood:</b> a newspaper is something you read the day after. Signing up and seeing the teams should feel like the evening itself.</li>
+    </ul>
+    <ul>
+      <li><b>On a PC:</b> one narrow column with a lot of empty pink on both sides; cards only fit three or four per row.</li>
+      <li><b>Pink on a monitor:</b> large areas of pale pink read as faded on a bright desktop screen, more than on a phone.</li>
+    </ul>
+  </div>
+  <div class="stage" data-dir="d0" data-cap="Current style, as it renders"></div>
+</section>
+
+<section>
+  <span class="eyebrow">3 · Direction A · recommended</span>
+  <h2>Floodlights</h2>
+  <div class="twocol">
+    <div class="stack">
+      <span class="tag">The 21:00 pitch</span>
+      <p>The site looks like the sports centre on a Thursday night: dark artificial turf with mowing stripes, a floodlight glow at the top, a scoreboard with lit dot digits for the sign-up count and the win chance. The main button is the fluorescent yellow of a bib, and the two teams are always yellow and orange.</p>
+      <p>Dark grounds are where metallic cards look best: gold glows, silver reads as silver, the card shadows finally make sense. On a PC it looks like a broadcast graphic rather than an admin panel.</p>
+    </div>
+    <dl class="spec">
+      <dt>Colours</dt><dd><div class="swatches"><span class="sw" style="background:#0d1a12"></span><span class="sw" style="background:#e5ff3a"></span><span class="sw" style="background:#ff6a1f"></span><span class="sw" style="background:#ffb000"></span><span class="sw" style="background:#f2f5ef"></span></div></dd>
+      <dt>Type</dt><dd>Tall stadium-sign lettering (Big Shoulders Display), a dot-matrix face for scoreboard numbers (Doto), a plain sans for text.</dd>
+      <dt>Signature</dt><dd>The counter flicking from 06 to 07 when you sign up.</dd>
+      <dt>Risks</dt><dd>Dark screens suffer more from sun glare on a phone; keep text pure white and large. Fluorescent yellow works only on dark, never as text on white.</dd>
+    </dl>
+  </div>
+  <div class="stage" data-dir="d1" data-cap="Floodlights"></div>
+</section>
+
+<section>
+  <span class="eyebrow">4 · Direction B</span>
+  <h2>The Album</h2>
+  <div class="twocol">
+    <div class="stack">
+      <span class="tag">Sticker album page</span>
+      <p>The site is an album: a blue cover band with a yellow edge, a lightly dotted page, and each match is a spread with slots. The cards stay as they are and sit in the slots like stickers already stuck in; the empty dashed slots show how many players are missing.</p>
+      <p>The most nostalgic and the brightest, so the best in sunlight. The cards' glossy look fits a sticker better than a newspaper, though less than a dark ground.</p>
+    </div>
+    <dl class="spec">
+      <dt>Colours</dt><dd><div class="swatches"><span class="sw" style="background:#23408e"></span><span class="sw" style="background:#ffcf1f"></span><span class="sw" style="background:#e9eef6"></span><span class="sw" style="background:#14171f"></span><span class="sw" style="background:#b3bccb"></span></div></dd>
+      <dt>Type</dt><dd>A heavy block face (Archivo Black) for headlines and numbers, a narrow face for text.</dd>
+      <dt>Signature</dt><dd>Your card dropping into its slot with a tiny bounce.</dd>
+      <dt>Risks</dt><dd>Silver cards are pale on a pale page. Keep it generic: no sticker-publisher logo or "Calciatori" wording.</dd>
+    </dl>
+  </div>
+  <div class="stage" data-dir="d2" data-cap="The Album"></div>
+</section>
+
+<section>
+  <span class="eyebrow">5 · Direction C</span>
+  <h2>The Kit Room</h2>
+  <div class="twocol">
+    <div class="stack">
+      <span class="tag">90s shirts</span>
+      <p>A loud geometric 90s shirt pattern only in the header band, then a solid deep plum page with gold trim and sporty italic lettering. Each group could pick its own "kit" pattern and colours, which suits multiple groups well.</p>
+      <p>The most playful. To leave room for the cards, the pattern never goes behind content.</p>
+    </div>
+    <dl class="spec">
+      <dt>Colours</dt><dd><div class="swatches"><span class="sw" style="background:#0b8c86"></span><span class="sw" style="background:#43237f"></span><span class="sw" style="background:#1c1236"></span><span class="sw" style="background:#ffd23f"></span><span class="sw" style="background:#ffffff"></span></div></dd>
+      <dt>Type</dt><dd>A heavy italic sports face (Kanit) for headlines and numbers.</dd>
+      <dt>Signature</dt><dd>The group's own kit pattern across the top.</dd>
+      <dt>Risks</dt><dd>Gold trim competes with gold cards. Colours can accidentally recall a real club. Goes out of fashion fastest.</dd>
+    </dl>
+  </div>
+  <div class="stage" data-dir="d3" data-cap="The Kit Room"></div>
+</section>
+
+<section>
+  <span class="eyebrow">6 · Side by side</span>
+  <h2>How the four compare</h2>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th></th><th>Le pagelle (now)</th><th>A · Floodlights</th><th>B · The Album</th><th>C · Kit Room</th></tr></thead>
+      <tbody>
+        <tr><td><b>Makes the current cards look at home</b></td><td><span class="dots">●<i>●●</i></span></td><td class="rec"><span class="dots">●●●</span></td><td><span class="dots">●●<i>●</i></span></td><td><span class="dots">●●<i>●</i></span></td></tr>
+        <tr><td><b>Looks good on a PC screen</b></td><td><span class="dots">●<i>●●</i></span></td><td class="rec"><span class="dots">●●●</span></td><td><span class="dots">●●<i>●</i></span></td><td><span class="dots">●●<i>●</i></span></td></tr>
+        <tr><td><b>Feels like our Thursday game</b></td><td><span class="dots">●<i>●●</i></span></td><td class="rec"><span class="dots">●●●</span></td><td><span class="dots">●●<i>●</i></span></td><td><span class="dots">●<i>●●</i></span></td></tr>
+        <tr><td><b>Readable on a phone in sunlight</b></td><td><span class="dots">●●●</span></td><td class="rec"><span class="dots">●●<i>●</i></span></td><td><span class="dots">●●●</span></td><td><span class="dots">●●<i>●</i></span></td></tr>
+        <tr><td><b>Looks good shared on WhatsApp</b></td><td><span class="dots">●●<i>●</i></span></td><td class="rec"><span class="dots">●●●</span></td><td><span class="dots">●●●</span></td><td><span class="dots">●●●</span></td></tr>
+        <tr><td><b>Work to switch</b></td><td>Done</td><td class="rec">Low–medium: tokens, fonts, scoreboard numbers</td><td>Medium: album slots, header band</td><td>Medium: patterns, per-group kits</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="muted">Since only the environment changes, every direction is mostly a change of colours, fonts and a few shared pieces in <code>src/components/ui.tsx</code>. The cards and the pages' structure stay the same.</p>
+</section>
+
+<section>
+  <span class="eyebrow">7 · Built for the PC too</span>
+  <h2>A desktop layout, whatever style wins</h2>
+  <ul class="steps" style="list-style: disc;">
+    <li><b>Wider page from 1024px:</b> about 1100px instead of the current 672px column.</li>
+    <li><b>Two columns on the group home:</b> the next match and the "I'm in" button on the left, the cards of who's in on the right, with empty slots for open spots.</li>
+    <li><b>Navigation at the top</b> on a PC, the tab bar at the bottom on a phone (this already happens from 768px).</li>
+    <li><b>Team proposals side by side:</b> the two teams in two columns of cards, so admins can compare and move players on a big screen.</li>
+    <li><b>Hover states</b> on cards and rows, since PC users have a mouse.</li>
+  </ul>
+</section>
+
+<section>
+  <span class="eyebrow">8 · Recommendation</span>
+  <h2>Go with Floodlights</h2>
+  <p>It is the only setting where the existing cards look like they belong: glossy metal on a dark ground. It is the most specific to how calcetto is really played, works best on a PC, and is the lightest switch, mostly colours and fonts. To deal with sunlight on phones, keep all text pure white and large, and keep the main actions in bib yellow, which stays visible in glare.</p>
+  <p>If the group prefers a light site, the Album is the runner-up.</p>
+  <h3>Next steps</h3>
+  <ol class="steps">
+    <li><b>Ask the group.</b> Post the four phone screens in the WhatsApp chat as a poll ("Which one would you open?").</li>
+    <li><b>Switch the shared pieces</b> in <code>ui.tsx</code> and the colours in <code>globals.css</code> to the winning direction; check the cards in every tier on it.</li>
+    <li><b>Add the desktop layout</b> above for the group home and team proposals.</li>
+    <li><b>Update <code>DESIGN.md</code></b> so the new rules replace "Le pagelle", and drop the line that says the cards are an exception.</li>
+  </ol>
+</section>
+
+<section>
+  <span class="eyebrow">Sources</span>
+  <ul class="sources">
+    <li><a href="https://www.ilrestodelcarlino.it/archive/zona-gialla-sport-calcetto-sport-contatto-7d4a3981">Il Resto del Carlino: most calcetto players are amateur groups of friends</a></li>
+    <li><a href="https://www.calcioefinanza.it/?p=62418">Calcio e Finanza: calcetto and sports centres</a></li>
+    <li><a href="https://www.ilfoglio.it/sport/2021/02/26/news/il-calcetto-radice-e-destino-del-calcio--131454">Il Foglio: "Il calcetto, radice e destino del calcio"</a></li>
+    <li><a href="https://www.ilpost.it/2015/04/21/calcetto-fubles/">Il Post: calcetto and Fubles</a></li>
+    <li><a href="https://wetheitalians.com/news/italian-entertainment-figurine-panini-ce-lho-ce-lho-mi-manca">We the Italians: "ce l'ho, ce l'ho, mi manca"</a></li>
+    <li><a href="https://www.nss-sports.com/en/lifestyle/24817/i-sessant-anni-delle-figurine-panini">nss sports: sixty years of football stickers</a></li>
+    <li><a href="https://thesefootballtimes.co/2018/06/01/how-the-panini-sticker-album-created-a-lifetime-of-memories-and-why-they-keep-growing/">These Football Times: the sticker album and memory</a></li>
+    <li><a href="https://www.nss-sports.com/en/kits/41197/fiorentina-s-new-home-jersey-by-kappa-is-a-deep-dive-into-the-90s">nss sports: Fiorentina's 90s-style 2025/26 shirt</a></li>
+    <li><a href="https://destinationcalcio.com/its-not-just-a-shirt-its-a-feeling-when-italy-ruled-football-and-fashion">Destination Calcio: when Italy ruled football and fashion</a></li>
+    <li><a href="https://www.ilpost.it/2024/10/21/cronache-di-spogliatoio-cos-e-storia/">Il Post: what Cronache di Spogliatoio is</a></li>
+    <li><a href="https://mowmag.com/sport/cronache-di-spogliatoio-e-il-futuro-del-calcio-ecco-come-e-perche-anche-con-gli-europei-stanno-raccontando-il-mondo-dello-sport-molto-meglio-di-mediaset-dazn-sky-e-rai">MOW: Cronache di Spogliatoio's style</a></li>
+    <li><a href="https://techprincess.it/?p=765844">Tech Princess: Kings League and the language of gaming</a></li>
+    <li><a href="https://www.nss-sports.com/en/lifestyle/41255/kings-league-italy-first-edition">nss sports: Kings League Italy, first edition</a></li>
+  </ul>
+</section>
+
+</div>
+
+<script>
+// Example players (made-up names). Values follow the app's own card rules: tier from the overall, stats spread around it.
+const PLAYERS = [
+  { n: "Davide R.", o: 82, p: "MID", s: [80, 85, 86, 84, 74, 79] },
+  { n: "Marco B.", o: 78, p: "ST", s: [84, 86, 72, 80, 60, 76] },
+  { n: "Lorenzo M.", o: 74, p: "MID", s: [74, 68, 80, 78, 66, 72] },
+  { n: "Giorgio F.", o: 71, p: "DEF", s: [66, 58, 70, 64, 82, 78] },
+  { n: "Ale S.", o: 69, p: "GK", s: [72, 70, 66, 68, 64, 70], gk: true },
+  { n: "Tommy V.", o: 66, p: "ST", s: [72, 74, 62, 70, 52, 66] },
+  { n: "Pietro C.", o: 61, p: "DEF", s: [56, 50, 60, 54, 72, 70] },
+];
+const OUT = ["PAC", "SHO", "PAS", "DRI", "DEF", "PHY"], GK = ["REF", "POS", "HAN", "OUT", "DIS", "FEET"];
+const tier = (o) => (o >= 75 ? "gold" : o >= 65 ? "silver" : "bronze");
+const ini = (n) => n.split(/\s+/).map((w) => w[0]).join("").replace(".", "").slice(0, 2).toUpperCase();
+
+function card(pl) {
+  const labels = pl.gk ? GK : OUT;
+  return `<div class="pc ${tier(pl.o)}"><div class="top"><div><div class="ov">${pl.o}</div><div class="ps">${pl.p}</div></div>` +
+    `<div class="ph"><span>${ini(pl.n)}</span></div></div><div class="nm">${pl.n}</div>` +
+    `<div class="st">${labels.map((l, i) => `<div><b>${pl.s[i]}</b><span>${l}</span></div>`).join("")}</div></div>`;
+}
+const slots = (k, h) => Array.from({ length: k }, () => `<div class="slot" style="height:${h}"><span>Open<br>spot</span></div>`).join("");
+
+function header(nav) {
+  return `<div class="ah"><div class="ah-in"><div class="grp"><small>Group</small>Calcetto del giovedì</div>` +
+    (nav ? `<nav><a class="on">Home</a><a>Matches</a><a>Players</a><a>Group</a></nav>` : "") + `</div></div>`;
+}
+function matchBox(short) {
+  return `<div class="box"><span class="lbl">Next match</span><span class="when">Thursday 6 Nov</span><span class="sub">21:00 · 5-a-side · Pitch 3</span>` +
+    `<div class="count"><b>07</b><span>of 10<br>players in</span></div><div class="cta">I'm in</div>` + (short ? `</div>` :
+    `<div class="win"><span class="lbl">Last match · win chance</span><div class="n"><span class="ta">52%</span><span class="tb">48%</span></div><div class="bar"><i></i><i></i></div></div></div>`);
+}
+
+document.querySelectorAll(".stage").forEach((st) => {
+  const d = st.dataset.dir, cap = st.dataset.cap;
+  const desktop = `<figure><div class="browser"><div class="chrome"><i></i><i></i><i></i><span class="url">team-builder-phi-six.vercel.app/groups/calcetto</span></div>` +
+    `<div class="app ${d}">${header(true)}<div class="main">${matchBox()}` +
+    `<div class="box"><span class="lbl">Who's in · 7 of 10</span><div class="cards" style="--card:6px">${PLAYERS.map(card).join("")}${slots(3, "auto")}</div></div>` +
+    `</div></div></div><figcaption>${cap} · on a PC</figcaption></figure>`;
+  const phone = `<figure><div class="phone"><div class="app ${d}">${header(false)}<div class="main">${matchBox(true)}` +
+    `<div class="box"><div class="me" style="--card:6.4px">${card(PLAYERS[2])}<p><b>Your card</b>12 matches played<br>7 won · 5 lost</p></div></div></div>` +
+    `<div class="tabs"><span class="on">Home</span><span>Matches</span><span>Players</span><span>Group</span></div></div></div>` +
+    `<figcaption>${cap} · on a phone</figcaption></figure>`;
+  st.innerHTML = desktop + phone;
+});
+// Empty slots take the height of a real card so the grid stays even.
+requestAnimationFrame(() => document.querySelectorAll(".cards").forEach((c) => {
+  const pc = c.querySelector(".pc"); if (!pc) return;
+  c.querySelectorAll(".slot").forEach((s) => (s.style.height = pc.offsetHeight + "px"));
+}));
+</script>

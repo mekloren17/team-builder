@@ -17,6 +17,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Local AI-assistant worktrees, not part of the repository:
+    ".claude/**",
   ]),
 ]);
 

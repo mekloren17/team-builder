@@ -14,7 +14,7 @@ type Props = { params: Promise<{ id: string }> };
 
 export default function GroupPage({ params }: Props) {
   return (
-    <Page>
+    <Page wide>
       <Suspense>
         <Home params={params} />
       </Suspense>
@@ -27,49 +27,54 @@ async function Home({ params }: Props) {
   const [{ me, canManage }, { matches, next }] = await Promise.all([loadGroup(id, `/groups/${id}`), loadMatches(id)]);
   const later = matches.filter((m) => m !== next && new Date(m.starts_at) > new Date(next?.starts_at ?? 0));
 
+  // Phone: match, your card, coming up. PC: match and coming up on the left, your card on the right.
   return (
-    <div>
-      {next ? (
-        <NextMatch groupId={id} match={next} me={me} />
-      ) : (
-        <section>
-          <Headline>No match on the calendar</Headline>
-          <Dateline>{canManage ? "Set one up and the group can start signing in." : "An admin will set up the next one. Stay ready."}</Dateline>
-          {canManage && (
-            <Link href={`/groups/${id}/matches/new`} className={`${button.primary} mt-5 w-full`}>
-              New match
-            </Link>
-          )}
-        </section>
-      )}
+    <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-start lg:gap-x-12">
+      <div className="lg:col-start-1">
+        {next ? (
+          <NextMatch groupId={id} match={next} me={me} />
+        ) : (
+          <section>
+            <Headline>No match on the calendar</Headline>
+            <Dateline>{canManage ? "Set one up and the group can start signing in." : "An admin will set up the next one. Stay ready."}</Dateline>
+            {canManage && (
+              <Link href={`/groups/${id}/matches/new`} className={`${button.primary} mt-5 w-full`}>
+                New match
+              </Link>
+            )}
+          </section>
+        )}
+      </div>
 
-      <SectionTitle
-        action={
-          hasProfile(me) && (
-            <Link href={`/groups/${id}/profile`} className={button.quiet}>
-              Edit my profile
+      <aside className="lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:[&>*:first-child]:mt-0">
+        <SectionTitle
+          action={
+            hasProfile(me) && (
+              <Link href={`/groups/${id}/profile`} className={button.quiet}>
+                Edit my profile
+              </Link>
+            )
+          }
+        >
+          Your card
+        </SectionTitle>
+        {hasProfile(me) ? (
+          <div className="flex justify-center">
+            <Card player={me} />
+          </div>
+        ) : (
+          <Panel className="p-5">
+            <p className="font-display text-2xl font-extrabold uppercase">You don&apos;t have a card yet</p>
+            <p className="mt-1 text-chalk-soft">A few honest questions about how you play. Two minutes, no trick questions.</p>
+            <Link href={`/groups/${id}/profile`} className={`${button.primary} mt-4 w-full`}>
+              Make my card
             </Link>
-          )
-        }
-      >
-        Your card
-      </SectionTitle>
-      {hasProfile(me) ? (
-        <div className="flex justify-center">
-          <Card player={me} />
-        </div>
-      ) : (
-        <Panel className="p-5">
-          <p className="font-display text-2xl font-extrabold uppercase">You don&apos;t have a card yet</p>
-          <p className="mt-1 text-ink-soft">A few honest questions about how you play. Two minutes, no trick questions.</p>
-          <Link href={`/groups/${id}/profile`} className={`${button.primary} mt-4 w-full`}>
-            Make my card
-          </Link>
-        </Panel>
-      )}
+          </Panel>
+        )}
+      </aside>
 
       {later.length > 0 && (
-        <>
+        <div className="lg:col-start-1">
           <SectionTitle
             action={
               <Link href={`/groups/${id}/matches`} className={button.quiet}>
@@ -80,7 +85,7 @@ async function Home({ params }: Props) {
             Coming up
           </SectionTitle>
           <Fixtures groupId={id} matches={later} myPlayerId={me.id} />
-        </>
+        </div>
       )}
     </div>
   );
@@ -131,14 +136,34 @@ async function NextMatch({ groupId, match, me }: { groupId: string; match: Fixtu
       <Headline>{headline}</Headline>
       <Dateline>
         {when} ·{" "}
-        <Link href={matchHref} className="font-semibold text-ink underline decoration-2">
+        <Link href={matchHref} className="font-semibold text-chalk underline decoration-2">
           who&apos;s in
         </Link>
       </Dateline>
+      <Scoreboard signed={signed} target={target} />
       <div className="mt-5">
         <MyAttendance groupId={groupId} matchId={match.id} playerId={me.id} signedForm={mine?.form ?? null} />
       </div>
     </section>
+  );
+}
+
+/** The sign-up count lit up like the scoreboard at the pitch. */
+function Scoreboard({ signed, target }: { signed: number; target: number }) {
+  return (
+    <div
+      className="mt-5 flex items-center justify-between rounded-md border border-rule bg-night px-4 py-2"
+      aria-label={`${signed} of ${target} players in`}
+    >
+      <span className="font-display text-sm font-black uppercase leading-tight tracking-widest text-chalk-soft">
+        Players in
+        <br />
+        of {target}
+      </span>
+      <span className="led tabular text-5xl font-black leading-none" aria-hidden>
+        {String(signed).padStart(2, "0")}
+      </span>
+    </div>
   );
 }
 

@@ -116,17 +116,17 @@ export function ProfileForm({ groupId, initial }: { groupId: string; initial: Pl
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <BackLink href={`/groups/${groupId}`}>Home</BackLink>
-        <span className="text-sm font-semibold text-ink-soft">
+        <span className="text-sm font-semibold text-chalk-soft">
           Step {step + 1} of {STEPS.length}
         </span>
       </div>
       <div className="grid grid-cols-4 gap-1" aria-hidden>
         {STEPS.map((s, i) => (
-          <span key={s} className={`h-1.5 ${i <= step ? "bg-ink" : "bg-paper-deep"}`} />
+          <span key={s} className={`h-1.5 ${i <= step ? "bg-chalk" : "bg-raised"}`} />
         ))}
       </div>
 
-      <div className="sticky top-0 z-10 -mx-4 flex justify-center border-b-2 border-ink bg-paper py-3 sm:-mx-6">
+      <div className="sticky top-0 z-10 -mx-4 flex justify-center border-b-2 border-line bg-turf py-3 sm:-mx-6">
         <PlayerCard
           name={displayName}
           overall={overall}
@@ -201,7 +201,7 @@ export function ProfileForm({ groupId, initial }: { groupId: string; initial: Pl
               ))}
             </div>
           </Field>
-          {keeper && <p className="text-ink-soft">You&apos;re our keeper: the next step asks about goalkeeping.</p>}
+          {keeper && <p className="text-chalk-soft">You&apos;re our keeper: the next step asks about goalkeeping.</p>}
           {main && (
             <Field label="Where else can you play? (optional)">
               <div className="grid grid-cols-2 gap-2">
@@ -222,7 +222,7 @@ export function ProfileForm({ groupId, initial }: { groupId: string; initial: Pl
 
       {step === 3 && (
         <div className="space-y-6">
-          <p className="text-ink-soft">
+          <p className="text-chalk-soft">
             Be honest: the teams are only as fair as these answers. They set your mark and the numbers on your card.
           </p>
           {(keeper ? GK_ATTRIBUTE_NAMES : ATTRIBUTE_NAMES).map((name, i) => (

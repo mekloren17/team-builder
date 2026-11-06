@@ -30,7 +30,7 @@ async function Chrome({ params }: { params: Promise<{ id: string }> }) {
       <Masthead
         title={group.name}
         right={
-          <Link href="/" className="hover:text-ink">
+          <Link href="/" className="hover:text-chalk">
             All groups
           </Link>
         }

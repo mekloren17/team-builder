@@ -1,52 +1,50 @@
 ---
 name: Team Builder
-description: The group's own pink sports daily, where every match gets its page and every player a mark.
+description: The sports centre at 21:00, where the group's cards shine under the floodlights.
 colors:
-  paper: "#f7dde2"
-  paper-deep: "#efc6ce"
-  sheet: "#ffffff"
-  ink: "#1a1414"
-  ink-soft: "#5e3f46"
-  ink-faint: "#8a6a71"
-  rule: "#1a141433"
-  red: "#c8102e"
-  red-deep: "#a00c24"
-  ok: "#1d6b3a"
+  turf: "#0d1a12"
+  night: "#050806"
+  panel: "#0b140f"
+  raised: "#1a2a1f"
+  chalk: "#f2f5ef"
+  chalk-soft: "#a9b5ac"
+  chalk-faint: "#7f8c82"
+  line: "#56665b"
+  rule: "#ffffff1f"
+  bib: "#e5ff3a"
+  bib-deep: "#cbe61f"
+  bib-orange: "#ff7a2e"
+  led: "#ffb000"
+  foul: "#ff6b5e"
+  foul-deep: "#ff8f85"
+  ok: "#6ee39a"
 typography:
   masthead:
-    fontFamily: "Barlow Condensed, Barlow, system-ui, sans-serif"
-    fontSize: "1.75rem"
-    fontWeight: 800
-    lineHeight: 1
-    letterSpacing: "-0.025em"
+    fontFamily: "Big Shoulders, Barlow, system-ui, sans-serif"
+    fontSize: "1.75rem (2rem from 1024px)"
+    fontWeight: 900
+    lineHeight: 1.15
   display:
-    fontFamily: "Barlow Condensed, Barlow, system-ui, sans-serif"
-    fontSize: "2.5rem"
-    fontWeight: 800
-    lineHeight: 0.95
-    letterSpacing: "-0.025em"
+    fontFamily: "Big Shoulders, Barlow, system-ui, sans-serif"
+    fontSize: "2.75rem"
+    fontWeight: 900
+    lineHeight: 0.92
   title:
-    fontFamily: "Barlow Condensed, Barlow, system-ui, sans-serif"
+    fontFamily: "Big Shoulders, Barlow, system-ui, sans-serif"
     fontSize: "1.25rem"
-    fontWeight: 800
+    fontWeight: 900
     lineHeight: 1.4
-    letterSpacing: "0.025em"
-  mark-lg:
-    fontFamily: "Barlow Condensed, Barlow, system-ui, sans-serif"
-    fontSize: "3.75rem"
-    fontWeight: 800
+    letterSpacing: "0.05em"
+  mark:
+    fontFamily: "Big Shoulders, Barlow, system-ui, sans-serif"
+    fontSize: "3.75rem / 1.875rem / 1.25rem"
+    fontWeight: 900
     lineHeight: 1
     fontFeature: "tnum"
-  mark-md:
-    fontFamily: "Barlow Condensed, Barlow, system-ui, sans-serif"
-    fontSize: "1.875rem"
-    fontWeight: 800
-    lineHeight: 1
-    fontFeature: "tnum"
-  mark-sm:
-    fontFamily: "Barlow Condensed, Barlow, system-ui, sans-serif"
-    fontSize: "1.25rem"
-    fontWeight: 800
+  led:
+    fontFamily: "Doto, ui-monospace, monospace"
+    fontSize: "1.875rem and up"
+    fontWeight: 900
     lineHeight: 1
     fontFeature: "tnum"
   body:
@@ -60,7 +58,7 @@ typography:
     fontWeight: 600
     lineHeight: 1.45
   label:
-    fontFamily: "Barlow Condensed, Barlow, system-ui, sans-serif"
+    fontFamily: "Big Shoulders, Barlow, system-ui, sans-serif"
     fontSize: "0.875rem"
     fontWeight: 700
     lineHeight: 1.25
@@ -71,85 +69,86 @@ typography:
     fontWeight: 600
     lineHeight: 1.43
 rounded:
-  none: "0px"
+  control: "6px"
+  tag: "2px"
+  bar: "9999px"
 spacing:
   hairline: "1px"
   rule: "2px"
-  masthead-rule: "3px"
   tab-rule: "4px"
   gutter: "16px"
   gutter-wide: "24px"
+  gutter-pc: "32px"
   section: "40px"
   control: "48px"
-  stamp: "56px"
   row: "64px"
   column: "672px"
+  frame: "1152px"
 components:
   button-primary:
-    backgroundColor: "{colors.red}"
-    textColor: "{colors.sheet}"
+    backgroundColor: "{colors.bib}"
+    textColor: "{colors.night}"
     typography: "{typography.title}"
-    rounded: "{rounded.none}"
+    rounded: "{rounded.control}"
     padding: "0 20px"
     height: "{spacing.control}"
   button-primary-hover:
-    backgroundColor: "{colors.red-deep}"
-  button-stamp:
-    backgroundColor: "{colors.red}"
-    textColor: "{colors.sheet}"
-    rounded: "{rounded.none}"
-    height: "{spacing.stamp}"
-    width: "100%"
+    backgroundColor: "{colors.bib-deep}"
   button-secondary:
-    backgroundColor: "{colors.sheet}"
-    textColor: "{colors.ink}"
+    backgroundColor: "{colors.panel}"
+    textColor: "{colors.chalk}"
     typography: "{typography.body-strong}"
-    rounded: "{rounded.none}"
+    rounded: "{rounded.control}"
     padding: "0 20px"
     height: "{spacing.control}"
   button-secondary-hover:
-    backgroundColor: "{colors.paper-deep}"
+    backgroundColor: "{colors.raised}"
   button-small:
-    backgroundColor: "{colors.sheet}"
-    textColor: "{colors.ink}"
+    backgroundColor: "{colors.panel}"
+    textColor: "{colors.chalk}"
     typography: "{typography.small}"
-    rounded: "{rounded.none}"
+    rounded: "{rounded.control}"
     padding: "0 12px"
     height: "40px"
   button-danger:
-    textColor: "{colors.red}"
+    textColor: "{colors.foul}"
     typography: "{typography.small}"
   button-quiet:
-    textColor: "{colors.ink-soft}"
+    textColor: "{colors.chalk-soft}"
     typography: "{typography.small}"
   input:
-    backgroundColor: "{colors.sheet}"
-    textColor: "{colors.ink}"
+    backgroundColor: "{colors.panel}"
+    textColor: "{colors.chalk}"
     typography: "{typography.body}"
-    rounded: "{rounded.none}"
+    rounded: "{rounded.control}"
     padding: "0 16px"
     height: "{spacing.control}"
   choice:
-    backgroundColor: "{colors.sheet}"
-    textColor: "{colors.ink}"
-    rounded: "{rounded.none}"
+    backgroundColor: "{colors.panel}"
+    textColor: "{colors.chalk}"
+    rounded: "{rounded.control}"
     padding: "8px 16px"
     height: "{spacing.control}"
   choice-selected:
-    backgroundColor: "{colors.ink}"
-    textColor: "{colors.paper}"
+    backgroundColor: "{colors.chalk}"
+    textColor: "{colors.turf}"
   panel:
-    backgroundColor: "{colors.sheet}"
-    textColor: "{colors.ink}"
-    rounded: "{rounded.none}"
+    backgroundColor: "{colors.panel}"
+    textColor: "{colors.chalk}"
+    rounded: "{rounded.control}"
+  scoreboard:
+    backgroundColor: "{colors.night}"
+    textColor: "{colors.led}"
+    typography: "{typography.led}"
+    rounded: "{rounded.control}"
   tab-bar:
-    backgroundColor: "{colors.ink}"
-    textColor: "{colors.paper}"
+    backgroundColor: "{colors.night}"
+    textColor: "{colors.chalk-soft}"
     typography: "{typography.label}"
     height: "{spacing.row}"
   tab-bar-wide:
-    backgroundColor: "{colors.paper}"
-    textColor: "{colors.ink-soft}"
+    backgroundColor: "transparent"
+    textColor: "{colors.chalk-soft}"
     height: "44px"
 ---
 
@@ -157,156 +156,105 @@ components:
 
 ## Overview
 
-**Creative North Star: "Le pagelle"**
+**Creative North Star: "Floodlights"**
 
-The app is the group's own pink sports daily. Every match gets its own page with a condensed headline and a dateline, and every player gets a mark printed beside their name, the way the Monday ratings run in the Italian sports papers. The ground is pink newsprint; the content sits in white boxes ruled in ink; one red does the shouting. It is read on a phone, often outdoors, so the system is high-contrast, large-type and large-target by default.
+The app looks like the sports centre on a Thursday night: dark artificial turf with mowing stripes, a floodlight glow at the top of the page, chalk-white lines, and a scoreboard whose dot digits light up as people sign up. The two teams are the two bibs everyone has worn: fluorescent yellow and orange.
 
-Density is that of a newspaper column: one narrow column (672px max) centred on wide screens, full-bleed with a 16px gutter on the phone. Hierarchy comes from type weight and ink rules, never from shadows, tints or rounded cards. The one authored motion is the stamp: signing up for a match lands like a rubber stamp on the page.
+The player cards are the stars. They keep their own design (rounded tiles, metallic gradients, shadow), and this environment exists to make them shine: glossy metal reads best on a dark ground.
 
-The world deliberately refuses the category default of a sports app: white rounded cards on grey, a green accent, a grey tab bar. Player cards (`src/components/player-card.tsx`) are an out-of-system exception and keep their own pre-existing design; see Components.
+It is a website first, used on phones from a WhatsApp link and on PCs, especially by admins. On a phone it is one column with a bottom tab bar; from 1024px the page frame widens to 1152px, navigation sits under the masthead, and pages that benefit (the group home) use two columns.
+
+Chosen on 05/11/2026 after the design review in `docs/design-directions.html`, replacing the earlier "Le pagelle" pink sports-paper style.
 
 **Key Characteristics:**
-- Pink newsprint ground, white boxed panels, ink rules (1px hairline, 2px rule, 3px masthead rule).
-- One red for the primary action, the current tab and live state.
-- Barlow for text; Barlow Condensed in heavy uppercase for headlines, section titles, tab labels and every mark.
-- Square corners everywhere in the system.
-- Flat: no shadows; depth is ink rules and the paper/sheet contrast.
-- Numbers as marks: heavy condensed tabular numerals; win chance as one ruled bar split at the exact percentage.
+- Dark turf ground with stripes and a floodlight glow (set on `body`, fixed).
+- Dark panels with a 2px `line` border and 6px corners.
+- One bib yellow for the primary action, the current tab, focus and team A; bib orange only for team B.
+- Big Shoulders in heavy uppercase for headlines, labels and marks; Doto lit in amber for big scoreboard numbers; Barlow for text (and inside the cards).
 
 ## Colors
 
-A warm two-tone print palette: pink paper and near-black ink, with one newspaper red.
-
 ### Primary
-- **Pagella Red** (`red`): the primary action (the "I'm in" stamp, primary buttons), the current tab's 4px marker, the "You're in" stamp, focus outlines, text selection, caret and native form accents. Also carries destructive text actions and error text.
-- **Pressed Red** (`red-deep`): hover state of red buttons and red text actions only.
+- **Bib Yellow** (`bib`): the primary action ("I'm in", "Use these teams"), the current tab's 4px bar, the "You're in" tag, focus outlines, text selection, caret, and team A wherever teams appear (win bar, team names, pitch tags). Text on it is `night`.
+- **Pressed Bib** (`bib-deep`): hover of bib buttons only.
+- **Bib Orange** (`bib-orange`): team B, and nothing else.
 
 ### Secondary
-- **Pitch Ledger Green** (`ok`): the "You're in" confirmation on the fixture board. Used for that confirmation only; it is not an accent.
+- **Scoreboard Amber** (`led`): lit numbers only (sign-up count, win percentages), always with the `.led` glow class.
+- **Foul Red** (`foul`, hover `foul-deep`): error text and destructive text actions. Never a fill.
+- **Pitch Green** (`ok`): the "You're in" confirmation on the fixture board.
 
 ### Neutral
-- **Pink Newsprint** (`paper`): the page ground, the masthead, the wide-screen tab row, text on ink (selected choices, inactive tab labels at 70%), and the hover tint of fixture rows. Also the browser `theme-color`.
-- **Pressed Pink** (`paper-deep`): hover fill on white controls and the highlight row for "me" in the ratings table.
-- **Sheet White** (`sheet`): every boxed panel, input, secondary button and unselected choice.
-- **Ink** (`ink`): all body text, every border and rule, selected choices, the phone tab bar, the "You" chip.
-- **Faded Ink** (`ink-soft`): datelines, secondary lines, quiet actions, inactive wide-screen tabs, the dashed border of empty states, the scrollbar thumb.
-- **Pale Ink** (`ink-faint`): input placeholders, on white only.
-- **Hairline** (`rule`, ink at 20%): 1px dividers between rows inside a panel (fixture rows, ratings rows, form-choice cells).
+- **Turf** (`turf`): the page ground and the browser `theme-color`; text on chalk fills.
+- **Night** (`night`): the scoreboard, the phone tab bar, overlays, text on bib.
+- **Panel** (`panel`): every boxed panel, input, secondary button and unselected choice.
+- **Raised** (`raised`): hover fills on panels and the "me" row in tables.
+- **Chalk** (`chalk`): body text, selected choices (as a fill), the "You" chip.
+- **Faded Chalk** (`chalk-soft`) and **Pale Chalk** (`chalk-faint`): secondary text; placeholders.
+- **Line** (`line`): 2px borders of panels and controls.
+- **Hairline** (`rule`, white at 12%): 1px dividers inside panels, the masthead rule.
 
 ### Named Rules
-**The One Red Rule.** Red marks what to press, where you are, and what is live. It never fills a panel, a heading or a decorative band. If a screen has two red buttons, one of them is wrong.
+**The One Bib Rule.** Bib yellow marks what to press, where you are, and team A. If a screen has two yellow buttons, one of them is wrong.
 
-**The Paper and Sheet Rule.** Content that can be read or acted on sits on a white sheet with a 2px ink border; the pink paper is the space between. Never put a white surface on paper without its ink rule.
+**The Two Bibs Rule.** Team A is always yellow and team B always orange, on every screen.
 
 ## Typography
 
-**Display Font:** Barlow Condensed (weights 600, 700, 800 via next/font, variable `--font-barlow-condensed`), falling back to Barlow, then system-ui.
-**Body Font:** Barlow (weights 400, 500, 600, 700 via next/font, variable `--font-barlow`), falling back to system-ui.
-
-**Character:** A sports-desk pairing from one family: the condensed cut set in 800 uppercase is the paper's headline voice and its numerals; the regular cut is the reporting underneath. Same skeleton, so the two never fight.
+**Display:** Big Shoulders (900, via next/font, `--font-big-shoulders`), tall and narrow like sports-centre signage. **Scoreboard:** Doto (900, `--font-doto`), a dot-matrix face, only for big lit numbers. **Body:** Barlow (400 to 700, `--font-barlow`); the player cards use it too.
 
 ### Hierarchy
-- **Masthead** (800, 1.75rem, line-height 1, tight tracking, uppercase): the group name at the top of every group page, sitting on a 3px ink rule.
-- **Display** (800, 2.5rem, line-height 0.95, tight tracking, uppercase, balanced wrap): the page headline (`Headline`), written as words: "Four in, six spots left", "The ratings".
-- **Title** (800, 1.25rem, wide tracking, uppercase): section titles on a 2px ink rule (`SectionTitle`), empty-state titles, team names, the primary button label.
-- **Mark** (800, tabular numerals, line-height 1; 3.75rem / 1.875rem / 1.25rem): every number that judges: overall, win %, strength, sign-up count (`Mark`, fixtures count at 1.5rem).
-- **Body** (400 to 600, 1rem, line-height 1.45): names (600), datelines (500, `ink-soft`), reporting copy.
-- **Label** (700, 0.875rem, wide tracking, uppercase, condensed): tab labels and table headers.
-- **Small** (600, 0.875rem; 0.75rem for meta lines): row meta, inline actions, errors.
+- **Masthead** (900, 1.75rem, 2rem from 1024px, uppercase): the group name.
+- **Display** (900, 2.75rem, line-height 0.92, uppercase, balanced): the page headline, counts written as words ("Seven in, three spots left").
+- **Title** (900, 1.25rem, wide tracking, uppercase): section titles on a 1px `line` rule, team names, the primary button label (1.5rem).
+- **Mark** (900, tabular): every number a player is judged by; `led` for scoreboard numbers.
+- **Body / Label / Small** as before: Barlow for running text, Big Shoulders bold uppercase for tabs and table headers.
 
 ### Named Rules
-**The Condensed Caps Rule.** Barlow Condensed appears only in heavy uppercase (headlines, section titles, labels) or as numerals. Running text is always Barlow, never condensed.
-
-**The Mark Rule.** Any number a player is judged by is a `Mark`: condensed 800, tabular, set flush right in tables. Never a pill, a badge or a coloured chip.
+**The Scoreboard Rule.** Doto is only for numbers of 1.875rem or more (it is hard to read smaller). Ratings in tables stay Big Shoulders.
 
 ## Layout
 
-One column, max 672px, centred (`Page`), with a 16px side gutter on the phone and 24px from 640px up; page body pads 24px top and bottom. The masthead repeats the same column inside a full-width paper band.
+The shared frame (`FRAME` in `ui.tsx`) is 672px on phones and tablets and 1152px from 1024px, with gutters of 16px, 24px from 640px and 32px from 1024px. `Page` keeps reading pages (forms, lists) in a 672px column, left-aligned within the frame on a PC; `Page wide` uses the whole frame.
 
-Vertical rhythm is set by section breaks: each `SectionTitle` opens with 40px above, a 2px ink rule, 8px to the title, 12px below. Headlines are followed by their dateline at 8px.
+The group home on a PC: next match and "Coming up" on the left, "Your card" in a 18rem column on the right. On the phone the order is match, card, coming up.
 
-Touch targets: 48px minimum for buttons, inputs and choices; 40px for small inline actions and back links; 64px for list rows, form-of-the-day cells and phone tabs; 56px for the "I'm in" stamp.
+Navigation responds at 768px: below, the tab bar is fixed to the bottom in `night`; from 768px it is a row under the masthead on the turf.
 
-Navigation responds at 768px: below it, the tab bar is fixed to the bottom in ink with safe-area padding; from 768px up, it becomes a static row under the masthead on paper with a 2px ink bottom rule. Fixture rows use a fixed three-column grid (when, count, chevron); the form-of-the-day picker is a five-column grid inside one ink box.
+Touch targets: 48px for buttons, inputs and choices; 40px for small actions; 64px for rows and phone tabs.
 
 ## Elevation & Depth
 
-The system is flat. There are no box-shadows anywhere in it. Depth is printed: the paper/sheet contrast separates content from ground, 2px ink borders box it, 1px hairlines divide inside a box, and 3px/4px rules mark the masthead and the current tab. State is shown by fill (paper-deep on hover, ink when selected), not by lift.
-
-### Named Rules
-**The Printed Depth Rule.** If something needs to stand out, give it an ink rule or an ink fill. Never a shadow, a blur or a glow.
+Panels are flat: depth comes from the dark panel on the striped turf and the 2px `line` border. The only shadows in the app are the player cards' own and the scoreboard glow.
 
 ## Shapes
 
-Square corners throughout (0px). Borders are the form language: 2px solid ink for panels, controls and the win bar; 2px dashed `ink-soft` for empty states; 1px `rule` hairlines between rows and cells; a 3px ink rule under the masthead; a 4px red bar on the current tab (top edge on the phone, bottom edge on wide screens).
-
-The only tilt is the stamp: the unsigned "I'm in" button sits rotated -1deg and straightens on press. Circles appear only on the pitch in the line-up (centre circle, player photo tokens), which is a drawn pitch, not a panel.
+Panels, controls, tables and the pitch have 6px corners (`rounded-md`); tags 2px; the win bar is a full pill. Circles only for photo tokens on the pitch.
 
 ## Components
 
-### Buttons
-Blunt and printed: rectangles with a 2px ink border, no radius, 150ms colour transitions, 45% opacity when disabled.
-- **Primary** (`button.primary`): red fill, white condensed 800 uppercase label at 1.25rem, 48px tall, 20px side padding; hover to `red-deep`. One per screen.
-- **Stamp** (the "I'm in" sign-up): primary at 56px, full width, 1.5rem label, rotated -1deg; on press it rotates to 0 and scales to 0.98.
-- **Secondary** (`button.secondary`): white with ink border and ink 600 label; hover fills `paper-deep`.
-- **Small** (`button.small`): the secondary look at 40px and 0.875rem, for actions inside lists.
-- **Danger / Quiet** (`button.danger`, `button.quiet`): underlined text actions in red (2px underline) or `ink-soft` (1px underline), offset 3px.
+- **Buttons:** primary in bib with `night` text and a heavy uppercase label; secondary and small are panels with a `line` border; danger and quiet are underlined text.
+- **Choices:** panel rows; selected fills with chalk and turf text. The form-of-the-day picker is five cells in one box.
+- **Panel / Empty:** dark panel with `line` border; empty states have a dashed `chalk-soft` border.
+- **Scoreboard (signature):** on the group home, a `night` box with "Players in / of N" on the left and the count in lit amber digits (`07`) on the right.
+- **Win bar (signature):** team names in their bib colour, percentages as lit marks, one pill bar split yellow/orange at the exact percentage.
+- **Line-up:** a darker green striped pitch with chalk markings; player tokens are photo circles ringed in their card tier, with an overall tag in their team's bib colour.
+- **Ratings table and fixture board:** boxed panels, hairline rows, `raised` hover, the viewer's row in `raised` with a chalk "You" chip.
+- **Motion:** `stamp-in` (220ms) lights up the "You're in" tag like a scoreboard; off under `prefers-reduced-motion`. Everything else is a 150ms colour transition.
 
-### Choices
-- **Style** (`choice(selected)`): full-width white rows with a 2px ink border, 48px tall, left-aligned 500 text; hover `paper-deep`.
-- **State:** selected inverts to ink fill with paper text. No checkmarks, no colour.
-- **Form of the day:** five cells in one ink box divided by hairlines, each a `FormIcon` arrow (down for a bad day, up for on fire) over its label; the selected cell is ink.
-
-### Cards / Containers
-- **Panel** (`Panel`): white sheet, 2px ink border, square corners, no shadow. Internal padding is set by content (16px for the win bar, 16px x 8px for rows).
-- **Empty** (`Empty`): 2px dashed `ink-soft` box, 20px x 24px padding, condensed title, `ink-soft` body that says what happens next.
-
-### Inputs / Fields
-- **Style** (`input`): white, 2px ink border, 48px tall, 16px side padding, 1rem text, `ink-faint` placeholder, red caret.
-- **Focus:** the browser outline is replaced by a 3px red outline on `:focus-visible` (offset 2px globally).
-- **Error:** `ErrorText`, 0.875rem 600 red, announced as an alert.
-
-### Navigation
-- **Masthead** (`Masthead`): group name in masthead type on paper, optional `ink-soft` link right, 3px ink rule below.
-- **Tab bar** (`TabBar`): on the phone, a fixed ink bar of 64px cells, icon over a condensed bold uppercase label; inactive labels paper at 70%, current tab white with a 4px red top bar. From 768px, a row of 44px tabs on paper, `ink-soft` inactive, ink current with a 4px red bottom bar.
-- **Back link** (`BackLink`): chevron plus 0.875rem 600 `ink-soft` text, ink on hover.
-
-### Headline and Dateline (signature)
-`Headline` in display type, followed by `Dateline` (1rem, 500, `ink-soft`): when, where, how many. Counts in headlines are spelled as words (`inWords`).
-
-### The ratings table (signature)
-The pagelle: a white ink-boxed table with condensed uppercase headers on a 2px ink rule, rows split by hairlines, rank in `ink-soft` tabular, name in 600 with a meta line, and the `Mark` flush right at 1.875rem. The viewer's own row fills `paper-deep` and carries an ink "You" chip.
-
-### Fixture board (signature)
-`Fixtures`: one ink-boxed list, 64px rows, date and format on the left, the sign-up count as a condensed mark ("7/10") with "in" or a green "You're in" under it, chevron right; hover tints the row paper.
-
-### Win bar (signature)
-`WinBar`: both percentages as small marks over a 12px bar boxed in 2px ink, filled ink up to team A's exact percentage and white after it.
-
-### Line-up
-`Lineup`: the win bar in a panel, condensed team headers with strength as a mark, and a drawn green pitch (ink-bordered) with white 30% markings. Player tokens are photo circles ringed in their card tier colour, an ink tag with overall and form arrow, and a short name.
-
-### Motion
-One authored moment: `stamp-in` (200ms, `cubic-bezier(0.16, 1, 0.3, 1)`, from scale 1.35 rotated -4deg and transparent to rest) plays when "You're in" appears. Disabled under `prefers-reduced-motion`. Everything else is a 150ms colour transition.
-
-### Out-of-system exception: Player cards
-`PlayerCard` (`src/components/player-card.tsx`) predates this world and is deliberately left as it is: tall tiles with rounded corners, bronze/silver/gold diagonal gradients, a stripe across the middle and a drop shadow. It is placed inside the system (Home, Players) but does not belong to it. Do not borrow its radius, gradients or shadow for new components, and do not restyle it to the system without an explicit decision.
+### Player cards
+`PlayerCard` (`src/components/player-card.tsx`) keeps its design: rounded tiles, bronze/silver/gold gradients, a stripe and a shadow. Do not restyle it; do not copy its gradients into other components.
 
 ## Do's and Don'ts
 
 ### Do:
-- **Do** box readable content in a white sheet with a 2px ink border on the pink paper.
-- **Do** keep red to the primary action, the current tab, live state, focus and errors; hover red to `red-deep`.
-- **Do** set every judged number as a condensed 800 tabular mark.
-- **Do** open sections with an ink rule and a condensed uppercase title (`SectionTitle`).
-- **Do** write headline counts as words ("Seven in, three spots left") with the facts in the dateline.
-- **Do** show selection by inverting to ink fill with paper text.
-- **Do** keep targets at 48px or more (64px for rows and tabs) and the column at 672px.
+- **Do** put content on dark panels with a `line` border on the turf.
+- **Do** keep bib yellow for the primary action, current tab, focus and team A; orange only for team B.
+- **Do** use `Page wide` and two columns on a PC where the screen has more than one thing to show.
+- **Do** keep text chalk-white and large: dark screens suffer in sunlight.
 
 ### Don't:
-- **Don't** add shadows, blurs or glows to system components; depth is ink rules and fills.
-- **Don't** round corners on panels, buttons, inputs, choices or tables.
-- **Don't** use red as a fill for anything other than the primary action, or as a decorative band.
-- **Don't** set running text in Barlow Condensed, or condensed text in lowercase.
-- **Don't** introduce a green accent, a grey tab bar or white rounded cards on grey: the category default this world replaces.
-- **Don't** copy the player card's gradients, radius or shadow into new components.
+- **Don't** use fluorescent yellow as text on a light surface, or as a large decorative fill.
+- **Don't** use Doto for small numbers or for words.
+- **Don't** add new shadows or glows besides the cards and the scoreboard.
+- **Don't** change the player cards.

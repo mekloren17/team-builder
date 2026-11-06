@@ -1,36 +1,48 @@
 @import "tailwindcss";
 
-/* Le pagelle: the group's own pink sports daily. See DESIGN.md. */
+/* Floodlights: the sports centre at 21:00. Dark turf, chalk lines, bib yellow, a lit scoreboard. See DESIGN.md. */
 :root {
-  color-scheme: light;
+  color-scheme: dark;
 }
 
 @theme {
-  --color-paper: #f7dde2; /* pink newsprint ground */
-  --color-paper-deep: #efc6ce; /* pressed rows, inactive fills */
-  --color-sheet: #ffffff; /* boxed panels on the page */
-  --color-ink: #1a1414;
-  --color-ink-soft: #5e3f46; /* secondary text, tinted from the paper */
-  --color-ink-faint: #8a6a71; /* placeholders on white only */
-  --color-rule: #1a141433;
-  --color-red: #c8102e; /* primary action, current tab, live state */
-  --color-red-deep: #a00c24;
-  --color-ok: #1d6b3a;
+  --color-turf: #0d1a12; /* the page ground: artificial turf at night */
+  --color-night: #050806; /* scoreboard, phone tab bar, overlays */
+  --color-panel: #0b140f; /* boxed panels on the turf */
+  --color-raised: #1a2a1f; /* hover fills, the "me" row */
+  --color-chalk: #f2f5ef; /* text, selected fills */
+  --color-chalk-soft: #a9b5ac; /* secondary text */
+  --color-chalk-faint: #7f8c82; /* placeholders */
+  --color-line: #56665b; /* borders of panels and controls */
+  --color-rule: #ffffff1f; /* hairlines inside a panel */
+  --color-bib: #e5ff3a; /* primary action, current tab, focus, team A */
+  --color-bib-deep: #cbe61f;
+  --color-bib-orange: #ff7a2e; /* team B */
+  --color-led: #ffb000; /* scoreboard numbers */
+  --color-foul: #ff6b5e; /* errors and destructive actions */
+  --color-foul-deep: #ff8f85;
+  --color-ok: #6ee39a; /* "You're in" */
 
   /* legacy names still used by the player card and a few controls */
-  --color-background: #f7dde2;
-  --color-foreground: #1a1414;
+  --color-background: #0d1a12;
+  --color-foreground: #f2f5ef;
 }
 
 /* fonts come from next/font variables set on <html> */
 @theme inline {
   --font-sans: var(--font-barlow), system-ui, sans-serif;
-  --font-display: var(--font-barlow-condensed), var(--font-barlow), system-ui, sans-serif;
+  --font-display: var(--font-big-shoulders), var(--font-barlow), system-ui, sans-serif;
+  --font-led: var(--font-doto), ui-monospace, monospace;
 }
 
 body {
-  background: var(--color-paper);
-  color: var(--color-ink);
+  background-color: var(--color-turf);
+  /* floodlight glow at the top, mowing stripes across the pitch */
+  background-image:
+    radial-gradient(ellipse 110% 420px at 50% -120px, #fff7d633, transparent 70%),
+    repeating-linear-gradient(90deg, #10211a 0 72px, #0c1912 72px 144px);
+  background-attachment: fixed;
+  color: var(--color-chalk);
   font-family: var(--font-barlow), system-ui, sans-serif;
   font-size: 1rem;
   line-height: 1.45;
@@ -38,46 +50,54 @@ body {
 
 /* Browser surfaces in the palette */
 ::selection {
-  background: var(--color-red);
-  color: #fff;
+  background: var(--color-bib);
+  color: var(--color-turf);
 }
 :focus-visible {
-  outline: 3px solid var(--color-red);
+  outline: 3px solid var(--color-bib);
   outline-offset: 2px;
 }
 input,
 textarea,
 select {
-  caret-color: var(--color-red);
-  accent-color: var(--color-red);
+  caret-color: var(--color-bib);
+  accent-color: var(--color-bib);
 }
 input[type="range"],
 input[type="checkbox"] {
-  accent-color: var(--color-red);
+  accent-color: var(--color-bib);
 }
 a {
   text-underline-offset: 3px;
 }
 html {
-  scrollbar-color: var(--color-ink-soft) var(--color-paper);
+  scrollbar-color: var(--color-line) var(--color-turf);
 }
 .tabular {
   font-variant-numeric: tabular-nums;
 }
+/* Lit scoreboard digits */
+.led {
+  font-family: var(--font-led);
+  color: var(--color-led);
+  text-shadow: 0 0 12px #ffb00066;
+}
 
-/* The one authored moment: signing up lands like a stamp on the page. */
+/* The one authored moment: signing up lights up like the scoreboard. */
 @keyframes stamp-in {
   from {
     opacity: 0;
-    transform: scale(1.35) rotate(-4deg);
+    transform: scale(1.25);
+    filter: brightness(2);
   }
   to {
     opacity: 1;
-    transform: scale(1) rotate(0);
+    transform: scale(1);
+    filter: none;
   }
 }
 .stamp-in {
-  animation: stamp-in 200ms cubic-bezier(0.16, 1, 0.3, 1);
+  animation: stamp-in 220ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 @media (prefers-reduced-motion: reduce) {
   .stamp-in {

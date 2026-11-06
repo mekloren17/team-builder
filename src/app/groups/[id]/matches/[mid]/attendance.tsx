@@ -36,14 +36,14 @@ export function MyAttendance({
         <legend className="mb-2 font-semibold">
           {imIn ? (
             <span className="stamp-in inline-block">
-              <span className="mr-2 inline-block border-2 border-red px-2 font-display text-lg font-extrabold uppercase text-red">You&apos;re in</span>
+              <span className="mr-2 inline-block rounded-sm bg-bib px-2 font-display text-lg font-black uppercase text-night">You&apos;re in</span>
               How are the legs today?
             </span>
           ) : (
             "How are the legs today?"
           )}
         </legend>
-        <div className="grid grid-cols-5 border-2 border-ink">
+        <div className="grid grid-cols-5 rounded-md border-2 border-line">
           {FORM_LEVELS.map((l) => {
             const on = form === l.value;
             return (
@@ -57,7 +57,7 @@ export function MyAttendance({
                 }}
                 aria-pressed={on}
                 className={`flex min-h-16 flex-col items-center justify-center gap-1 border-r border-rule px-0.5 text-sm font-semibold transition-colors duration-150 last:border-r-0 ${
-                  on ? "bg-ink text-paper" : "bg-sheet text-ink hover:bg-paper-deep"
+                  on ? "bg-chalk text-turf" : "bg-panel text-chalk hover:bg-raised"
                 }`}
               >
                 <FormIcon form={l.value} className="size-6" />

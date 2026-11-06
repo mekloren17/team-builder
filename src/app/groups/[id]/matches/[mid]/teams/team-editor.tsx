@@ -93,8 +93,8 @@ export function TeamEditor({
   }
 
   const tab = (on: boolean) =>
-    `min-h-11 shrink-0 border-2 border-ink px-4 text-sm font-semibold transition-colors duration-150 ${
-      on ? "bg-ink text-paper" : "bg-sheet text-ink hover:bg-paper-deep"
+    `min-h-11 shrink-0 rounded-md border-2 border-line px-4 text-sm font-semibold transition-colors duration-150 ${
+      on ? "bg-chalk text-turf" : "bg-panel text-chalk hover:bg-raised"
     }`;
 
   return (
@@ -112,7 +112,7 @@ export function TeamEditor({
               choose(shown);
               setShown(shown + 1);
             }}
-            className="inline-flex min-h-11 shrink-0 items-center gap-1 border-2 border-dashed border-ink px-4 text-sm font-semibold hover:bg-sheet"
+            className="inline-flex min-h-11 shrink-0 items-center gap-1 rounded-md border-2 border-dashed border-line px-4 text-sm font-semibold hover:bg-panel"
           >
             <Plus className="size-4" aria-hidden /> Another option
           </button>
@@ -127,12 +127,12 @@ export function TeamEditor({
         </button>
       </div>
 
-      <div className="border-2 border-ink bg-sheet p-4">
-        <p className="mb-2 text-sm font-semibold text-ink-soft">Chance of winning{edited && " (after your changes)"}</p>
+      <div className="rounded-md border-2 border-line bg-panel p-4">
+        <p className="mb-2 text-sm font-semibold text-chalk-soft">Chance of winning{edited && " (after your changes)"}</p>
         {bothFilled ? (
           <WinBar probA={probA} labelA="Team A" labelB="Team B" />
         ) : (
-          <p className="text-sm text-ink-soft">Put at least one player in each team to see it.</p>
+          <p className="text-sm text-chalk-soft">Put at least one player in each team to see it.</p>
         )}
       </div>
 
@@ -156,7 +156,7 @@ export function TeamEditor({
       {view === "list" ? (
         <>
           {toPick.length > 0 && <PickList players={toPick} onPick={pick} />}
-          <p className="flex items-center gap-2 text-sm text-ink-soft">
+          <p className="flex items-center gap-2 text-sm text-chalk-soft">
             <ArrowLeftRight className="size-4" aria-hidden /> Tap a player to send them to the other team.
           </p>
           <div className="grid grid-cols-2 gap-3">
@@ -202,12 +202,12 @@ function TeamColumn({
 }) {
   const sorted = [...ids].sort((a, b) => byId.get(b)!.overall - byId.get(a)!.overall);
   return (
-    <div className="border-2 border-ink bg-sheet">
-      <div className="flex items-baseline justify-between border-b-2 border-ink px-3 py-2">
-        <h2 className="font-display text-lg font-extrabold uppercase">{title}</h2>
+    <div className="rounded-md border-2 border-line bg-panel">
+      <div className="flex items-baseline justify-between border-b-2 border-line px-3 py-2">
+        <h2 className={`font-display text-lg font-black uppercase ${title.endsWith("B") ? "text-bib-orange" : "text-bib"}`}>{title}</h2>
         {ids.length > 0 && <Mark value={strength.toFixed(1)} size="sm" />}
       </div>
-      {ids.length === 0 && <p className="px-3 py-4 text-sm text-ink-soft">Nobody yet</p>}
+      {ids.length === 0 && <p className="px-3 py-4 text-sm text-chalk-soft">Nobody yet</p>}
       <ul>
         {sorted.map((id) => {
           const p = byId.get(id)!;
@@ -216,11 +216,11 @@ function TeamColumn({
               <button
                 type="button"
                 onClick={() => onTap(id)}
-                className="flex min-h-12 w-full items-center justify-between gap-2 px-3 text-left transition-colors duration-150 hover:bg-paper"
+                className="flex min-h-12 w-full items-center justify-between gap-2 px-3 text-left transition-colors duration-150 hover:bg-raised"
               >
                 <span className="min-w-0 truncate font-semibold">
                   {p.name}
-                  {p.positions.includes("GK") && <span className="ml-1 text-xs font-bold text-ink-soft">GK</span>}
+                  {p.positions.includes("GK") && <span className="ml-1 text-xs font-bold text-chalk-soft">GK</span>}
                 </span>
                 <span className="flex shrink-0 items-center gap-1">
                   <FormIcon form={p.form} className="size-4" />
@@ -239,8 +239,8 @@ function TeamColumn({
 function PickList({ players, onPick }: { players: EditorPlayer[]; onPick: (id: string, team: "A" | "B") => void }) {
   const sorted = [...players].sort((a, b) => b.overall - a.overall);
   return (
-    <div className="border-2 border-ink bg-sheet">
-      <h2 className="border-b-2 border-ink px-3 py-2 font-display text-lg font-extrabold uppercase">
+    <div className="rounded-md border-2 border-line bg-panel">
+      <h2 className="border-b-2 border-line px-3 py-2 font-display text-lg font-black uppercase">
         Still to pick ({players.length})
       </h2>
       <ul>
@@ -248,15 +248,15 @@ function PickList({ players, onPick }: { players: EditorPlayer[]; onPick: (id: s
           <li key={p.id} className="flex min-h-12 items-center justify-between gap-2 border-b border-rule px-3 py-1 last:border-b-0">
             <span className="min-w-0 truncate font-semibold">
               {p.name}
-              {p.positions.includes("GK") && <span className="ml-1 text-xs font-bold text-ink-soft">GK</span>}
+              {p.positions.includes("GK") && <span className="ml-1 text-xs font-bold text-chalk-soft">GK</span>}
             </span>
             <span className="flex shrink-0 items-center gap-2">
               <FormIcon form={p.form} className="size-4" />
               <Mark value={p.overall} size="sm" />
-              <button type="button" onClick={() => onPick(p.id, "A")} className={button.small} aria-label={`${p.name} to Team A`}>
+              <button type="button" onClick={() => onPick(p.id, "A")} className={`${button.small} font-black text-bib`} aria-label={`${p.name} to Team A`}>
                 A
               </button>
-              <button type="button" onClick={() => onPick(p.id, "B")} className={button.small} aria-label={`${p.name} to Team B`}>
+              <button type="button" onClick={() => onPick(p.id, "B")} className={`${button.small} font-black text-bib-orange`} aria-label={`${p.name} to Team B`}>
                 B
               </button>
             </span>

@@ -29,7 +29,7 @@ export function CopyInvite({ url }: { url: string }) {
         value={url}
         aria-label="Invite link"
         onFocus={(e) => e.target.select()}
-        className="min-h-12 min-w-0 flex-1 border-2 border-r-0 border-ink bg-sheet px-3 text-sm"
+        className="min-h-12 min-w-0 flex-1 border-2 border-r-0 border-line bg-panel px-3 text-sm"
       />
       <button type="button" onClick={share} className={`${button.primary} shrink-0 text-base`}>
         {copied ? <Check className="size-5" aria-hidden /> : <Share2 className="size-5" aria-hidden />}

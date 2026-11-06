@@ -30,9 +30,9 @@ async function Players({ params }: Props) {
         results.
       </Dateline>
 
-      <table className="mt-5 w-full border-2 border-ink bg-sheet">
+      <div className="mt-5 overflow-hidden rounded-md border-2 border-line bg-panel"><table className="w-full">
         <thead>
-          <tr className="border-b-2 border-ink text-left font-display text-sm font-bold uppercase tracking-wide">
+          <tr className="border-b-2 border-line text-left font-display text-sm font-bold uppercase tracking-wide">
             <th className="w-10 py-2 pl-3 text-right">#</th>
             <th className="py-2 pl-3">Player</th>
             <th className="py-2 pl-2">Role</th>
@@ -44,7 +44,7 @@ async function Players({ params }: Props) {
             <Row key={p.id} player={p} rank={i + 1} isMe={p.id === me.id} />
           ))}
         </tbody>
-      </table>
+      </table></div>
 
       <SectionTitle>The cards</SectionTitle>
       <div className="flex flex-wrap justify-center gap-3 sm:justify-start">
@@ -76,12 +76,12 @@ function positionLabel(p: PlayerRow): string {
 function Row({ player: p, rank, isMe }: { player: PlayerRow; rank: number; isMe: boolean }) {
   const ovr = displayOverall(p);
   return (
-    <tr className={`border-b border-rule last:border-b-0 ${isMe ? "bg-paper-deep" : ""}`}>
-      <td className="tabular py-2.5 pl-3 text-right text-sm font-semibold text-ink-soft">{rank}</td>
+    <tr className={`border-b border-rule last:border-b-0 ${isMe ? "bg-raised" : ""}`}>
+      <td className="tabular py-2.5 pl-3 text-right text-sm font-semibold text-chalk-soft">{rank}</td>
       <td className="py-2.5 pl-3">
         <span className="font-semibold">{p.display_name}</span>
-        {isMe && <span className="ml-2 bg-ink px-1.5 py-0.5 text-xs font-bold uppercase text-paper">You</span>}
-        <span className="block text-xs text-ink-soft">
+        {isMe && <span className="ml-2 bg-chalk px-1.5 py-0.5 text-xs font-bold uppercase text-turf">You</span>}
+        <span className="block text-xs text-chalk-soft">
           {isGuest(p) ? "Guest" : isProvisional(p.matches_played) ? "Provisional" : `${p.matches_played} matches`}
         </span>
       </td>
