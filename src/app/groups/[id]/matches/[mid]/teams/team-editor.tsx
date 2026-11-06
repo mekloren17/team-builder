@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { ArrowLeftRight, Plus } from "lucide-react";
+import { ArrowLeftRight, Hand, Plus } from "lucide-react";
 import { assignPositions, effectiveMu, splitStrengths, winProbability, type BalancePlayer } from "@/lib/engine/engine";
 import { Lineup, type LineupPlayer } from "@/components/lineup";
 import { button, ErrorText, FormIcon, Mark, WinBar } from "@/components/ui";
@@ -20,7 +20,7 @@ export interface Option {
   teamB: string[];
 }
 
-/** Choose one of the proposals, move players by tapping them, save. */
+/** Choose one of the proposals (or pick the teams by hand), move players by tapping them, save. */
 export function TeamEditor({
   groupId,
   matchId,
@@ -37,24 +37,41 @@ export function TeamEditor({
   initiallyShown: number;
 }) {
   const [shown, setShown] = useState(initiallyShown);
-  const [selected, setSelected] = useState(0);
+  // "manual" = the admin picks both teams from scratch.
+  const [selected, setSelected] = useState<number | "manual">(options.length > 0 ? 0 : "manual");
   const [view, setView] = useState<"list" | "pitch">("list");
-  const [teamA, setTeamA] = useState(options[0].teamA);
-  const [teamB, setTeamB] = useState(options[0].teamB);
+  const [teamA, setTeamA] = useState<string[]>(options[0]?.teamA ?? []);
+  const [teamB, setTeamB] = useState<string[]>(options[0]?.teamB ?? []);
   const [error, setError] = useState<string | null>(null);
   const [saving, startSaving] = useTransition();
 
   const byId = new Map(players.map((p) => [p.id, p]));
   const eff = (ids: string[]) => ids.map((id) => byId.get(id)!).map((p) => effectiveMu(p.mu, p.form));
-  const { sA, sB } = splitStrengths(eff(teamA), eff(teamB));
+  const bothFilled = teamA.length > 0 && teamB.length > 0;
+  const { sA, sB } = bothFilled ? splitStrengths(eff(teamA), eff(teamB)) : { sA: NaN, sB: NaN };
   const probA = winProbability(sA, sB);
   const sizeGap = Math.abs(teamA.length - teamB.length);
-  const edited = teamA.join() !== options[selected].teamA.join() || teamB.join() !== options[selected].teamB.join();
+  const manual = selected === "manual";
+  const edited =
+    !manual && (teamA.join() !== options[selected].teamA.join() || teamB.join() !== options[selected].teamB.join());
+  const toPick = players.filter((p) => !teamA.includes(p.id) && !teamB.includes(p.id));
 
   function choose(i: number) {
     setSelected(i);
     setTeamA(options[i].teamA);
     setTeamB(options[i].teamB);
+  }
+
+  function pickByHand() {
+    setSelected("manual");
+    setTeamA([]);
+    setTeamB([]);
+    setView("list");
+  }
+
+  function pick(id: string, team: "A" | "B") {
+    if (team === "A") setTeamA([...teamA, id]);
+    else setTeamB([...teamB, id]);
   }
 
   function move(id: string) {
@@ -100,18 +117,37 @@ export function TeamEditor({
             <Plus className="size-4" aria-hidden /> Another option
           </button>
         )}
+        <button
+          type="button"
+          onClick={pickByHand}
+          aria-pressed={manual}
+          className={`${tab(manual)} inline-flex items-center gap-1`}
+        >
+          <Hand className="size-4" aria-hidden /> Pick myself
+        </button>
       </div>
 
       <div className="border-2 border-ink bg-sheet p-4">
         <p className="mb-2 text-sm font-semibold text-ink-soft">Chance of winning{edited && " (after your changes)"}</p>
-        <WinBar probA={probA} labelA="Team A" labelB="Team B" />
+        {bothFilled ? (
+          <WinBar probA={probA} labelA="Team A" labelB="Team B" />
+        ) : (
+          <p className="text-sm text-ink-soft">Put at least one player in each team to see it.</p>
+        )}
       </div>
 
       {sizeGap > 1 && <ErrorText>The teams differ by {sizeGap} players. Move someone back.</ErrorText>}
 
       <div className="grid grid-cols-2" role="group" aria-label="View">
         {(["list", "pitch"] as const).map((v) => (
-          <button key={v} type="button" onClick={() => setView(v)} aria-pressed={view === v} className={tab(view === v)}>
+          <button
+            key={v}
+            type="button"
+            onClick={() => setView(v)}
+            aria-pressed={view === v}
+            disabled={v === "pitch" && !bothFilled}
+            className={`${tab(view === v)} disabled:opacity-45`}
+          >
             {v === "list" ? "Edit teams" : "See on the pitch"}
           </button>
         ))}
@@ -119,6 +155,7 @@ export function TeamEditor({
 
       {view === "list" ? (
         <>
+          {toPick.length > 0 && <PickList players={toPick} onPick={pick} />}
           <p className="flex items-center gap-2 text-sm text-ink-soft">
             <ArrowLeftRight className="size-4" aria-hidden /> Tap a player to send them to the other team.
           </p>
@@ -140,11 +177,11 @@ export function TeamEditor({
       {error && <ErrorText>{error}</ErrorText>}
       <button
         type="button"
-        disabled={saving || teamA.length === 0 || teamB.length === 0}
+        disabled={saving || !bothFilled || toPick.length > 0}
         onClick={save}
         className={`${button.primary} w-full`}
       >
-        {saving ? "Saving…" : "Use these teams"}
+        {saving ? "Saving…" : toPick.length > 0 ? `${toPick.length} still to pick` : "Use these teams"}
       </button>
     </div>
   );
@@ -168,8 +205,9 @@ function TeamColumn({
     <div className="border-2 border-ink bg-sheet">
       <div className="flex items-baseline justify-between border-b-2 border-ink px-3 py-2">
         <h2 className="font-display text-lg font-extrabold uppercase">{title}</h2>
-        <Mark value={strength.toFixed(1)} size="sm" />
+        {ids.length > 0 && <Mark value={strength.toFixed(1)} size="sm" />}
       </div>
+      {ids.length === 0 && <p className="px-3 py-4 text-sm text-ink-soft">Nobody yet</p>}
       <ul>
         {sorted.map((id) => {
           const p = byId.get(id)!;
@@ -192,6 +230,38 @@ function TeamColumn({
             </li>
           );
         })}
+      </ul>
+    </div>
+  );
+}
+
+/** Players not in a team yet (only when picking by hand): one tap sends them to A or B. */
+function PickList({ players, onPick }: { players: EditorPlayer[]; onPick: (id: string, team: "A" | "B") => void }) {
+  const sorted = [...players].sort((a, b) => b.overall - a.overall);
+  return (
+    <div className="border-2 border-ink bg-sheet">
+      <h2 className="border-b-2 border-ink px-3 py-2 font-display text-lg font-extrabold uppercase">
+        Still to pick ({players.length})
+      </h2>
+      <ul>
+        {sorted.map((p) => (
+          <li key={p.id} className="flex min-h-12 items-center justify-between gap-2 border-b border-rule px-3 py-1 last:border-b-0">
+            <span className="min-w-0 truncate font-semibold">
+              {p.name}
+              {p.positions.includes("GK") && <span className="ml-1 text-xs font-bold text-ink-soft">GK</span>}
+            </span>
+            <span className="flex shrink-0 items-center gap-2">
+              <FormIcon form={p.form} className="size-4" />
+              <Mark value={p.overall} size="sm" />
+              <button type="button" onClick={() => onPick(p.id, "A")} className={button.small} aria-label={`${p.name} to Team A`}>
+                A
+              </button>
+              <button type="button" onClick={() => onPick(p.id, "B")} className={button.small} aria-label={`${p.name} to Team B`}>
+                B
+              </button>
+            </span>
+          </li>
+        ))}
       </ul>
     </div>
   );
