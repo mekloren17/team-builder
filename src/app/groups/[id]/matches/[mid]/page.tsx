@@ -3,12 +3,14 @@ import Link from "next/link";
 import { effectiveMu, splitStrengths, winProbability } from "@/lib/engine/engine";
 import { Lineup, type LineupPlayer } from "@/components/lineup";
 import { BackLink, button, Dateline, Empty, FormIcon, Headline, inWords, Mark, Page, Panel, SectionTitle } from "@/components/ui";
-import { formatMatchDate, STATUS_LABEL } from "@/lib/match";
+import { formatMatchDate, hasStarted, STATUS_LABEL, type MatchPlayerRow } from "@/lib/match";
+import { formatChange } from "@/lib/ratings";
 import { displayOverall, hasProfile, toBalancePlayer, UNKNOWN_LEVEL, type PlayerRow } from "@/lib/player";
 import { deleteMatch, reopenMatch } from "../actions";
 import { AttendanceToggle, MyAttendance } from "./attendance";
 import { Constraints } from "./constraints";
 import { loadMatch } from "./data";
+import { Result } from "./result";
 
 type Props = { params: Promise<{ id: string; mid: string }> };
 
@@ -30,6 +32,13 @@ async function Match({ params }: Props) {
   const mySignup = signed.find((s) => s.player_id === me.id);
   const notSigned = players.filter((p) => !signed.some((s) => s.player_id === p.id));
   const open = match.status === "open";
+  // Result: who may enter it (players of the match and admins, after kick-off) and answer it (the other team, admins).
+  const myTeam = mySignup?.team ?? null;
+  const started = hasStarted(match.starts_at);
+  const enteredBy = match.result_by ? byId.get(match.result_by) : undefined;
+  const enteredByTeam = signed.find((s) => s.player_id === match.result_by)?.team ?? null;
+  const canEnter = !open && started && (canManage || myTeam !== null);
+  const canAnswer = canManage || (myTeam !== null && enteredByTeam !== null && myTeam !== enteredByTeam);
   const target = match.format * 2;
   const headline = !open
     ? match.status === "played"
@@ -57,6 +66,33 @@ async function Match({ params }: Props) {
         <div className="mt-6">
           <Teams players={byId} signups={signed} winProbA={match.win_prob_a} />
         </div>
+      )}
+
+      {!open && (started || match.result_status) && (
+        <>
+          <SectionTitle>Result</SectionTitle>
+          <Result
+            groupId={id}
+            matchId={mid}
+            result={{
+              status: match.result_status,
+              scoreA: match.score_a,
+              scoreB: match.score_b,
+              enteredBy: enteredBy?.display_name ?? null,
+              enteredByTeam,
+            }}
+            canEnter={canEnter}
+            canAnswer={canAnswer}
+            canManage={canManage}
+          />
+        </>
+      )}
+
+      {match.result_status === "confirmed" && signed.some((s) => s.mu_after !== null) && (
+        <>
+          <SectionTitle>Marks after this match</SectionTitle>
+          <MarkChanges players={byId} signups={signed} meId={me.id} />
+        </>
       )}
 
       <SectionTitle>
@@ -224,5 +260,47 @@ function Teams({
       strengthB={sB}
       winProbA={winProbA ?? winProbability(sA, sB)}
     />
+  );
+}
+
+/** Each player's mark before and after this match, by team, biggest change first. */
+function MarkChanges({ players, signups, meId }: { players: Map<string, PlayerRow>; signups: MatchPlayerRow[]; meId: string }) {
+  return (
+    <div className="grid gap-3 sm:grid-cols-2">
+      {(["A", "B"] as const).map((t) => {
+        const rows = signups
+          .filter((s) => s.team === t && s.mu_before !== null && s.mu_after !== null)
+          .sort((a, b) => b.mu_after! - b.mu_before! - (a.mu_after! - a.mu_before!));
+        return (
+          <Panel key={t}>
+            <h3
+              className={`border-b-2 border-line px-4 py-2 font-display text-lg font-black uppercase ${t === "A" ? "text-bib" : "text-bib-orange"}`}
+            >
+              Team {t}
+            </h3>
+            <ul>
+              {rows.map((s) => {
+                const change = formatChange(s.mu_before!, s.mu_after!);
+                const color = change.startsWith("+") ? "text-ok" : change.startsWith("−") ? "text-foul" : "text-chalk-soft";
+                return (
+                  <li
+                    key={s.player_id}
+                    className={`flex min-h-12 items-center justify-between gap-3 border-b border-rule px-4 last:border-b-0 ${s.player_id === meId ? "bg-raised" : ""}`}
+                  >
+                    <span className="min-w-0 truncate font-semibold">{players.get(s.player_id)?.display_name}</span>
+                    <span className="flex shrink-0 items-baseline gap-3">
+                      <span className="tabular text-sm text-chalk-soft">
+                        {Math.round(s.mu_before!)} → {Math.round(s.mu_after!)}
+                      </span>
+                      <span className={`tabular w-12 text-right font-display text-xl font-black ${color}`}>{change}</span>
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          </Panel>
+        );
+      })}
+    </div>
   );
 }
