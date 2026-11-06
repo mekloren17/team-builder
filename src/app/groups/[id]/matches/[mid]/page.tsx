@@ -70,7 +70,40 @@ async function Match({ params }: Props) {
 
       {match.status !== "open" && (
         <div className="mt-6 lg:grid lg:grid-cols-[minmax(0,42rem)_minmax(0,1fr)] lg:items-start lg:gap-8">
-          <Teams players={byId} signups={signed} winProbA={match.win_prob_a} />
+          {/* the result on top, with the odds of before kick-off; then the pitch */}
+          <div className="space-y-6">
+            {!open && (started || match.result_status) && (
+              <Result
+                groupId={id}
+                matchId={mid}
+                result={{
+                  status: match.result_status,
+                  scoreA: match.score_a,
+                  scoreB: match.score_b,
+                  enteredBy: enteredBy?.display_name ?? null,
+                  enteredByTeam,
+                  goals,
+                }}
+                players={signed
+                  .filter((s) => s.team)
+                  .map((s) => ({
+                    id: s.player_id,
+                    name: shortName(byId.get(s.player_id)!.display_name, !byId.get(s.player_id)!.user_id),
+                    team: s.team!,
+                  }))}
+                winProbA={match.win_prob_a}
+                canEnter={canEnter}
+                canAnswer={canAnswer}
+                canManage={canManage}
+              />
+            )}
+            <Teams
+              players={byId}
+              signups={signed}
+              winProbA={match.win_prob_a}
+              showOdds={!match.result_status}
+            />
+          </div>
           {marksReady && (
             <aside className="hidden lg:block">
               <h2 className="mb-3 font-display text-xl font-black uppercase">Marks after this match</h2>
@@ -81,34 +114,6 @@ async function Match({ params }: Props) {
       )}
 
       <div className="lg:max-w-2xl">
-
-      {!open && (started || match.result_status) && (
-        <>
-          <SectionTitle>Result</SectionTitle>
-          <Result
-            groupId={id}
-            matchId={mid}
-            result={{
-              status: match.result_status,
-              scoreA: match.score_a,
-              scoreB: match.score_b,
-              enteredBy: enteredBy?.display_name ?? null,
-              enteredByTeam,
-              goals,
-            }}
-            players={signed
-              .filter((s) => s.team)
-              .map((s) => ({
-                id: s.player_id,
-                name: shortName(byId.get(s.player_id)!.display_name, !byId.get(s.player_id)!.user_id),
-                team: s.team!,
-              }))}
-            canEnter={canEnter}
-            canAnswer={canAnswer}
-            canManage={canManage}
-          />
-        </>
-      )}
 
       {marksReady && (
         <div className="lg:hidden">
@@ -247,10 +252,13 @@ function Teams({
   players,
   signups,
   winProbA,
+  showOdds,
 }: {
   players: Map<string, PlayerRow>;
   signups: { player_id: string; form: number; team: "A" | "B" | null; position: LineupPlayer["position"] }[];
   winProbA: number | null;
+  /** The chance of winning above the pitch; off once there is a result (it is shown with the score). */
+  showOdds: boolean;
 }) {
   const team = (t: "A" | "B"): LineupPlayer[] =>
     signups
@@ -282,6 +290,7 @@ function Teams({
       strengthA={sA}
       strengthB={sB}
       winProbA={winProbA ?? winProbability(sA, sB)}
+      showOdds={showOdds}
     />
   );
 }
