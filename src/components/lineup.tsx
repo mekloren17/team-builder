@@ -1,6 +1,6 @@
 import type { Pos } from "@/lib/engine/engine";
 import { FormIcon, Mark, WinBar } from "@/components/ui";
-import { tier, type Tier } from "@/lib/player";
+import { shortName, tier, type Tier } from "@/lib/player";
 
 export interface LineupPlayer {
   id: string;
@@ -122,9 +122,6 @@ function Token({ player, team }: { player: LineupPlayer; team: "A" | "B" }) {
   );
 }
 
-/** Short enough for a token: "Emanuele F." for members; guests keep their full name, they have no other way to be told apart. */
 function pitchName(p: LineupPlayer): string {
-  if (p.guest) return p.name;
-  const [first, ...rest] = p.name.trim().split(/\s+/);
-  return rest.length > 0 ? `${first} ${rest[rest.length - 1][0]}.` : first;
+  return shortName(p.name, p.guest);
 }

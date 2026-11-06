@@ -289,7 +289,7 @@ function ScoreForm({
                           className="flex min-h-12 items-center justify-between gap-2 border-b border-rule px-3 py-1 last:border-b-0"
                         >
                           <span className="min-w-0 truncate text-sm font-semibold">{p.name}</span>
-                          <span className="flex shrink-0 items-center gap-3">
+                          <span className="flex shrink-0 items-center gap-2">
                             <Mini
                               label={`${p.name} goals`}
                               value={s.g}
@@ -393,9 +393,9 @@ function Mini({
   onChange: (v: number) => void;
 }) {
   const btn =
-    "grid size-9 place-items-center rounded-md border-2 border-line text-chalk transition-colors hover:bg-raised disabled:opacity-35";
+    "grid size-8 place-items-center rounded-md border-2 border-line text-chalk transition-colors hover:bg-raised disabled:opacity-35";
   return (
-    <span className="flex items-center gap-1">
+    <span className="flex items-center gap-0.5">
       <button
         type="button"
         onClick={() => onChange(value - 1)}

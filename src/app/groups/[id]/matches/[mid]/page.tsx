@@ -5,7 +5,7 @@ import { Lineup, type LineupPlayer } from "@/components/lineup";
 import { BackLink, button, Dateline, Empty, FormIcon, Headline, inWords, Mark, Page, Panel, SectionTitle } from "@/components/ui";
 import { formatMatchDate, hasStarted, STATUS_LABEL, type MatchPlayerRow } from "@/lib/match";
 import { formatChange } from "@/lib/ratings";
-import { displayOverall, hasProfile, toBalancePlayer, UNKNOWN_LEVEL, type PlayerRow } from "@/lib/player";
+import { displayOverall, hasProfile, shortName, toBalancePlayer, UNKNOWN_LEVEL, type PlayerRow } from "@/lib/player";
 import { deleteMatch, reopenMatch } from "../actions";
 import { AttendanceToggle, MyAttendance } from "./attendance";
 import { Constraints } from "./constraints";
@@ -85,7 +85,7 @@ async function Match({ params }: Props) {
               .filter((s) => s.team)
               .map((s) => ({
                 id: s.player_id,
-                name: byId.get(s.player_id)!.display_name,
+                name: shortName(byId.get(s.player_id)!.display_name, !byId.get(s.player_id)!.user_id),
                 team: s.team!,
                 goals: s.goals,
                 assists: s.assists,
