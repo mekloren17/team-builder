@@ -5,7 +5,7 @@ import { ChevronRight } from "lucide-react";
 import { isProvisional } from "@/lib/engine/engine";
 import { PlayerCard } from "@/components/player-card";
 import { BackLink, Dateline, Empty, Headline, Mark, Page, Panel, SectionTitle } from "@/components/ui";
-import { formatMatchDate } from "@/lib/match";
+import { formatMatchDate, statText } from "@/lib/match";
 import { cardStats, displayOverall, isGuest, mainPosition } from "@/lib/player";
 import { formatChange } from "@/lib/ratings";
 import { createClient } from "@/lib/supabase/server";
@@ -17,6 +17,8 @@ interface PlayedRow {
   team: "A" | "B" | null;
   mu_before: number | null;
   mu_after: number | null;
+  goals: number;
+  assists: number;
   matches: {
     id: string;
     starts_at: string;
@@ -52,7 +54,7 @@ async function Player({ params }: Props) {
   const supabase = await createClient();
   const { data } = await supabase
     .from("match_players")
-    .select("team, mu_before, mu_after, matches!inner (id, starts_at, format, score_a, score_b, result_status)")
+    .select("team, mu_before, mu_after, goals, assists, matches!inner (id, starts_at, format, score_a, score_b, result_status)")
     .eq("player_id", pid)
     .eq("matches.result_status", "confirmed")
     .not("team", "is", null);
@@ -66,6 +68,8 @@ async function Player({ params }: Props) {
   };
   const record = { W: 0, D: 0, L: 0 };
   for (const r of played) record[outcome(r)]++;
+  const goals = played.reduce((s, r) => s + r.goals, 0);
+  const assists = played.reduce((s, r) => s + r.assists, 0);
   const stats = cardStats(p);
 
   return (
@@ -92,21 +96,23 @@ async function Player({ params }: Props) {
           guest={isGuest(p)}
           photoUrl={p.photo_url}
         />
-        <Panel className="grid w-full grid-cols-4 divide-x divide-rule text-center sm:max-w-sm">
-          {(
-            [
+        <div className="w-full space-y-3 sm:max-w-sm">
+          <StatRow
+            items={[
               ["Played", played.length],
               ["Won", record.W],
               ["Drawn", record.D],
               ["Lost", record.L],
-            ] as const
-          ).map(([label, n]) => (
-            <div key={label} className="py-4">
-              <Mark value={n} size="md" />
-              <span className="mt-1 block text-xs font-semibold uppercase text-chalk-soft">{label}</span>
-            </div>
-          ))}
-        </Panel>
+            ]}
+          />
+          <StatRow
+            items={[
+              ["Goals", goals],
+              ["Assists", assists],
+              ["G+A / match", played.length ? ((goals + assists) / played.length).toFixed(1) : "–"],
+            ]}
+          />
+        </div>
       </div>
 
       <SectionTitle>Matches</SectionTitle>
@@ -140,6 +146,9 @@ async function Player({ params }: Props) {
                       <span className="tabular">
                         {r.matches.score_a}–{r.matches.score_b}
                       </span>
+                      {(r.goals > 0 || r.assists > 0) && (
+                        <span className="font-semibold text-chalk"> · {statText(r.goals, r.assists)}</span>
+                      )}
                     </span>
                   </span>
                   <span className={`tabular text-right font-display text-xl font-black ${color}`}>{change ?? "–"}</span>
@@ -151,5 +160,18 @@ async function Player({ params }: Props) {
         </ul>
       )}
     </div>
+  );
+}
+
+function StatRow({ items }: { items: [string, number | string][] }) {
+  return (
+    <Panel className={`grid divide-x divide-rule text-center ${items.length === 4 ? "grid-cols-4" : "grid-cols-3"}`}>
+      {items.map(([label, n]) => (
+        <div key={label} className="py-4">
+          <Mark value={n} size="md" />
+          <span className="mt-1 block text-xs font-semibold uppercase text-chalk-soft">{label}</span>
+        </div>
+      ))}
+    </Panel>
   );
 }

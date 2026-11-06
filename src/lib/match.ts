@@ -26,6 +26,8 @@ export interface MatchPlayerRow {
   position: Pos | null;
   mu_before: number | null;
   mu_after: number | null;
+  goals: number;
+  assists: number;
 }
 
 export interface PairConstraintRow {
@@ -37,7 +39,7 @@ export interface PairConstraintRow {
 
 export const MATCH_COLUMNS =
   "id, group_id, format, starts_at, status, score_a, score_b, win_prob_a, result_status, result_by";
-export const MATCH_PLAYER_COLUMNS = "match_id, player_id, form, team, position, mu_before, mu_after";
+export const MATCH_PLAYER_COLUMNS = "match_id, player_id, form, team, position, mu_before, mu_after, goals, assists";
 
 // The group plays in Italy: show times there, whatever the server's time zone.
 const TIME_ZONE = "Europe/Rome";
@@ -83,3 +85,11 @@ export function listedSince(): string {
 export function hasStarted(startsAt: string): boolean {
   return new Date(startsAt).getTime() <= Date.now();
 }
+
+/** A player's goals and assists in short: "2 G · 1 A", leaving out what is zero. */
+export function statText(goals: number, assists: number): string {
+  return [goals > 0 && `${goals} G`, assists > 0 && `${assists} A`].filter(Boolean).join(" · ");
+}
+
+/** Goals and assists by player id, as submitted with the result. */
+export type ScorerStats = Record<string, { g: number; a: number }>;

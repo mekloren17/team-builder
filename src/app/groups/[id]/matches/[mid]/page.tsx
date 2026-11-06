@@ -81,6 +81,15 @@ async function Match({ params }: Props) {
               enteredBy: enteredBy?.display_name ?? null,
               enteredByTeam,
             }}
+            players={signed
+              .filter((s) => s.team)
+              .map((s) => ({
+                id: s.player_id,
+                name: byId.get(s.player_id)!.display_name,
+                team: s.team!,
+                goals: s.goals,
+                assists: s.assists,
+              }))}
             canEnter={canEnter}
             canAnswer={canAnswer}
             canManage={canManage}
