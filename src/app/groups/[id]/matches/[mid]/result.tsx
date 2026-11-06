@@ -2,16 +2,14 @@
 
 import { useState, useTransition } from "react";
 import { ChevronDown, Minus, Plus } from "lucide-react";
-import { button, ErrorText, Mark, Panel } from "@/components/ui";
-import { RESULT_LABEL, statText, type ResultStatus, type ScorerStats } from "@/lib/match";
+import { button, ErrorText, input, Mark, Panel } from "@/components/ui";
+import { RESULT_LABEL, type GoalEntry, type ResultStatus } from "@/lib/match";
 import { confirmResult, disputeResult, submitResult } from "../actions";
 
 export interface ResultPlayer {
   id: string;
   name: string;
   team: "A" | "B";
-  goals: number;
-  assists: number;
 }
 
 export interface ResultState {
@@ -21,6 +19,8 @@ export interface ResultState {
   /** Name of who entered it, and their team (null if not a player of the match). */
   enteredBy: string | null;
   enteredByTeam: "A" | "B" | null;
+  /** Goals with a known scorer (the rest of the score are own goals or not known). */
+  goals: GoalEntry[];
 }
 
 /**
@@ -58,7 +58,7 @@ export function Result({
     });
   }
 
-  const save = (a: number, b: number, stats: ScorerStats) => run(() => submitResult(groupId, matchId, a, b, stats));
+  const save = (a: number, b: number, goals: GoalEntry[]) => run(() => submitResult(groupId, matchId, a, b, goals));
 
   // No result yet: the form, for whoever may enter it.
   if (result.status === null) {
@@ -93,7 +93,7 @@ export function Result({
           </span>
           <span className="font-display text-lg font-black uppercase text-bib-orange">Team B</span>
         </div>
-        <Scorers players={players} />
+        <Scorers goals={result.goals} players={players} />
         <p className="mt-3 text-center text-sm font-semibold">
           <span
             className={
@@ -158,6 +158,7 @@ export function Result({
             }
             initialA={result.scoreA ?? 0}
             initialB={result.scoreB ?? 0}
+            initialGoals={result.goals}
             players={players}
             busy={busy}
             error={error}
@@ -175,20 +176,21 @@ export function Result({
   );
 }
 
-/** Who scored and assisted, under the score, one column per team. */
-function Scorers({ players }: { players: ResultPlayer[] }) {
-  if (!players.some((p) => p.goals > 0 || p.assists > 0)) return null;
+/** Each goal under the score, "Scorer (Assist)", one column per team. */
+function Scorers({ goals, players }: { goals: GoalEntry[]; players: ResultPlayer[] }) {
+  const name = new Map(players.map((p) => [p.id, p.name]));
+  const known = goals.filter((g) => g.scorer && name.has(g.scorer));
+  if (known.length === 0) return null;
   return (
     <div className="mt-3 grid grid-cols-2 gap-4 border-t border-rule pt-3 text-sm">
       {(["A", "B"] as const).map((t) => (
         <ul key={t} className={`space-y-1 ${t === "B" ? "text-right" : ""}`}>
-          {players
-            .filter((p) => p.team === t && (p.goals > 0 || p.assists > 0))
-            .sort((x, y) => y.goals - x.goals || y.assists - x.assists)
-            .map((p) => (
-              <li key={p.id}>
-                <span className="font-semibold">{p.name}</span>{" "}
-                <span className="tabular text-chalk-soft">{statText(p.goals, p.assists)}</span>
+          {known
+            .filter((g) => g.team === t)
+            .map((g, i) => (
+              <li key={i}>
+                <span className="font-semibold">{name.get(g.scorer!)}</span>
+                {g.assist && name.has(g.assist) && <span className="text-chalk-soft"> ({name.get(g.assist)})</span>}
               </li>
             ))}
         </ul>
@@ -197,11 +199,20 @@ function Scorers({ players }: { players: ResultPlayer[] }) {
   );
 }
 
+type Slot = { scorer: string | null; assist: string | null };
+
+/** One slot per goal of the team: those with a known scorer first, then empty ones. */
+function slotsFor(team: "A" | "B", goals: GoalEntry[], score: number): Slot[] {
+  const known = goals.filter((g) => g.team === team).map((g) => ({ scorer: g.scorer, assist: g.assist }));
+  return [...known, ...Array.from({ length: Math.max(0, score - known.length) }, () => ({ scorer: null, assist: null }))];
+}
+
 function ScoreForm({
   title,
   note,
   initialA = 0,
   initialB = 0,
+  initialGoals = [],
   players,
   busy,
   error,
@@ -212,37 +223,38 @@ function ScoreForm({
   note: string;
   initialA?: number;
   initialB?: number;
+  initialGoals?: GoalEntry[];
   players: ResultPlayer[];
   busy: boolean;
   error: string | null;
-  onSave: (a: number, b: number, stats: ScorerStats) => void;
+  onSave: (a: number, b: number, goals: GoalEntry[]) => void;
   onCancel?: () => void;
 }) {
-  const [a, setA] = useState(initialA);
-  const [b, setB] = useState(initialB);
-  const [stats, setStats] = useState<ScorerStats>(() =>
-    Object.fromEntries(players.filter((p) => p.goals || p.assists).map((p) => [p.id, { g: p.goals, a: p.assists }])),
-  );
-  const [showScorers, setShowScorers] = useState(Object.keys(stats).length > 0);
+  const [slots, setSlots] = useState<Record<"A" | "B", Slot[]>>({
+    A: slotsFor("A", initialGoals, initialA),
+    B: slotsFor("B", initialGoals, initialB),
+  });
+  const [showScorers, setShowScorers] = useState(initialGoals.length > 0);
+  const score = { A: slots.A.length, B: slots.B.length };
 
-  const sum = (t: "A" | "B", k: "g" | "a") =>
-    players.filter((p) => p.team === t).reduce((s, p) => s + (stats[p.id]?.[k] ?? 0), 0);
-  const score = { A: a, B: b };
-  const problem = (["A", "B"] as const)
-    .map((t) =>
-      sum(t, "g") > score[t]
-        ? `Team ${t} has more scorers than goals.`
-        : sum(t, "a") > sum(t, "g")
-          ? `Team ${t} has more assists than goals.`
-          : null,
-    )
-    .find(Boolean);
+  // The score is the number of goal slots: + adds an empty one, − removes the last one.
+  function setScore(t: "A" | "B", n: number) {
+    const cur = slots[t];
+    const next = n > cur.length ? [...cur, ...Array.from({ length: n - cur.length }, () => ({ scorer: null, assist: null }))] : cur.slice(0, n);
+    setSlots({ ...slots, [t]: next });
+  }
 
-  function change(id: string, k: "g" | "a", v: number) {
-    const next = { ...(stats[id] ?? { g: 0, a: 0 }), [k]: v };
-    const rest = { ...stats };
-    delete rest[id];
-    setStats(next.g || next.a ? { ...rest, [id]: next } : rest);
+  function setSlot(t: "A" | "B", i: number, slot: Slot) {
+    // an assist needs a scorer, and someone else
+    const fixed = { ...slot, assist: slot.scorer && slot.assist !== slot.scorer ? slot.assist : null };
+    setSlots({ ...slots, [t]: slots[t].map((s, j) => (j === i ? fixed : s)) });
+  }
+
+  function submit() {
+    const goals: GoalEntry[] = (["A", "B"] as const).flatMap((t) =>
+      slots[t].filter((s) => s.scorer).map((s) => ({ team: t, scorer: s.scorer, assist: s.assist })),
+    );
+    onSave(score.A, score.B, goals);
   }
 
   return (
@@ -250,8 +262,8 @@ function ScoreForm({
       <h3 className="font-display text-lg font-extrabold uppercase">{title}</h3>
       <p className="mb-4 text-sm text-chalk-soft">{note}</p>
       <div className="grid gap-3">
-        <Stepper label="Team A" color="text-bib" value={a} onChange={setA} />
-        <Stepper label="Team B" color="text-bib-orange" value={b} onChange={setB} />
+        <Stepper label="Team A" color="text-bib" value={score.A} onChange={(n) => setScore("A", n)} />
+        <Stepper label="Team B" color="text-bib-orange" value={score.B} onChange={(n) => setScore("B", n)} />
       </div>
 
       <button
@@ -268,61 +280,67 @@ function ScoreForm({
       {showScorers && (
         <div className="mt-2 space-y-4">
           {(["A", "B"] as const).map((t) => {
-            const goalsLeft = score[t] - sum(t, "g");
-            const assistsLeft = sum(t, "g") - sum(t, "a");
+            const team = players.filter((p) => p.team === t);
             return (
               <div key={t} className="rounded-md border-2 border-line">
-                <div className="flex items-baseline justify-between border-b-2 border-line px-3 py-2">
+                <div className="border-b-2 border-line px-3 py-2">
                   <span className={`font-display font-black uppercase ${t === "A" ? "text-bib" : "text-bib-orange"}`}>
                     Team {t}
                   </span>
-                  {/* each label as wide as its counter below (MINI_WIDTH), same gap as in the rows */}
-                  <span className="flex shrink-0 gap-2 text-center text-xs font-semibold uppercase text-chalk-soft">
-                    <span className={MINI_WIDTH}>Goals</span>
-                    <span className={MINI_WIDTH}>Assists</span>
-                  </span>
                 </div>
-                <ul>
-                  {players
-                    .filter((p) => p.team === t)
-                    .map((p) => {
-                      const s = stats[p.id] ?? { g: 0, a: 0 };
-                      return (
-                        <li
-                          key={p.id}
-                          className="flex min-h-12 items-center justify-between gap-2 border-b border-rule px-3 py-1 last:border-b-0"
+                {slots[t].length === 0 ? (
+                  <p className="px-3 py-3 text-sm text-chalk-soft">No goals.</p>
+                ) : (
+                  <ol>
+                    {slots[t].map((s, i) => (
+                      <li
+                        key={i}
+                        className="grid grid-cols-[2.5rem_1fr_1fr] items-center gap-2 border-b border-rule px-3 py-2 last:border-b-0"
+                      >
+                        <span className="text-xs font-semibold uppercase text-chalk-soft">Goal {i + 1}</span>
+                        <select
+                          aria-label={`Team ${t}, goal ${i + 1}: scorer`}
+                          value={s.scorer ?? ""}
+                          onChange={(e) => setSlot(t, i, { ...s, scorer: e.target.value || null })}
+                          className={`${input} min-h-11 px-2 text-sm`}
                         >
-                          <span className="min-w-0 truncate text-sm font-semibold">{p.name}</span>
-                          <span className="flex shrink-0 items-center gap-2">
-                            <Mini
-                              label={`${p.name} goals`}
-                              value={s.g}
-                              canAdd={goalsLeft > 0}
-                              onChange={(v) => change(p.id, "g", v)}
-                            />
-                            <Mini
-                              label={`${p.name} assists`}
-                              value={s.a}
-                              canAdd={assistsLeft > 0}
-                              onChange={(v) => change(p.id, "a", v)}
-                            />
-                          </span>
-                        </li>
-                      );
-                    })}
-                </ul>
+                          <option value="">Scorer?</option>
+                          {team.map((p) => (
+                            <option key={p.id} value={p.id}>
+                              {p.name}
+                            </option>
+                          ))}
+                        </select>
+                        <select
+                          aria-label={`Team ${t}, goal ${i + 1}: assist`}
+                          value={s.assist ?? ""}
+                          disabled={!s.scorer}
+                          onChange={(e) => setSlot(t, i, { ...s, assist: e.target.value || null })}
+                          className={`${input} min-h-11 px-2 text-sm disabled:opacity-45`}
+                        >
+                          <option value="">No assist</option>
+                          {team
+                            .filter((p) => p.id !== s.scorer)
+                            .map((p) => (
+                              <option key={p.id} value={p.id}>
+                                {p.name}
+                              </option>
+                            ))}
+                        </select>
+                      </li>
+                    ))}
+                  </ol>
+                )}
               </div>
             );
           })}
-          <p className="text-xs text-chalk-soft">
-            Goals left without a scorer count as own goals or forgotten. An assist needs a goal of the same team.
-          </p>
+          <p className="text-xs text-chalk-soft">A goal left without a scorer counts as an own goal or not known.</p>
         </div>
       )}
 
-      {(problem || error) && (
+      {error && (
         <div className="mt-3">
-          <ErrorText>{problem ?? error}</ErrorText>
+          <ErrorText>{error}</ErrorText>
         </div>
       )}
       <div className={`mt-4 grid gap-3 ${onCancel ? "grid-cols-2" : ""}`}>
@@ -331,13 +349,8 @@ function ScoreForm({
             Cancel
           </button>
         )}
-        <button
-          type="button"
-          disabled={busy || !!problem}
-          onClick={() => onSave(a, b, stats)}
-          className={button.primary}
-        >
-          {busy ? "Saving…" : `Save ${a}–${b}`}
+        <button type="button" disabled={busy} onClick={submit} className={button.primary}>
+          {busy ? "Saving…" : `Save ${score.A}–${score.B}`}
         </button>
       </div>
     </Panel>
@@ -381,52 +394,5 @@ function Stepper({
         </button>
       </div>
     </div>
-  );
-}
-
-/** Width of a Mini counter: two 2rem buttons, a 1.25rem number and two 0.125rem gaps. */
-const MINI_WIDTH = "w-[5.5rem]";
-
-/** Small counter for one player's goals or assists. */
-function Mini({
-  label,
-  value,
-  canAdd,
-  onChange,
-}: {
-  label: string;
-  value: number;
-  canAdd: boolean;
-  onChange: (v: number) => void;
-}) {
-  const btn =
-    "grid size-8 place-items-center rounded-md border-2 border-line text-chalk transition-colors hover:bg-raised disabled:opacity-35";
-  return (
-    <span className={`flex items-center justify-between gap-0.5 ${MINI_WIDTH}`}>
-      <button
-        type="button"
-        onClick={() => onChange(value - 1)}
-        disabled={value === 0}
-        className={btn}
-        aria-label={`${label}: one less`}
-      >
-        <Minus className="size-3.5" aria-hidden />
-      </button>
-      <span
-        className={`tabular w-5 text-center font-display text-lg font-black ${value ? "text-chalk" : "text-chalk-faint"}`}
-        aria-label={`${label}: ${value}`}
-      >
-        {value}
-      </span>
-      <button
-        type="button"
-        onClick={() => onChange(value + 1)}
-        disabled={!canAdd}
-        className={btn}
-        aria-label={`${label}: one more`}
-      >
-        <Plus className="size-3.5" aria-hidden />
-      </button>
-    </span>
   );
 }

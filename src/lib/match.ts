@@ -91,5 +91,9 @@ export function statText(goals: number, assists: number): string {
   return [goals > 0 && `${goals} G`, assists > 0 && `${assists} A`].filter(Boolean).join(" · ");
 }
 
-/** Goals and assists by player id, as submitted with the result. */
-export type ScorerStats = Record<string, { g: number; a: number }>;
+/** One goal: its team, who scored (null: own goal or not known) and who assisted. */
+export interface GoalEntry {
+  team: "A" | "B";
+  scorer: string | null;
+  assist: string | null;
+}

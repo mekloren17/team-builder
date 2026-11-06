@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { assignPositions, effectiveMu, splitStrengths, winProbability, type Pos } from "@/lib/engine/engine";
 import { requireUser } from "@/lib/auth";
 import { PLAYER_COLUMNS, toBalancePlayer, type PlayerRow } from "@/lib/player";
-import type { MatchPlayerRow, ScorerStats } from "@/lib/match";
+import type { GoalEntry, MatchPlayerRow } from "@/lib/match";
 import { groupRatings, type ConfirmedMatch, type RatingPlayer } from "@/lib/ratings";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -115,14 +115,14 @@ export async function submitResult(
   matchId: string,
   scoreA: number,
   scoreB: number,
-  stats: ScorerStats = {},
+  goals: GoalEntry[] = [],
 ) {
   const { supabase } = await requireUser(matchPath(groupId, matchId));
   const { data: status, error } = await supabase.rpc("submit_result", {
     mid: matchId,
     p_score_a: scoreA,
     p_score_b: scoreB,
-    p_stats: stats,
+    p_goals: goals,
   });
   if (error) return { error: error.message };
   if (status === "confirmed") {

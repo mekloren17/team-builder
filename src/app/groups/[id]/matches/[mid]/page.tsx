@@ -26,7 +26,7 @@ export default function MatchPage({ params }: Props) {
 
 async function Match({ params }: Props) {
   const { id, mid } = await params;
-  const { players, me, canManage, match, signups, constraints } = await loadMatch(id, mid, `/groups/${id}/matches/${mid}`);
+  const { players, me, canManage, match, signups, constraints, goals } = await loadMatch(id, mid, `/groups/${id}/matches/${mid}`);
   const byId = new Map(players.map((p) => [p.id, p]));
   const signed = signups.filter((s) => byId.has(s.player_id));
   const mySignup = signed.find((s) => s.player_id === me.id);
@@ -80,6 +80,7 @@ async function Match({ params }: Props) {
               scoreB: match.score_b,
               enteredBy: enteredBy?.display_name ?? null,
               enteredByTeam,
+              goals,
             }}
             players={signed
               .filter((s) => s.team)
@@ -87,8 +88,6 @@ async function Match({ params }: Props) {
                 id: s.player_id,
                 name: shortName(byId.get(s.player_id)!.display_name, !byId.get(s.player_id)!.user_id),
                 team: s.team!,
-                goals: s.goals,
-                assists: s.assists,
               }))}
             canEnter={canEnter}
             canAnswer={canAnswer}
