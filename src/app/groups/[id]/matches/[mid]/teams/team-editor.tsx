@@ -253,10 +253,10 @@ function PickList({ players, onPick }: { players: EditorPlayer[]; onPick: (id: s
             <span className="flex shrink-0 items-center gap-2">
               <FormIcon form={p.form} className="size-4" />
               <Mark value={p.overall} size="sm" />
-              <button type="button" onClick={() => onPick(p.id, "A")} className={`${button.small} font-black text-bib`} aria-label={`${p.name} to Team A`}>
+              <button type="button" onClick={() => onPick(p.id, "A")} className={`${button.small} font-black! text-bib!`} aria-label={`${p.name} to Team A`}>
                 A
               </button>
-              <button type="button" onClick={() => onPick(p.id, "B")} className={`${button.small} font-black text-bib-orange`} aria-label={`${p.name} to Team B`}>
+              <button type="button" onClick={() => onPick(p.id, "B")} className={`${button.small} font-black! text-bib-orange!`} aria-label={`${p.name} to Team B`}>
                 B
               </button>
             </span>
